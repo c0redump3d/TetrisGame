@@ -11,6 +11,7 @@ namespace TetrisGame
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// carson eats poop
         [STAThread]
         static void Main()
         {
