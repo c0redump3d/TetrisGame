@@ -19,7 +19,7 @@ namespace TetrisGame
         Rectangle bThree;
         Rectangle bFour;
         int rotationAng = 1; // 1 default
-        int currentBlock = 2;
+        int currentBlock = 3;
         Rectangle[] placedrect;
 
 
@@ -38,6 +38,38 @@ namespace TetrisGame
 
             placedrect = new Rectangle[1];
 
+            if (currentBlock == 1)
+            {
+                r1 = 32;
+                r2 = 0;
+                l1 = 32;
+                l2 = 32;
+                t1 = 32;
+                t2 = 0;
+                rotationAng = 1;
+            }
+            else if (currentBlock == 2)
+            {
+                r1 = 32;
+                r2 = 0;
+                l1 = 32;
+                l2 = 0;
+                t1 = 32;
+                t2 = 0;
+                rotationAng = 1;
+
+            }
+            else if (currentBlock == 3)
+            {
+                r1 = -32;
+                r2 = -32;
+                l1 = 32;
+                l2 = 0;
+                t1 = 0;
+                t2 = 32;
+                rotationAng = 1;
+
+            }
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -46,20 +78,11 @@ namespace TetrisGame
 
             for (int i = placedrect.Length - 1; i > 0; i--)
                 e.Graphics.FillRectangle(Brushes.Orange, placedrect[i]);
-            if (currentBlock == 1)
-            {
-                bOne = new Rectangle(plyX, plyY, 32, 32); // middle block
-                bTwo = new Rectangle(plyX + r1, plyY + r2, 32, 32); //right/top
-                bThree = new Rectangle(plyX - l1, plyY - l2, 32, 32);
-                bFour = new Rectangle(plyX + t2, plyY - t1, 32, 32);
-            }
-            else if (currentBlock == 2)
-            {
-                bOne = new Rectangle(plyX, plyY, 32, 32); // middle block
-                bTwo = new Rectangle(plyX + r1, plyY + r2, 32, 32); //right/top
-                bThree = new Rectangle(plyX - l1, plyY - l2, 32, 32);
-                bFour = new Rectangle(plyX + t2, plyY - t1, 32, 32);
-            }
+
+            bOne = new Rectangle(plyX, plyY, 32, 32); // middle block
+            bTwo = new Rectangle(plyX + r1, plyY + r2, 32, 32); //right/top
+            bThree = new Rectangle(plyX - l1, plyY - l2, 32, 32);
+            bFour = new Rectangle(plyX + t2, plyY - t1, 32, 32);
             Brush blackPen = Brushes.Black;
             e.Graphics.FillRectangle(blackPen, bOne);
             e.Graphics.FillRectangle(blackPen, bTwo);
@@ -93,13 +116,13 @@ namespace TetrisGame
 
                 if (currentBlock == 1)
                 {
-                    currentBlock = 2;
-                    r1 = 32;
-                    r2 = 0;
+                    currentBlock = 3;
+                    r1 = -32;
+                    r2 = -32;
                     l1 = 32;
-                    l2 = 32;
-                    t1 = 32;
-                    t2 = 0;
+                    l2 = 0;
+                    t1 = 0;
+                    t2 = 32;
                     rotationAng = 1;
                 }
                 else if (currentBlock == 2)
@@ -109,6 +132,18 @@ namespace TetrisGame
                     r2 = 0;
                     l1 = 32;
                     l2 = 0;
+                    t1 = 32;
+                    t2 = 0;
+                    rotationAng = 1;
+
+                }
+                else if (currentBlock == 3)
+                {
+                    currentBlock = 2;
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 32;
                     t1 = 32;
                     t2 = 0;
                     rotationAng = 1;
@@ -139,13 +174,13 @@ namespace TetrisGame
 
                     if (currentBlock == 1)
                     {
-                        currentBlock = 2;
-                        r1 = 32;
-                        r2 = 0;
+                        currentBlock = 3;
+                        r1 = -32;
+                        r2 = -32;
                         l1 = 32;
-                        l2 = 32;
-                        t1 = 32;
-                        t2 = 0;
+                        l2 = 0;
+                        t1 = 0;
+                        t2 = 32;
                         rotationAng = 1;
                     }
                     else if (currentBlock == 2)
@@ -155,6 +190,18 @@ namespace TetrisGame
                         r2 = 0;
                         l1 = 32;
                         l2 = 0;
+                        t1 = 32;
+                        t2 = 0;
+                        rotationAng = 1;
+
+                    }
+                    else if (currentBlock == 3)
+                    {
+                        currentBlock = 2;
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 32;
                         t1 = 32;
                         t2 = 0;
                         rotationAng = 1;
@@ -199,10 +246,13 @@ namespace TetrisGame
                     }else if(currentBlock == 2)
                     {
                         rotateZblock();
+                    }else if(currentBlock == 3)
+                    {
+                        rotateJblock();
                     }
                     break;
                 case 'k'://duplicate player
-                    
+                    MessageBox.Show("" + currentBlock);
                     break;
                 case 'l':
                     
@@ -305,6 +355,47 @@ namespace TetrisGame
                 l2 = 32;
                 t1 = t2;
                 t2 = 0;
+                rotationAng = 1;
+            }
+        }
+        private void rotateJblock()
+        {
+            if (rotationAng == 1)
+            {
+                r2 = 32;
+                r1 = 0;
+                l2 = 32;
+                l1 = 0;
+                t2 = 32;
+                t1 = 32;
+                rotationAng++;
+            }
+            else if (rotationAng == 2)
+            {
+                r1 = 32;
+                r2 = 32;
+                l1 = l2;
+                l2 = 0;
+                t1 = 0;
+                t2 = 32;
+                rotationAng++;
+            }else if(rotationAng == 3)
+            {
+                r1 = -32;
+                r2 = 32;
+                l1 = 0;
+                l2 = 32;
+                t1 = (-32);
+                t2 = 0;
+                rotationAng++;
+            }else if(rotationAng == 4)
+            {
+                r1 = -32;
+                r2 = -32;
+                l1 = 32;
+                l2 = 0;
+                t1 = 0;
+                t2 = 32;
                 rotationAng = 1;
             }
         }
