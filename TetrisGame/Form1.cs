@@ -34,20 +34,9 @@ namespace TetrisGame
         {
             InitializeComponent();
             this.panel1.Anchor |= AnchorStyles.Bottom | AnchorStyles.Right;
-            this.panel1.Resize += panel1_Resize;
             this.panel1.Paint += panel1_Paint;
 
             placedrect = new Rectangle[1];
-
-        }
-
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void S(object sender, EventArgs e)
-        {
 
         }
 
@@ -86,7 +75,7 @@ namespace TetrisGame
                     Array.Clear(placedrect, 0, placedrect.Length);
 
 
-            if (plyY == 608)
+            if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
             {
                 timer1.Stop();
                 bOne = new Rectangle();
@@ -176,10 +165,6 @@ namespace TetrisGame
 
 
         }
-        private void panel1_Resize(object sender, EventArgs e)
-        {
-            panel1.Invalidate();
-        }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -202,10 +187,10 @@ namespace TetrisGame
                     //plyY -= 32;
                     break;
                 case 'a':
-                    plyX -= 32;
+                    moveLeft();
                     break;
                 case 'd':
-                    plyX += 32;
+                    moveRight();
                     break;
                 case 'c':
                     if(currentBlock == 1)
@@ -226,6 +211,44 @@ namespace TetrisGame
             }
             
             panel1.Invalidate();
+        }
+
+        private void moveRight()
+        {
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.X == placedrect[i].X - 32 && bOne.Y == placedrect[i].Y
+                    || bTwo.X == placedrect[i].X - 32 && bTwo.Y == placedrect[i].Y
+                    || bThree.X == placedrect[i].X - 32 && bThree.Y == placedrect[i].Y
+                    || bFour.X == placedrect[i].X - 32 && bFour.Y == placedrect[i].Y
+                    || bOne.X >= 288
+                    || bTwo.X >= 288
+                    || bThree.X >= 288
+                    || bFour.X >= 288)
+                {
+                    return;
+                }
+
+            plyX += 32;
+
+        }
+
+        private void moveLeft()
+        {
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.X == placedrect[i].X + 32 && bOne.Y == placedrect[i].Y
+                    || bTwo.X == placedrect[i].X + 32 && bTwo.Y == placedrect[i].Y
+                    || bThree.X == placedrect[i].X + 32 && bThree.Y == placedrect[i].Y
+                    || bFour.X == placedrect[i].X + 32 && bFour.Y == placedrect[i].Y 
+                    || bOne.X <= 0
+                    || bTwo.X <= 0
+                    || bThree.X <= 0
+                    || bFour.X <= 0)
+                {
+                    return;
+                }
+
+            plyX -= 32;
+
         }
 
         private void rotateTblock()
@@ -288,8 +311,6 @@ namespace TetrisGame
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-                
-
             plyY += 32;
             panel1.Invalidate();
         }
