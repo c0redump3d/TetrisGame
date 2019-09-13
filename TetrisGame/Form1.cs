@@ -54,6 +54,7 @@ namespace TetrisGame
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
+
             for (int i = placedrect.Length - 1; i > 0; i--)
                 e.Graphics.FillRectangle(Brushes.Orange, placedrect[i]);
             if (currentBlock == 1)
@@ -80,16 +81,25 @@ namespace TetrisGame
                 for (int y = 0; y < 20; y++)
                     e.Graphics.DrawRectangle(new Pen(Color.Black), x * 32, y * 32, 32, 32);
 
+            for (int i = placedrect.Length - 1; i > 1; i--)
+                if (placedrect[i].Y == 32)
+                    Array.Clear(placedrect, 0, placedrect.Length);
+
+
             if (plyY == 608)
             {
                 timer1.Stop();
+                bOne = new Rectangle();
+                bTwo = new Rectangle();
+                bThree = new Rectangle();
+                bFour = new Rectangle();
                 List<Rectangle> createblock = placedrect.ToList();
                 createblock.Add(new Rectangle(plyX, plyY, 32, 32));
                 createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
                 createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
                 createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
                 placedrect = createblock.ToArray();
-                plyY = 32;
+                plyY = 0;
                 plyX = 160;
 
                 if (currentBlock == 1)
@@ -125,13 +135,17 @@ namespace TetrisGame
                     || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
                 {
                     timer1.Stop();
+                    bOne = new Rectangle();
+                    bTwo = new Rectangle();
+                    bThree = new Rectangle();
+                    bFour = new Rectangle();
                     List<Rectangle> createblock = placedrect.ToList();
                     createblock.Add(new Rectangle(plyX, plyY, 32, 32));
                     createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
                     createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
                     createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
                     placedrect = createblock.ToArray();
-                    plyY = 32;
+                    plyY = 0;
                     plyX = 160;
 
                     if (currentBlock == 1)
