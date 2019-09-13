@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace TetrisGame
 {
@@ -33,13 +34,23 @@ namespace TetrisGame
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            Rectangle bOne = new Rectangle(10, 10, 10, 10);
-            Rectangle bTwo = new Rectangle(50, 10, 10, 10);
-            Rectangle bThree = new Rectangle(10, 10, 10, 10);
-            Rectangle bFour = new Rectangle(10, 10, 10, 10);
-            Pen blackPen = new Pen(Color.FromArgb(255, 0, 0, 0), 5);
-            e.Graphics.DrawRectangle(blackPen, bOne);
-            e.Graphics.DrawRectangle(blackPen, bTwo);
+            Pen blackPen = new Pen(Color.Black);
+            Point[] points =
+            {
+                new Point(360, 10),
+                new Point(390, 10),
+                new Point(390, 20),
+                new Point(380, 20),
+                new Point(380, 30),
+                new Point(370, 30),
+                new Point(370, 20),
+                new Point(360, 20),
+                new Point(360, 10)
+
+            };
+            
+            
+
         //use union method 
 
         }
