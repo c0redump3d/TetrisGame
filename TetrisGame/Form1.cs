@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,6 +13,8 @@ namespace TetrisGame
 {
     public partial class Form1 : Form
     {
+
+
         int plyX = 160;
         int plyY = 32;
         Rectangle bOne;
@@ -21,6 +24,11 @@ namespace TetrisGame
         int rotationAng = 1; // 1 default
         int currentBlock = 3;
         Rectangle[] placedrect;
+        int[] bank;
+        int row1 = 0;
+
+
+        Rectangle[] rows;
 
 
         int r1 = 32;
@@ -37,6 +45,8 @@ namespace TetrisGame
             this.panel1.Paint += panel1_Paint;
 
             placedrect = new Rectangle[1];
+            rows = new Rectangle[2];
+            bank = new int[0];
 
             if (currentBlock == 1)
             {
@@ -70,6 +80,17 @@ namespace TetrisGame
                 rotationAng = 1;
 
             }
+
+            for (int y = 0; y < 20; y++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    //e.Graphics.DrawRectangle(new Pen(Color.Black), x * 32, y * 32, 32, 32);
+                    List<Rectangle> addtile = rows.ToList();
+                    addtile.Add(new Rectangle(x * 32, y * 32, 32, 32));
+                    rows = addtile.ToArray();
+                }
+            }
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -89,11 +110,62 @@ namespace TetrisGame
             e.Graphics.FillRectangle(blackPen, bThree);
             e.Graphics.FillRectangle(blackPen, bFour);
 
-            for (int x = 0; x < 10; x++)
-                for (int y = 0; y < 20; y++)
-                    e.Graphics.DrawRectangle(new Pen(Color.Black), x * 32, y * 32, 32, 32);
 
-            for (int i = placedrect.Length - 1; i > 1; i--)
+
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                for (int j = rows.Length - 1; j > 0; j--)
+                    if (placedrect[i].Contains(rows[j]) && placedrect[i].Y == 608)
+                    {
+                        if (!bank.Contains(i))
+                        {
+
+                            List<int> addbank = bank.ToList();
+                            addbank.Add(i);
+                            bank = addbank.ToArray();
+                            Array.Sort(bank);
+                            row1++;
+                        }
+                        
+                    }
+
+            if (row1 == 10)
+            {
+                try
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    label1.Text += "\n" + bank[0];
+                    createblock.RemoveAt(bank[9]);
+                    createblock.RemoveAt(bank[8]);
+                    createblock.RemoveAt(bank[7]);
+                    createblock.RemoveAt(bank[6]);
+                    createblock.RemoveAt(bank[5]);
+                    createblock.RemoveAt(bank[4]);
+                    createblock.RemoveAt(bank[3]);
+                    createblock.RemoveAt(bank[2]);
+                    createblock.RemoveAt(bank[1]);
+                    createblock.RemoveAt(bank[0]);
+                    placedrect = createblock.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        placedrect[i].Y += 32;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("" + bank[1]);
+                }
+
+                bank = new int[0];
+                row1 = 0;
+
+            }
+
+
+
+
+            for (int j = rows.Length - 1; j > 0; j--)
+                e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
+
+
+                for (int i = placedrect.Length - 1; i > 1; i--)
                 if (placedrect[i].Y == 32)
                     Array.Clear(placedrect, 0, placedrect.Length);
 
@@ -252,7 +324,7 @@ namespace TetrisGame
                     }
                     break;
                 case 'k'://duplicate player
-                    MessageBox.Show("" + currentBlock);
+                    MessageBox.Show("" + bank.Length);
                     break;
                 case 'l':
                     
@@ -403,7 +475,9 @@ namespace TetrisGame
         private void Timer1_Tick(object sender, EventArgs e)
         {
             plyY += 32;
-            panel1.Invalidate();
+
+
+                panel1.Invalidate();
         }
     }
 }
