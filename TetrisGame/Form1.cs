@@ -15,6 +15,7 @@ namespace TetrisGame
 {
     public partial class Form1 : Form
     {
+       
         public static Point tPoint1 = new Point(390, 10);
         public static Point tPoint2 = new Point(390, 20);
         public static Point tPoint3 = new Point(380, 20);
@@ -23,6 +24,9 @@ namespace TetrisGame
         public static Point tPoint6 = new Point(370, 20);
         public static Point tPoint7 = new Point(360, 20);
         public static Point tPoint8 = new Point(360, 10);
+        public static Point tPoint9 = new Point(370, 10);
+        public static Point tPoint10 = new Point(380, 10);
+
         public static int item_in_list = 0;
 
         private static Point[] points =
@@ -41,7 +45,7 @@ namespace TetrisGame
 
 
         public static Point[] currentPoints = points;
-        
+
         public Form1()
         {
             InitializeComponent();
@@ -64,22 +68,22 @@ namespace TetrisGame
         public static void panel1_Paint(object sender, PaintEventArgs e)
         {
             Pen blackPen = new Pen(Color.Black, 3);
-            foreach(Point[] value in block_list)
-            {   
-                if(value != null)
+            foreach (Point[] value in block_list)
+            {
+                if (value != null)
                 {
                     e.Graphics.DrawPolygon(blackPen, value);
                 }
-               
-                
+
+
             }
-    
+
 
             e.Graphics.DrawPolygon(blackPen, currentPoints);
-            
+
             e.Graphics.DrawLine(blackPen, 0, 450, 750, 450);
 
-            
+
             //use union method
 
         }
@@ -99,9 +103,10 @@ namespace TetrisGame
         private void Timer1_Tick_1(object sender, EventArgs e)
         {
             bool Add = true;
-            if (currentPoints[3].Y == 450){
+            if (currentPoints[3].Y == 450)
+            {
                 Add = false;
-            } 
+            }
             for (int a = 0; a < currentPoints.Length; a++)
             {
 
@@ -126,9 +131,11 @@ namespace TetrisGame
                     Point tSix = new Point(370, 20);
                     Point tSeven = new Point(360, 20);
                     Point tEight = new Point(360, 10);
+                    Point tNine = new Point(370, 10);
+                    Point tTen = new Point(380, 10);
 
-                   
-                    Point[] points_rest = {
+
+        Point[] points_rest = {
                         tOne,
                         tTwo,
                         tThree,
@@ -139,30 +146,31 @@ namespace TetrisGame
                         tEight,
                     };
                     currentPoints = points_rest;
-                    
+
                     panel1.Invalidate();
 
                     return;
 
 
                 }
-                
+
 
             }
             foreach (Point[] value in block_list)
             {
                 if (value != null)
                 {
-                    for (int i = 3; i < 8; i++)
+                    for (int i = 3; i < 7; i++)
                     {
                         if (
-                            currentPoints[3].Y == value[0].Y && currentPoints[3].X == value[i].X ||
+                            currentPoints[3].Y == value[1].Y && currentPoints[3].X == value[i].X ||
                             currentPoints[4].Y == value[0].Y && currentPoints[4].X == value[i].X ||
                             currentPoints[5].Y == value[0].Y && currentPoints[5].X == value[i].X ||
                             currentPoints[6].Y == value[0].Y && currentPoints[6].X == value[i].X)
 
-           
+
                         {
+
 
                             block_list[item_in_list] = new Point[] { currentPoints[0], currentPoints[1], currentPoints[2], currentPoints[3], currentPoints[4], currentPoints[5], currentPoints[6], currentPoints[7] };
                             panel1.Invalidate();
@@ -177,20 +185,22 @@ namespace TetrisGame
                             Point tSix = new Point(370, 20);
                             Point tSeven = new Point(360, 20);
                             Point tEight = new Point(360, 10);
+                            Point tNine = new Point(370, 10);
+                            Point tTen = new Point(380, 10);
 
-                            
+
                             Point[] points_rest = {
                                     tOne,
                                     tTwo,
                                     tThree,
-                                    tFour, 
+                                    tFour,
                                     tFive,
                                     tSix,
                                     tSeven,
                                     tEight,
                                     };
                             currentPoints = points_rest;
-                           
+
                             panel1.Invalidate();
 
                         }
@@ -201,7 +211,7 @@ namespace TetrisGame
             }
             panel1.Invalidate();
 
-            
+
         }
 
         private void Form1_KeyPress_1(object sender, KeyPressEventArgs e)
@@ -220,10 +230,35 @@ namespace TetrisGame
 
 
                     }
-                    
                     break;
 
+                case 'c':
+                    int xCentre = (currentPoints[0].X + currentPoints[7].X) / 2;
+                    int yCentre = (currentPoints[0].Y + currentPoints[3].Y) / 2;
+                    Point centre = new Point(xCentre, yCentre);
+                    Point newCentre = Point.Round(centre);
+                    panel1.Invalidate();
+                    for (int a = 0; a < currentPoints.Length; a++)
+                    {
+                        currentPoints[a] = rotatePoint(currentPoints[a], centre, 90);
+                        
+
+                    }
+                    break;
+
+
+
             }
+        }
+
+        public Point rotatePoint(Point point, Point centroid, double angle)
+        {
+            int x = centroid.X + (int)((point.X - centroid.X) * Math.Cos(angle) - (point.Y - centroid.Y) * Math.Sin(angle));
+
+            int y = centroid.Y + (int)((point.X - centroid.X) * Math.Sin(angle) + (point.Y - centroid.Y) * Math.Cos(angle));
+
+            return new Point(x, y);
+
         }
     }
 }
