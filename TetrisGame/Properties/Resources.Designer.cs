@@ -63,6 +63,24 @@ namespace TetrisGame.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream clear {
+            get {
+                return ResourceManager.GetStream("clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream fall {
+            get {
+                return ResourceManager.GetStream("fall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream line_clear {
             get {
                 return ResourceManager.GetStream("line_clear", resourceCulture);
@@ -94,6 +112,16 @@ namespace TetrisGame.Properties {
         internal static string Microsoft_DirectX_DirectSound1 {
             get {
                 return ResourceManager.GetString("Microsoft_DirectX_DirectSound1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tetris_logo {
+            get {
+                object obj = ResourceManager.GetObject("tetris_logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

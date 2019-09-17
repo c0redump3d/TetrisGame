@@ -62,7 +62,7 @@
     </Reference>
     <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Resources\Microsoft.DirectX.DirectSound.dll</HintPath>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,7 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StoredColor.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +117,9 @@
     <None Include="Resources\line.wav" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\tetris_logo.png" />
+    <None Include="Resources\fall.wav" />
+    <None Include="Resources\clear.wav" />
     <None Include="Resources\tetris_loop.wav" />
     <None Include="bin\Debug\Microsoft.DirectX.xml" />
     <Content Include="Microsoft.DirectX.DirectSound.dll" />
