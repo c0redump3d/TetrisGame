@@ -1,14 +1,19 @@
-﻿using System;
+﻿using MaterialSkin;
+using MaterialSkin.Controls;
+using Microsoft.DirectX.DirectSound;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Media;
 using System.Windows.Forms;
 
 namespace TetrisGame
 {
-    public partial class Form1 : Form
+    
+    public partial class Form1 : MaterialForm
     {
-
 
         int plyX = 160;
         int plyY = 32;
@@ -17,52 +22,13 @@ namespace TetrisGame
         Rectangle bThree;
         Rectangle bFour;
         int rotationAng = 1; // 1 default
-        int currentBlock = 3;
+        int currentBlock = 1;
+        Random rand;
+        Brush currentColor;
         Rectangle[] placedrect;
-        int[] bank1 = new int[0];
-        int row1 = 0;
-        int[] bank2 = new int[0];
-        int row2 = 0;
-        int[] bank3 = new int[0];
-        int row3 = 0;
-        int[] bank4 = new int[0];
-        int row4 = 0;
-        int[] bank5 = new int[0];
-        int row5 = 0;
-        int[] bank6 = new int[0];
-        int row6 = 0;
-        int[] bank7 = new int[0];
-        int row7 = 0;
-        int[] bank8 = new int[0];
-        int row8 = 0;
-        int[] bank9 = new int[0];
-        int row9 = 0;
-        int[] bank10 = new int[0];
-        int row10 = 0;
-        int[] bank11 = new int[0];
-        int row11 = 0;
-        int[] bank12 = new int[0];
-        int row12 = 0;
-        int[] bank13 = new int[0];
-        int row13 = 0;
-        int[] bank14 = new int[0];
-        int row14 = 0;
-        int[] bank15 = new int[0];
-        int row15 = 0;
-        int[] bank16 = new int[0];
-        int row16 = 0;
-        int[] bank17 = new int[0];
-        int row17 = 0;
-        int[] bank18 = new int[0];
-        int row18 = 0;
-        int[] bank19 = new int[0];
-        int row19 = 0;
-        int[] bank20 = new int[0];
-        int row20 = 0;
-
+        Brush[] storedColor;
 
         Rectangle[] rows;
-
 
         int r1 = 32;
         int r2 = 0;
@@ -70,25 +36,35 @@ namespace TetrisGame
         int l2 = 32; // normally 0
         int t1 = 32;
         int t2 = 0;
+        private bool paused = false;
+        private Microsoft.DirectX.DirectSound.Buffer soundBuffer;
 
         public Form1()
         {
-            InitializeComponent();
+                InitializeComponent();
+
+            //set up material form
+            MaterialSkinManager materialSkinManager = MaterialSkinManager.Instance;
+            materialSkinManager.AddFormToManage(this);
+            materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
+            materialSkinManager.ColorScheme = new ColorScheme(Primary.Grey900, Primary.Grey900, Primary.Grey900, 0, TextShade.WHITE);
+            //done setting up material form
 
             placedrect = new Rectangle[2];
+            storedColor = new Brush[0];
             rows = new Rectangle[2];
+            rand = new Random();
+
+            var dev = new Device();      //This line creates the problem
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.tetris_loop, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.tetris_loop, dev);
+            sound.Volume = -3000;
+            sound.Play(0, BufferPlayFlags.Default);
+
+            currentBlock = rand.Next(1, 6);
 
             if (currentBlock == 1)
-            {
-                r1 = 32;
-                r2 = 0;
-                l1 = 32;
-                l2 = 32;
-                t1 = 32;
-                t2 = 0;
-                rotationAng = 1;
-            }
-            else if (currentBlock == 2)
             {
                 r1 = 32;
                 r2 = 0;
@@ -96,6 +72,18 @@ namespace TetrisGame
                 l2 = 0;
                 t1 = 32;
                 t2 = 0;
+                currentColor = Brushes.Purple;
+                rotationAng = 1;
+            }
+            else if (currentBlock == 2)
+            {
+                r1 = 32;
+                r2 = 0;
+                l1 = 32;
+                l2 = 32;
+                t1 = 32;
+                t2 = 0;
+                currentColor = Brushes.Red;
                 rotationAng = 1;
 
             }
@@ -107,9 +95,37 @@ namespace TetrisGame
                 l2 = 0;
                 t1 = 0;
                 t2 = 32;
+                currentColor = Brushes.Blue;
                 rotationAng = 1;
 
             }
+            else if (currentBlock == 4)
+            {
+                r1 = 0;
+                r2 = 64;
+                l1 = 0;
+                l2 = (-32);
+                t1 = 32;
+                t2 = 0;
+                currentColor = Brushes.Cyan;
+                rotationAng = 1;
+            }
+            else if (currentBlock == 5)
+            {
+                r1 = 32;
+                r2 = 32;
+                l1 = 0;
+                l2 = (-32);
+                t1 = 0;
+                t2 = 32;
+                currentColor = Brushes.Gold;
+                rotationAng = 1;
+            }
+
+            List<Brush> addcolor = storedColor.ToList();
+            addcolor.Add(currentColor);
+            addcolor.Add(currentColor);
+            storedColor = addcolor.ToArray();
 
             for (int y = 0; y < 20; y++)
             {
@@ -126,19 +142,19 @@ namespace TetrisGame
         private void GameBoard_Paint(object sender, PaintEventArgs e)
         {
             for (int i = placedrect.Length - 1; i > 0; i--)
-                e.Graphics.FillRectangle(Brushes.Orange, placedrect[i]);
+                e.Graphics.FillRectangle(storedColor[i], placedrect[i]);
+            //test[1].Rect.Y += 32;
 
             bOne = new Rectangle(plyX, plyY, 32, 32); // middle block
             bTwo = new Rectangle(plyX + r1, plyY + r2, 32, 32); //right/top
             bThree = new Rectangle(plyX - l1, plyY - l2, 32, 32);
             bFour = new Rectangle(plyX + t2, plyY - t1, 32, 32);
-            Brush blackPen = Brushes.Black;
-            e.Graphics.FillRectangle(blackPen, bOne);
-            e.Graphics.FillRectangle(blackPen, bTwo);
-            e.Graphics.FillRectangle(blackPen, bThree);
-            e.Graphics.FillRectangle(blackPen, bFour);
+            e.Graphics.FillRectangle(currentColor, bOne);
+            e.Graphics.FillRectangle(currentColor, bTwo);
+            e.Graphics.FillRectangle(currentColor, bThree);
+            e.Graphics.FillRectangle(currentColor, bFour);
 
-
+            #region mess1
 
             for (int i = placedrect.Length - 1; i > 0; i--)
                 for (int j = rows.Length - 1; j > 0; j--)
@@ -307,10 +323,12 @@ namespace TetrisGame
                         }
 
                     }
+            #endregion
+
             placedrect[0].Y = 99999;
             placedrect[1].Y = 99999;
 
-
+            #region mess2
             try
             {
                 if (row1 == 10)
@@ -327,6 +345,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank1[1]);
                     createblock.RemoveAt(bank1[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank1[9]);
+                    removecolor.RemoveAt(bank1[8]);
+                    removecolor.RemoveAt(bank1[7]);
+                    removecolor.RemoveAt(bank1[6]);
+                    removecolor.RemoveAt(bank1[5]);
+                    removecolor.RemoveAt(bank1[4]);
+                    removecolor.RemoveAt(bank1[3]);
+                    removecolor.RemoveAt(bank1[2]);
+                    removecolor.RemoveAt(bank1[1]);
+                    removecolor.RemoveAt(bank1[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         placedrect[i].Y += 32;
                     resetBank();
@@ -345,6 +375,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank2[1]);
                     createblock.RemoveAt(bank2[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank2[9]);
+                    removecolor.RemoveAt(bank2[8]);
+                    removecolor.RemoveAt(bank2[7]);
+                    removecolor.RemoveAt(bank2[6]);
+                    removecolor.RemoveAt(bank2[5]);
+                    removecolor.RemoveAt(bank2[4]);
+                    removecolor.RemoveAt(bank2[3]);
+                    removecolor.RemoveAt(bank2[2]);
+                    removecolor.RemoveAt(bank2[1]);
+                    removecolor.RemoveAt(bank2[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 576)
                             placedrect[i].Y += 32;
@@ -364,6 +406,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank3[1]);
                     createblock.RemoveAt(bank3[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank3[9]);
+                    removecolor.RemoveAt(bank3[8]);
+                    removecolor.RemoveAt(bank3[7]);
+                    removecolor.RemoveAt(bank3[6]);
+                    removecolor.RemoveAt(bank3[5]);
+                    removecolor.RemoveAt(bank3[4]);
+                    removecolor.RemoveAt(bank3[3]);
+                    removecolor.RemoveAt(bank3[2]);
+                    removecolor.RemoveAt(bank3[1]);
+                    removecolor.RemoveAt(bank3[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 544)
                             placedrect[i].Y += 32;
@@ -383,6 +437,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank4[1]);
                     createblock.RemoveAt(bank4[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank4[9]);
+                    removecolor.RemoveAt(bank4[8]);
+                    removecolor.RemoveAt(bank4[7]);
+                    removecolor.RemoveAt(bank4[6]);
+                    removecolor.RemoveAt(bank4[5]);
+                    removecolor.RemoveAt(bank4[4]);
+                    removecolor.RemoveAt(bank4[3]);
+                    removecolor.RemoveAt(bank4[2]);
+                    removecolor.RemoveAt(bank4[1]);
+                    removecolor.RemoveAt(bank4[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 512)
                             placedrect[i].Y += 32;
@@ -402,6 +468,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank5[1]);
                     createblock.RemoveAt(bank5[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank5[9]);
+                    removecolor.RemoveAt(bank5[8]);
+                    removecolor.RemoveAt(bank5[7]);
+                    removecolor.RemoveAt(bank5[6]);
+                    removecolor.RemoveAt(bank5[5]);
+                    removecolor.RemoveAt(bank5[4]);
+                    removecolor.RemoveAt(bank5[3]);
+                    removecolor.RemoveAt(bank5[2]);
+                    removecolor.RemoveAt(bank5[1]);
+                    removecolor.RemoveAt(bank5[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 480)
                             placedrect[i].Y += 32;
@@ -421,6 +499,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank6[1]);
                     createblock.RemoveAt(bank6[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank6[9]);
+                    removecolor.RemoveAt(bank6[8]);
+                    removecolor.RemoveAt(bank6[7]);
+                    removecolor.RemoveAt(bank6[6]);
+                    removecolor.RemoveAt(bank6[5]);
+                    removecolor.RemoveAt(bank6[4]);
+                    removecolor.RemoveAt(bank6[3]);
+                    removecolor.RemoveAt(bank6[2]);
+                    removecolor.RemoveAt(bank6[1]);
+                    removecolor.RemoveAt(bank6[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 448)
                             placedrect[i].Y += 32;
@@ -440,6 +530,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank7[1]);
                     createblock.RemoveAt(bank7[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank7[9]);
+                    removecolor.RemoveAt(bank7[8]);
+                    removecolor.RemoveAt(bank7[7]);
+                    removecolor.RemoveAt(bank7[6]);
+                    removecolor.RemoveAt(bank7[5]);
+                    removecolor.RemoveAt(bank7[4]);
+                    removecolor.RemoveAt(bank7[3]);
+                    removecolor.RemoveAt(bank7[2]);
+                    removecolor.RemoveAt(bank7[1]);
+                    removecolor.RemoveAt(bank7[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 416)
                             placedrect[i].Y += 32;
@@ -459,6 +561,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank8[1]);
                     createblock.RemoveAt(bank8[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank8[9]);
+                    removecolor.RemoveAt(bank8[8]);
+                    removecolor.RemoveAt(bank8[7]);
+                    removecolor.RemoveAt(bank8[6]);
+                    removecolor.RemoveAt(bank8[5]);
+                    removecolor.RemoveAt(bank8[4]);
+                    removecolor.RemoveAt(bank8[3]);
+                    removecolor.RemoveAt(bank8[2]);
+                    removecolor.RemoveAt(bank8[1]);
+                    removecolor.RemoveAt(bank8[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 384)
                             placedrect[i].Y += 32;
@@ -478,6 +592,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank9[1]);
                     createblock.RemoveAt(bank9[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank9[9]);
+                    removecolor.RemoveAt(bank9[8]);
+                    removecolor.RemoveAt(bank9[7]);
+                    removecolor.RemoveAt(bank9[6]);
+                    removecolor.RemoveAt(bank9[5]);
+                    removecolor.RemoveAt(bank9[4]);
+                    removecolor.RemoveAt(bank9[3]);
+                    removecolor.RemoveAt(bank9[2]);
+                    removecolor.RemoveAt(bank9[1]);
+                    removecolor.RemoveAt(bank9[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 352)
                             placedrect[i].Y += 32;
@@ -497,6 +623,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank10[1]);
                     createblock.RemoveAt(bank10[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank10[9]);
+                    removecolor.RemoveAt(bank10[8]);
+                    removecolor.RemoveAt(bank10[7]);
+                    removecolor.RemoveAt(bank10[6]);
+                    removecolor.RemoveAt(bank10[5]);
+                    removecolor.RemoveAt(bank10[4]);
+                    removecolor.RemoveAt(bank10[3]);
+                    removecolor.RemoveAt(bank10[2]);
+                    removecolor.RemoveAt(bank10[1]);
+                    removecolor.RemoveAt(bank10[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 320)
                             placedrect[i].Y += 32;
@@ -516,6 +654,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank11[1]);
                     createblock.RemoveAt(bank11[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank11[9]);
+                    removecolor.RemoveAt(bank11[8]);
+                    removecolor.RemoveAt(bank11[7]);
+                    removecolor.RemoveAt(bank11[6]);
+                    removecolor.RemoveAt(bank11[5]);
+                    removecolor.RemoveAt(bank11[4]);
+                    removecolor.RemoveAt(bank11[3]);
+                    removecolor.RemoveAt(bank11[2]);
+                    removecolor.RemoveAt(bank11[1]);
+                    removecolor.RemoveAt(bank11[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 288)
                             placedrect[i].Y += 32;
@@ -535,6 +685,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank12[1]);
                     createblock.RemoveAt(bank12[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank12[9]);
+                    removecolor.RemoveAt(bank12[8]);
+                    removecolor.RemoveAt(bank12[7]);
+                    removecolor.RemoveAt(bank12[6]);
+                    removecolor.RemoveAt(bank12[5]);
+                    removecolor.RemoveAt(bank12[4]);
+                    removecolor.RemoveAt(bank12[3]);
+                    removecolor.RemoveAt(bank12[2]);
+                    removecolor.RemoveAt(bank12[1]);
+                    removecolor.RemoveAt(bank12[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 256)
                             placedrect[i].Y += 32;
@@ -554,6 +716,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank13[1]);
                     createblock.RemoveAt(bank13[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank13[9]);
+                    removecolor.RemoveAt(bank13[8]);
+                    removecolor.RemoveAt(bank13[7]);
+                    removecolor.RemoveAt(bank13[6]);
+                    removecolor.RemoveAt(bank13[5]);
+                    removecolor.RemoveAt(bank13[4]);
+                    removecolor.RemoveAt(bank13[3]);
+                    removecolor.RemoveAt(bank13[2]);
+                    removecolor.RemoveAt(bank13[1]);
+                    removecolor.RemoveAt(bank13[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 224)
                             placedrect[i].Y += 32;
@@ -573,6 +747,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank14[1]);
                     createblock.RemoveAt(bank14[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank14[9]);
+                    removecolor.RemoveAt(bank14[8]);
+                    removecolor.RemoveAt(bank14[7]);
+                    removecolor.RemoveAt(bank14[6]);
+                    removecolor.RemoveAt(bank14[5]);
+                    removecolor.RemoveAt(bank14[4]);
+                    removecolor.RemoveAt(bank14[3]);
+                    removecolor.RemoveAt(bank14[2]);
+                    removecolor.RemoveAt(bank14[1]);
+                    removecolor.RemoveAt(bank14[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 192)
                             placedrect[i].Y += 32;
@@ -592,6 +778,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank15[1]);
                     createblock.RemoveAt(bank15[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank15[9]);
+                    removecolor.RemoveAt(bank15[8]);
+                    removecolor.RemoveAt(bank15[7]);
+                    removecolor.RemoveAt(bank15[6]);
+                    removecolor.RemoveAt(bank15[5]);
+                    removecolor.RemoveAt(bank15[4]);
+                    removecolor.RemoveAt(bank15[3]);
+                    removecolor.RemoveAt(bank15[2]);
+                    removecolor.RemoveAt(bank15[1]);
+                    removecolor.RemoveAt(bank15[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 160)
                             placedrect[i].Y += 32;
@@ -611,6 +809,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank16[1]);
                     createblock.RemoveAt(bank16[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank16[9]);
+                    removecolor.RemoveAt(bank16[8]);
+                    removecolor.RemoveAt(bank16[7]);
+                    removecolor.RemoveAt(bank16[6]);
+                    removecolor.RemoveAt(bank16[5]);
+                    removecolor.RemoveAt(bank16[4]);
+                    removecolor.RemoveAt(bank16[3]);
+                    removecolor.RemoveAt(bank16[2]);
+                    removecolor.RemoveAt(bank16[1]);
+                    removecolor.RemoveAt(bank16[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 128)
                             placedrect[i].Y += 32;
@@ -630,6 +840,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank17[1]);
                     createblock.RemoveAt(bank17[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank17[9]);
+                    removecolor.RemoveAt(bank17[8]);
+                    removecolor.RemoveAt(bank17[7]);
+                    removecolor.RemoveAt(bank17[6]);
+                    removecolor.RemoveAt(bank17[5]);
+                    removecolor.RemoveAt(bank17[4]);
+                    removecolor.RemoveAt(bank17[3]);
+                    removecolor.RemoveAt(bank17[2]);
+                    removecolor.RemoveAt(bank17[1]);
+                    removecolor.RemoveAt(bank17[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 96)
                             placedrect[i].Y += 32;
@@ -649,6 +871,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank18[1]);
                     createblock.RemoveAt(bank18[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank18[9]);
+                    removecolor.RemoveAt(bank18[8]);
+                    removecolor.RemoveAt(bank18[7]);
+                    removecolor.RemoveAt(bank18[6]);
+                    removecolor.RemoveAt(bank18[5]);
+                    removecolor.RemoveAt(bank18[4]);
+                    removecolor.RemoveAt(bank18[3]);
+                    removecolor.RemoveAt(bank18[2]);
+                    removecolor.RemoveAt(bank18[1]);
+                    removecolor.RemoveAt(bank18[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 64)
                             placedrect[i].Y += 32;
@@ -668,6 +902,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank19[1]);
                     createblock.RemoveAt(bank19[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank19[9]);
+                    removecolor.RemoveAt(bank19[8]);
+                    removecolor.RemoveAt(bank19[7]);
+                    removecolor.RemoveAt(bank19[6]);
+                    removecolor.RemoveAt(bank19[5]);
+                    removecolor.RemoveAt(bank19[4]);
+                    removecolor.RemoveAt(bank19[3]);
+                    removecolor.RemoveAt(bank19[2]);
+                    removecolor.RemoveAt(bank19[1]);
+                    removecolor.RemoveAt(bank19[0]);
+                    storedColor = removecolor.ToArray();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 32)
                             placedrect[i].Y += 32;
@@ -687,6 +933,18 @@ namespace TetrisGame
                     createblock.RemoveAt(bank20[1]);
                     createblock.RemoveAt(bank20[0]);
                     placedrect = createblock.ToArray();
+                    List<Brush> removecolor = storedColor.ToList();
+                    removecolor.RemoveAt(bank20[9]);
+                    removecolor.RemoveAt(bank20[8]);
+                    removecolor.RemoveAt(bank20[7]);
+                    removecolor.RemoveAt(bank20[6]);
+                    removecolor.RemoveAt(bank20[5]);
+                    removecolor.RemoveAt(bank20[4]);
+                    removecolor.RemoveAt(bank20[3]);
+                    removecolor.RemoveAt(bank20[2]);
+                    removecolor.RemoveAt(bank20[1]);
+                    removecolor.RemoveAt(bank20[0]);
+                    storedColor = removecolor.ToArray();
                     resetBank();
                 }
 
@@ -696,7 +954,7 @@ namespace TetrisGame
                 MessageBox.Show("" + bank1[1]);
             }
 
-
+            #endregion
 
             for (int j = rows.Length - 1; j > 0; j--)
                 e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
@@ -716,44 +974,74 @@ namespace TetrisGame
                 createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
                 createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
                 placedrect = createblock.ToArray();
+                List<Brush> addcolor = storedColor.ToList();
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                storedColor = addcolor.ToArray();
                 plyY = 0;
                 plyX = 160;
 
+                currentBlock = rand.Next(1, 6);
                 if (currentBlock == 1)
                 {
-                    currentBlock = 3;
-                    r1 = -32;
-                    r2 = -32;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 0;
-                    t2 = 32;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 2)
-                {
-                    currentBlock = 1;
                     r1 = 32;
                     r2 = 0;
                     l1 = 32;
                     l2 = 0;
                     t1 = 32;
                     t2 = 0;
+                    currentColor = Brushes.Purple;
                     rotationAng = 1;
-
                 }
-                else if (currentBlock == 3)
+                else if (currentBlock == 2)
                 {
-                    currentBlock = 2;
                     r1 = 32;
                     r2 = 0;
                     l1 = 32;
                     l2 = 32;
                     t1 = 32;
                     t2 = 0;
+                    currentColor = Brushes.Red;
                     rotationAng = 1;
 
                 }
+                else if (currentBlock == 3)
+                {
+                    r1 = -32;
+                    r2 = -32;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Blue;
+                    rotationAng = 1;
+
+                }
+                else if (currentBlock == 4)
+                {
+                    r1 = 0;
+                    r2 = 64;
+                    l1 = 0;
+                    l2 = (-32);
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.Cyan;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 5)
+                {
+                    r1 = 32;
+                    r2 = 32;
+                    l1 = 0;
+                    l2 = (-32);
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Gold;
+                    rotationAng = 1;
+                }
+
                 timer1.Start();
             }
             //use union method 
@@ -765,54 +1053,91 @@ namespace TetrisGame
                 {
                     if (plyY < 32)
                         return;
+
                     timer1.Stop();
                     bOne = new Rectangle();
                     bTwo = new Rectangle();
                     bThree = new Rectangle();
                     bFour = new Rectangle();
-                    List<Rectangle> createblock = placedrect.ToList();
-                    createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                    createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                    createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                    createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                    placedrect = createblock.ToArray();
+                    if (!bOne.Contains(placedrect[i])
+                    || !bTwo.Contains(placedrect[i])
+                    || !bThree.Contains(placedrect[i])
+                    || !bFour.Contains(placedrect[i]))
+                    {
+                        List<Rectangle> createblock = placedrect.ToList();
+                        createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                        createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                        createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                        createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                        placedrect = createblock.ToArray();
+                        placedrect = createblock.ToArray();
+                        List<Brush> addcolor = storedColor.ToList();
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        storedColor = addcolor.ToArray();
+                    }
                     plyY = 0;
                     plyX = 160;
+                    currentBlock = rand.Next(1, 6);
 
                     if (currentBlock == 1)
                     {
-                        currentBlock = 3;
-                        r1 = -32;
-                        r2 = -32;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 0;
-                        t2 = 32;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 2)
-                    {
-                        currentBlock = 1;
                         r1 = 32;
                         r2 = 0;
                         l1 = 32;
                         l2 = 0;
                         t1 = 32;
                         t2 = 0;
+                        currentColor = Brushes.Purple;
                         rotationAng = 1;
-
                     }
-                    else if (currentBlock == 3)
+                    else if (currentBlock == 2)
                     {
-                        currentBlock = 2;
                         r1 = 32;
                         r2 = 0;
                         l1 = 32;
                         l2 = 32;
                         t1 = 32;
                         t2 = 0;
+                        currentColor = Brushes.Red;
                         rotationAng = 1;
 
+                    }
+                    else if (currentBlock == 3)
+                    {
+                        r1 = -32;
+                        r2 = -32;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Blue;
+                        rotationAng = 1;
+
+                    }
+                    else if (currentBlock == 4)
+                    {
+                        r1 = 0;
+                        r2 = 64;
+                        l1 = 0;
+                        l2 = (-32);
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.Cyan;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 5)
+                    {
+                        r1 = 32;
+                        r2 = 32;
+                        l1 = 0;
+                        l2 = (-32);
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Gold;
+                        rotationAng = 1;
                     }
                     timer1.Start();
                 }
@@ -822,31 +1147,18 @@ namespace TetrisGame
             try
             {
                 for (int i = placedrect.Length - 1; i > 1; i--)
-                    if (placedrect[i].Y == 32)
+                    if (placedrect[i].Y == 0)
                     {
                         placedrect = new Rectangle[2];
                         resetBank();
+                        storedColor = new Brush[0];
+                        List<Brush> addcolor = storedColor.ToList();
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        storedColor = addcolor.ToArray();
                     }
             }
             catch (Exception) { }
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-            
-
-
-        }
-
-        private void removeAll()
-        {
-            for (int i = placedrect.Length - 1; i > 0; i--)
-            {
-                List<Rectangle> createblock = placedrect.ToList();
-                createblock.RemoveAt(i);
-                placedrect = createblock.ToArray();
-            }
         }
 
         private void resetBank()
@@ -908,6 +1220,8 @@ namespace TetrisGame
                             || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
                             || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
                             return;
+                    if (paused)
+                        return;
                     plyY += 32;
                     break;
                 case 'w':
@@ -920,7 +1234,17 @@ namespace TetrisGame
                     moveRight();
                     break;
                 case 'c':
-                    if(currentBlock == 1)
+                    if (paused)
+                        return;
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32 
+                            || bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32)
+                            return;
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (currentBlock == 4 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32 || currentBlock == 4 && rotationAng == 1 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 64
+                            || currentBlock == 4 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32 || currentBlock == 4 && rotationAng == 1 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 64)
+                            return;
+                    if (currentBlock == 1)
                     {
                         rotateTblock();
                     }else if(currentBlock == 2)
@@ -929,14 +1253,26 @@ namespace TetrisGame
                     }else if(currentBlock == 3)
                     {
                         rotateJblock();
+                    }else if(currentBlock == 4)
+                    {
+                        rotateIblock();
                     }
                     break;
                 case 'k'://duplicate player
-                    MessageBox.Show("" + bank1.Length + " " + bank2.Length + " " + bank3.Length + " " + bank4.Length + " " + bank5.Length + " " + bank6.Length + " " + bank7.Length + " " + bank8.Length
-                         + " " + bank9.Length + " " + bank10.Length + " " + bank11.Length + " " + bank12.Length);
+                    MessageBox.Show("" + storedColor.Length + " " + placedrect.Length);
+                    //MessageBox.Show("" + currentBlock);
                     break;
                 case 'l':
-                    
+                    if (paused == false)
+                    {
+                        timer1.Stop();
+                        paused = true;
+                    }
+                    else
+                    {
+                        timer1.Start();
+                        paused = false;
+                    }
                     break;
 
             }
@@ -958,7 +1294,8 @@ namespace TetrisGame
                 {
                     return;
                 }
-
+            if (paused)
+                return;
             plyX += 32;
 
         }
@@ -969,7 +1306,7 @@ namespace TetrisGame
                 if (bOne.X == placedrect[i].X + 32 && bOne.Y == placedrect[i].Y
                     || bTwo.X == placedrect[i].X + 32 && bTwo.Y == placedrect[i].Y
                     || bThree.X == placedrect[i].X + 32 && bThree.Y == placedrect[i].Y
-                    || bFour.X == placedrect[i].X + 32 && bFour.Y == placedrect[i].Y 
+                    || bFour.X == placedrect[i].X + 32 && bFour.Y == placedrect[i].Y
                     || bOne.X <= 0
                     || bTwo.X <= 0
                     || bThree.X <= 0
@@ -977,15 +1314,54 @@ namespace TetrisGame
                 {
                     return;
                 }
+            if (paused)
+                return;
 
             plyX -= 32;
 
+        }
+
+        private void rotateIblock()
+        {
+            if (rotationAng == 1)
+            {
+                if (plyX == 288)
+                    plyX -= 64;
+                else if (plyX == 256)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
+                r1 = 32;
+                r2 = 0;
+                l1 = 32;
+                l2 = 0;
+                t2 = 64;
+                t1 = 0;
+                rotationAng++;
+            }else if(rotationAng == 2)
+            {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
+                r1 = 0;
+                r2 = 64;
+                l1 = 0;
+                l2 = (-32);
+                t1 = 32;
+                t2 = 0;
+                rotationAng = 1;
+            }
         }
 
         private void rotateTblock()
         {
             if (rotationAng == 1)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r2 = r1;
                 r1 = 0;
                 l2 = l1;
@@ -996,6 +1372,10 @@ namespace TetrisGame
             }
             else if (rotationAng == 2)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r1 = r2;
                 r2 = 0;
                 l1 = l2;
@@ -1006,6 +1386,10 @@ namespace TetrisGame
             }
             else if (rotationAng == 3)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r2 = r1;
                 r1 = 0;
                 l2 = l1;
@@ -1020,6 +1404,10 @@ namespace TetrisGame
         {
             if (rotationAng == 1)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r2 = r1;
                 r1 = 0;
                 l2 = l1;
@@ -1030,6 +1418,10 @@ namespace TetrisGame
             }
             else if (rotationAng == 2)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r1 = r2;
                 r2 = 0;
                 l1 = l2;
@@ -1043,6 +1435,10 @@ namespace TetrisGame
         {
             if (rotationAng == 1)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r2 = 32;
                 r1 = 0;
                 l2 = 32;
@@ -1053,6 +1449,10 @@ namespace TetrisGame
             }
             else if (rotationAng == 2)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r1 = 32;
                 r2 = 32;
                 l1 = l2;
@@ -1062,6 +1462,10 @@ namespace TetrisGame
                 rotationAng++;
             }else if(rotationAng == 3)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r1 = -32;
                 r2 = 32;
                 l1 = 0;
@@ -1071,6 +1475,10 @@ namespace TetrisGame
                 rotationAng++;
             }else if(rotationAng == 4)
             {
+                if (plyX == 288)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
                 r1 = -32;
                 r2 = -32;
                 l1 = 32;
@@ -1084,6 +1492,7 @@ namespace TetrisGame
         private void Timer1_Tick(object sender, EventArgs e)
         {
             plyY += 32;
+
             gameBoard.Invalidate();
         }
 

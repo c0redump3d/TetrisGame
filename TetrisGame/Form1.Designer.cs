@@ -42,9 +42,10 @@
             // 
             // gameBoard
             // 
-            this.gameBoard.Location = new System.Drawing.Point(75, 12);
+            this.gameBoard.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.gameBoard.Location = new System.Drawing.Point(12, 76);
             this.gameBoard.Name = "gameBoard";
-            this.gameBoard.Size = new System.Drawing.Size(400, 701);
+            this.gameBoard.Size = new System.Drawing.Size(321, 641);
             this.gameBoard.TabIndex = 2;
             this.gameBoard.TabStop = false;
             this.gameBoard.Paint += new System.Windows.Forms.PaintEventHandler(this.GameBoard_Paint);
@@ -53,9 +54,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(920, 813);
+            this.ClientSize = new System.Drawing.Size(623, 729);
             this.Controls.Add(this.gameBoard);
-            this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "Form1";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
@@ -67,6 +67,47 @@
         #endregion
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.PictureBox gameBoard;
+
+        int[] bank1 = new int[0];
+        int row1 = 0;
+        int[] bank2 = new int[0];
+        int row2 = 0;
+        int[] bank3 = new int[0];
+        int row3 = 0;
+        int[] bank4 = new int[0];
+        int row4 = 0;
+        int[] bank5 = new int[0];
+        int row5 = 0;
+        int[] bank6 = new int[0];
+        int row6 = 0;
+        int[] bank7 = new int[0];
+        int row7 = 0;
+        int[] bank8 = new int[0];
+        int row8 = 0;
+        int[] bank9 = new int[0];
+        int row9 = 0;
+        int[] bank10 = new int[0];
+        int row10 = 0;
+        int[] bank11 = new int[0];
+        int row11 = 0;
+        int[] bank12 = new int[0];
+        int row12 = 0;
+        int[] bank13 = new int[0];
+        int row13 = 0;
+        int[] bank14 = new int[0];
+        int row14 = 0;
+        int[] bank15 = new int[0];
+        int row15 = 0;
+        int[] bank16 = new int[0];
+        int row16 = 0;
+        int[] bank17 = new int[0];
+        int row17 = 0;
+        int[] bank18 = new int[0];
+        int row18 = 0;
+        int[] bank19 = new int[0];
+        int row19 = 0;
+        int[] bank20 = new int[0];
+        int row20 = 0;
     }
 }
 
