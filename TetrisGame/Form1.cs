@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -10,6 +11,14 @@ namespace TetrisGame
     
     public partial class Form1 : Form
     {
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
+            IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
+
+        private PrivateFontCollection fonts = new PrivateFontCollection();
+
+        Font hoogfont26;
+        Font hoogfont28;
 
         int plyX = 160;
         int plyY = 32;
@@ -39,11 +48,29 @@ namespace TetrisGame
         private bool paused = false;
         private Microsoft.DirectX.DirectSound.Buffer soundBuffer;
         private Microsoft.DirectX.DirectSound.Buffer sfxBuffer;
-        private bool stop = false;
+        private bool stop = true;
 
         public Form1()
         {
-                InitializeComponent();
+            InitializeComponent();
+
+            this.Icon = Properties.Resources.tetrisico;
+
+            byte[] fontData = Properties.Resources.hoog0553;
+            IntPtr fontPtr = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(fontData.Length);
+            System.Runtime.InteropServices.Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
+            uint dummy = 0;
+            fonts.AddMemoryFont(fontPtr, Properties.Resources.hoog0553.Length);
+            AddFontMemResourceEx(fontPtr, (uint)Properties.Resources.hoog0553.Length, IntPtr.Zero, ref dummy);
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(fontPtr);
+
+            hoogfont26 = new Font(fonts.Families[0], 26.0F);
+            hoogfont28 = new Font(fonts.Families[0], 28.0F);
+
+            scoreLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
+            lineLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
+            levelLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
+
             //tetrisLogo.Image = Properties.Resources.tetris_logo;
             this.BackgroundImage = Properties.Resources.gui;
 
@@ -51,7 +78,7 @@ namespace TetrisGame
             storedColor = new Brush[0];
             rows = new Rectangle[2];
             rand = new Random();
-            playMusic();
+            //playMusic();
 
             timer1.Stop();
             paused = true;
@@ -1373,31 +1400,31 @@ namespace TetrisGame
             if (score >= 0 && score < 10)
             {
                 scoreLabel.Left = 388;
-                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 28F);
+                scoreLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
             }
             else if (score > 10 && score < 100)
             {
                 scoreLabel.Left = 378;
                 scoreLabel.Text = "" + score;
-                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 28F);
+                scoreLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
             }
             else if (score >= 100 && score < 1000)
             {
                 scoreLabel.Left = 365;
                 scoreLabel.Text = "" + score;
-                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 28F);
+                scoreLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
 
             }
             else if (score >= 1000 && score < 2000)
             {
-                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 26F);
+                scoreLabel.Font = new System.Drawing.Font(hoogfont26, FontStyle.Regular);
                 scoreLabel.Left = 358;
                 scoreLabel.Text = "" + score;
 
             }
             else if (score >= 2000)
             {
-                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 26F);
+                scoreLabel.Font = new System.Drawing.Font(hoogfont26, FontStyle.Regular);
                 scoreLabel.Left = 351;
                 scoreLabel.Text = "" + score;
             }
@@ -1502,14 +1529,12 @@ namespace TetrisGame
             row20 = 0;
         }
 
-        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.KeyChar)
+            switch (e.KeyCode)
             {
-                case 'v':
-                    MessageBox.Show("" + plyX + ".." + plyY);
-                    break;
-                case 's':
+                case Keys.Down:
+                case Keys.S:
 
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
@@ -1521,7 +1546,17 @@ namespace TetrisGame
                         return;
                     plyY += 32;
                     break;
-                case 'w':
+                case Keys.Escape:
+                    if (paused == false)
+                    {
+                        timer1.Stop();
+                        paused = true;
+                    }
+                    else
+                    {
+                        timer1.Start();
+                        paused = false;
+                    }
                     if (!stop)
                     {
                         stop = true;
@@ -1533,17 +1568,20 @@ namespace TetrisGame
                         playMusic();
                     }
                     break;
-                case 'a':
+                case Keys.Left:
+                case Keys.A:
                     moveLeft();
                     break;
-                case 'd':
+                case Keys.Right:
+                case Keys.D:
                     moveRight();
                     break;
-                case 'c':
+                case Keys.Z:
+                case Keys.X:
                     if (paused)
                         return;
                     for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32 
+                        if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32
                             || bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32)
                             return;
                     for (int i = placedrect.Length - 1; i > 0; i--)
@@ -1553,38 +1591,26 @@ namespace TetrisGame
                     if (currentBlock == 1)
                     {
                         rotateTblock();
-                    }else if(currentBlock == 2)
+                    }
+                    else if (currentBlock == 2)
                     {
                         rotateZblock();
-                    }else if(currentBlock == 3)
+                    }
+                    else if (currentBlock == 3)
                     {
                         rotateJblock();
-                    }else if(currentBlock == 4)
+                    }
+                    else if (currentBlock == 4)
                     {
                         rotateIblock();
                     }
                     else if (currentBlock == 6)
                     {
                         rotateLblock();
-                    }else if(currentBlock == 7)
+                    }
+                    else if (currentBlock == 7)
                     {
                         rotateSblock();
-                    }
-                    break;
-                case 'k'://duplicate player
-                    MessageBox.Show("" + this.Width + " " + this.Height);
-                    //MessageBox.Show("" + currentBlock);
-                    break;
-                case (char)13:
-                    if (paused == false)
-                    {
-                        timer1.Stop();
-                        paused = true;
-                    }
-                    else
-                    {
-                        timer1.Start();
-                        paused = false;
                     }
                     break;
 
@@ -1901,5 +1927,6 @@ namespace TetrisGame
             gameBoard.Invalidate();
         }
 
+        
     }
 }

@@ -89,6 +89,16 @@ namespace TetrisGame.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] hoog0553 {
+            get {
+                object obj = ResourceManager.GetObject("hoog0553", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
         internal static System.IO.UnmanagedMemoryStream line_clear {
@@ -141,6 +151,16 @@ namespace TetrisGame.Properties {
         internal static System.IO.UnmanagedMemoryStream tetris_loop {
             get {
                 return ResourceManager.GetStream("tetris_loop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon tetrisico {
+            get {
+                object obj = ResourceManager.GetObject("tetrisico", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }

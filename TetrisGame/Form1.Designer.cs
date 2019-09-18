@@ -59,11 +59,11 @@
             // 
             this.levelLabel.AutoSize = true;
             this.levelLabel.BackColor = System.Drawing.Color.Transparent;
-            this.levelLabel.Font = new System.Drawing.Font("hooge 05_53", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.levelLabel.Font = new System.Drawing.Font("Georgia", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.levelLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.levelLabel.Location = new System.Drawing.Point(378, 69);
             this.levelLabel.Name = "levelLabel";
-            this.levelLabel.Size = new System.Drawing.Size(76, 47);
+            this.levelLabel.Size = new System.Drawing.Size(65, 43);
             this.levelLabel.TabIndex = 3;
             this.levelLabel.Text = "00";
             // 
@@ -83,11 +83,11 @@
             // 
             this.lineLabel.AutoSize = true;
             this.lineLabel.BackColor = System.Drawing.Color.Transparent;
-            this.lineLabel.Font = new System.Drawing.Font("hooge 05_53", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lineLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lineLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lineLabel.Location = new System.Drawing.Point(362, 176);
             this.lineLabel.Name = "lineLabel";
-            this.lineLabel.Size = new System.Drawing.Size(104, 47);
+            this.lineLabel.Size = new System.Drawing.Size(83, 44);
             this.lineLabel.TabIndex = 5;
             this.lineLabel.Text = "000";
             this.lineLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -96,11 +96,11 @@
             // 
             this.scoreLabel.AutoSize = true;
             this.scoreLabel.BackColor = System.Drawing.Color.Transparent;
-            this.scoreLabel.Font = new System.Drawing.Font("hooge 05_53", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.scoreLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.scoreLabel.Location = new System.Drawing.Point(388, 288);
             this.scoreLabel.Name = "scoreLabel";
-            this.scoreLabel.Size = new System.Drawing.Size(48, 47);
+            this.scoreLabel.Size = new System.Drawing.Size(41, 44);
             this.scoreLabel.TabIndex = 6;
             this.scoreLabel.Text = "0";
             // 
@@ -118,7 +118,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Tetris";
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).EndInit();
             this.ResumeLayout(false);
