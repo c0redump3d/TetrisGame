@@ -1,4 +1,4 @@
-﻿using Microsoft.DirectX.DirectSound;
+using Microsoft.DirectX.DirectSound;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
