@@ -54,12 +54,6 @@
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
-    <Reference Include="MaterialDesignColors, Version=1.2.0.325, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MaterialDesignColors.1.2.0\lib\net45\MaterialDesignColors.dll</HintPath>
-    </Reference>
-    <Reference Include="MaterialSkin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MaterialSkin.Updated.0.2.2\lib\MaterialSkin.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
@@ -117,12 +111,12 @@
     <None Include="Resources\line.wav" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\gui.png" />
     <None Include="Resources\tetris_logo.png" />
     <None Include="Resources\fall.wav" />
     <None Include="Resources\clear.wav" />
     <None Include="Resources\tetris_loop.wav" />
     <None Include="bin\Debug\Microsoft.DirectX.xml" />
-    <Content Include="Microsoft.DirectX.DirectSound.dll" />
     <None Include="Resources\Microsoft.DirectX.DirectSound.xml" />
     <None Include="Resources\Microsoft.DirectX.DirectSound.dll" />
   </ItemGroup>

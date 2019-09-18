@@ -1,19 +1,14 @@
-﻿using MaterialSkin;
-using MaterialSkin.Controls;
-using Microsoft.DirectX.DirectSound;
+﻿using Microsoft.DirectX.DirectSound;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Media;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace TetrisGame
 {
     
-    public partial class Form1 : MaterialForm
+    public partial class Form1 : Form
     {
 
         int plyX = 160;
@@ -28,6 +23,10 @@ namespace TetrisGame
         Brush currentColor;
         Rectangle[] placedrect;
         Brush[] storedColor;
+        int lines = 0;
+        int score = 0;
+        int level = 0;
+        int points = 40;
 
         Rectangle[] rows;
 
@@ -45,14 +44,8 @@ namespace TetrisGame
         public Form1()
         {
                 InitializeComponent();
-            tetrisLogo.Image = Properties.Resources.tetris_logo;
-            //tetrisLogo.BackColor = Color.Beige;
-            //set up material form
-            MaterialSkinManager materialSkinManager = MaterialSkinManager.Instance;
-            materialSkinManager.AddFormToManage(this);
-            materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
-            materialSkinManager.ColorScheme = new ColorScheme(Primary.Grey900, Primary.Grey900, Primary.Grey900, 0, TextShade.WHITE);
-            //done setting up material form
+            //tetrisLogo.Image = Properties.Resources.tetris_logo;
+            this.BackgroundImage = Properties.Resources.gui;
 
             placedrect = new Rectangle[2];
             storedColor = new Brush[0];
@@ -379,10 +372,13 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank1[1]);
                     removecolor.RemoveAt(bank1[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row2 == 10)
                 {
@@ -410,11 +406,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank2[1]);
                     removecolor.RemoveAt(bank2[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 576)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row3 == 10)
                 {
@@ -442,11 +441,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank3[1]);
                     removecolor.RemoveAt(bank3[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 544)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row4 == 10)
                 {
@@ -474,11 +476,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank4[1]);
                     removecolor.RemoveAt(bank4[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 512)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row5 == 10)
                 {
@@ -506,11 +511,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank5[1]);
                     removecolor.RemoveAt(bank5[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 480)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row6 == 10)
                 {
@@ -538,11 +546,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank6[1]);
                     removecolor.RemoveAt(bank6[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 448)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row7 == 10)
                 {
@@ -570,11 +581,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank7[1]);
                     removecolor.RemoveAt(bank7[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 416)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row8 == 10)
                 {
@@ -602,11 +616,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank8[1]);
                     removecolor.RemoveAt(bank8[0]);
                     storedColor = removecolor.ToArray();
+                    score += points;
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 384)
                             placedrect[i].Y += 32;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row9 == 10)
                 {
@@ -635,11 +652,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank9[1]);
                     removecolor.RemoveAt(bank9[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 352)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row10 == 10)
                 {
@@ -667,11 +687,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank10[1]);
                     removecolor.RemoveAt(bank10[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 320)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row11 == 10)
                 {
@@ -699,11 +722,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank11[1]);
                     removecolor.RemoveAt(bank11[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 288)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row12 == 10)
                 {
@@ -731,11 +757,15 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank12[1]);
                     removecolor.RemoveAt(bank12[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
+                    gameBoard.Invalidate();
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 256)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row13 == 10)
                 {
@@ -763,11 +793,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank13[1]);
                     removecolor.RemoveAt(bank13[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 224)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row14 == 10)
                 {
@@ -795,11 +828,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank14[1]);
                     removecolor.RemoveAt(bank14[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 192)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row15 == 10)
                 {
@@ -827,11 +863,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank15[1]);
                     removecolor.RemoveAt(bank15[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 160)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row16 == 10)
                 {
@@ -859,11 +898,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank16[1]);
                     removecolor.RemoveAt(bank16[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 128)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row17 == 10)
                 {
@@ -891,11 +933,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank17[1]);
                     removecolor.RemoveAt(bank17[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 96)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row18 == 10)
                 {
@@ -923,11 +968,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank18[1]);
                     removecolor.RemoveAt(bank18[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 64)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row19 == 10)
                 {
@@ -955,11 +1003,14 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank19[1]);
                     removecolor.RemoveAt(bank19[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
                     playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 32)
                             placedrect[i].Y += 32;
+                    score += points;
                     resetBank();
+                    gameBoard.Invalidate();
                 }
                 else if (row20 == 10)
                 {
@@ -987,8 +1038,11 @@ namespace TetrisGame
                     removecolor.RemoveAt(bank20[1]);
                     removecolor.RemoveAt(bank20[0]);
                     storedColor = removecolor.ToArray();
+                    lines++;
+                    score += points;
                     playClear();
                     resetBank();
+                    gameBoard.Invalidate();
                 }
 
             }
@@ -1000,7 +1054,10 @@ namespace TetrisGame
             #endregion
 
             for (int j = rows.Length - 1; j > 0; j--)
-                e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.X == rows[j].X && bOne.Y == rows[j].Y || bTwo.X == rows[j].X && bTwo.Y == rows[j].Y || bThree.X == rows[j].X && bThree.Y == rows[j].Y
+                    || bFour.X == rows[j].X && bFour.Y == rows[j].Y || placedrect[i].X == rows[j].X && placedrect[i].Y == rows[j].Y)
+                    e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
 
 
             if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
@@ -1237,16 +1294,134 @@ namespace TetrisGame
                 for (int i = placedrect.Length - 1; i > 1; i--)
                     if (placedrect[i].Y == 0)
                     {
-                        placedrect = new Rectangle[2];
-                        resetBank();
-                        storedColor = new Brush[0];
-                        List<Brush> addcolor = storedColor.ToList();
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        storedColor = addcolor.ToArray();
+                        resetGame();
                     }
             }
             catch (Exception) { }
+
+
+            if (lines < 10)
+                lineLabel.Text = "00" + lines;
+            else if (lines < 100)
+                lineLabel.Text = "0" + lines;
+            else
+                lineLabel.Text = "" + lines;
+
+            if(lines == 10 && level != 1)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 925;
+            }else if (lines == 20 && level != 2)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 850;
+            }
+            else if (lines == 30 && level != 3)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 775;
+            }
+            else if (lines == 40 && level != 4)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 700;
+            }
+            else if (lines == 50 && level != 5)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 625;
+            }
+            else if (lines == 60 && level != 6)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 550;
+            }
+            else if (lines == 70 && level != 7)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 475;
+            }
+            else if (lines == 80 && level != 8)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 400;
+            }
+            else if (lines == 90 && level != 9)
+            {
+                level++;
+                points += 40;
+                levelLabel.Text = "0" + level;
+                timer1.Interval = 325;
+            }
+
+            if (score >= 0 && score < 10)
+            {
+                scoreLabel.Left = 388;
+                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 28F);
+            }
+            else if (score > 10 && score < 100)
+            {
+                scoreLabel.Left = 378;
+                scoreLabel.Text = "" + score;
+                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 28F);
+            }
+            else if (score >= 100 && score < 1000)
+            {
+                scoreLabel.Left = 365;
+                scoreLabel.Text = "" + score;
+                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 28F);
+
+            }
+            else if (score >= 1000 && score < 2000)
+            {
+                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 26F);
+                scoreLabel.Left = 358;
+                scoreLabel.Text = "" + score;
+
+            }
+            else if (score >= 2000)
+            {
+                scoreLabel.Font = new System.Drawing.Font(scoreLabel.Font.Name, 26F);
+                scoreLabel.Left = 351;
+                scoreLabel.Text = "" + score;
+            }
+            
+
+        }
+
+        private void resetGame()
+        {
+            points = 40;
+            lines = 0;
+            score = 0;
+            level = 0;
+            levelLabel.Text = "00";
+            scoreLabel.Text = "0";
+            timer1.Interval = 1000;
+            placedrect = new Rectangle[2];
+            resetBank();
+            storedColor = new Brush[0];
+            List<Brush> addcolor = storedColor.ToList();
+            addcolor.Add(currentColor);
+            addcolor.Add(currentColor);
+            storedColor = addcolor.ToArray();
+            gameBoard.Invalidate();
         }
 
         private void playFall()
@@ -1397,7 +1572,7 @@ namespace TetrisGame
                     }
                     break;
                 case 'k'://duplicate player
-                    MessageBox.Show("" + storedColor.Length + " " + placedrect.Length);
+                    MessageBox.Show("" + this.Width + " " + this.Height);
                     //MessageBox.Show("" + currentBlock);
                     break;
                 case (char)13:
@@ -1723,7 +1898,6 @@ namespace TetrisGame
         private void Timer1_Tick(object sender, EventArgs e)
         {
             plyY += 32;
-
             gameBoard.Invalidate();
         }
 
