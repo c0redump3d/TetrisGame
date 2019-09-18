@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -11,51 +10,14 @@ namespace TetrisGame
     
     public partial class Form1 : Form
     {
-        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
-            IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
-
-        private PrivateFontCollection fonts = new PrivateFontCollection();
-
-        Font hoogfont26;
-        Font hoogfont28;
-
-        int plyX = 160;
-        int plyY = 32;
-        Rectangle bOne;
-        Rectangle bTwo;
-        Rectangle bThree;
-        Rectangle bFour;
-        int rotationAng = 1; // 1 default
-        int currentBlock = 1;
-        Random rand;
-        Brush currentColor;
-        Rectangle[] placedrect;
-        Brush[] storedColor;
-        int lines = 0;
-        int score = 0;
-        int level = 0;
-        int points = 40;
-
-        Rectangle[] rows;
-
-        int r1 = 32;
-        int r2 = 0;
-        int l1 = 32;
-        int l2 = 32; // normally 0
-        int t1 = 32;
-        int t2 = 0;
-        private bool paused = false;
-        private Microsoft.DirectX.DirectSound.Buffer soundBuffer;
-        private Microsoft.DirectX.DirectSound.Buffer sfxBuffer;
-        private bool stop = true;
 
         public Form1()
         {
             InitializeComponent();
 
-            this.Icon = Properties.Resources.tetrisico;
+            this.Icon = Properties.Resources.tetrisico; // set icon
 
+            //add custom font
             byte[] fontData = Properties.Resources.hoog0553;
             IntPtr fontPtr = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(fontData.Length);
             System.Runtime.InteropServices.Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
@@ -64,25 +26,28 @@ namespace TetrisGame
             AddFontMemResourceEx(fontPtr, (uint)Properties.Resources.hoog0553.Length, IntPtr.Zero, ref dummy);
             System.Runtime.InteropServices.Marshal.FreeCoTaskMem(fontPtr);
 
-            hoogfont26 = new Font(fonts.Families[0], 26.0F);
-            hoogfont28 = new Font(fonts.Families[0], 28.0F);
+            hoogfont24 = new Font(fonts.Families[0], 24.0F); // setup 24pt font
+            hoogfont28 = new Font(fonts.Families[0], 28.0F); // setup 28pt font
 
+            //set labels to correct font
             scoreLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
             lineLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
             levelLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
+            startLabel.Font = new System.Drawing.Font(hoogfont24, FontStyle.Regular);
 
-            //tetrisLogo.Image = Properties.Resources.tetris_logo;
+            tetrisLogo.Image = Properties.Resources.tetris_logo;
             this.BackgroundImage = Properties.Resources.gui;
 
+            //setup rows, placedrectangles, etc
             placedrect = new Rectangle[2];
             storedColor = new Brush[0];
             rows = new Rectangle[2];
             rand = new Random();
-            //playMusic();
 
-            timer1.Stop();
+            gravityTimer.Stop();
             paused = true;
 
+            //choose shape
             currentBlock = rand.Next(1, 8);
 
             if (currentBlock == 1)
@@ -170,7 +135,7 @@ namespace TetrisGame
             addcolor.Add(currentColor);
             storedColor = addcolor.ToArray();
 
-            for (int y = 0; y < 20; y++)
+            for (int y = 0; y < 20; y++) // makes a 10x20 grid
             {
                 for (int x = 0; x < 10; x++)
                 {
@@ -183,33 +148,54 @@ namespace TetrisGame
 
         private void GameBoard_Paint(object sender, PaintEventArgs e)
         {
-            for (int i = placedrect.Length - 1; i > 0; i--)
-                e.Graphics.FillRectangle(storedColor[i], placedrect[i]);
-            //test[1].Rect.Y += 32;
+            if (!stop)
+            {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    e.Graphics.FillRectangle(storedColor[i], placedrect[i]);
 
-            bOne = new Rectangle(plyX, plyY, 32, 32); // middle block
-            bTwo = new Rectangle(plyX + r1, plyY + r2, 32, 32); //right/top
-            bThree = new Rectangle(plyX - l1, plyY - l2, 32, 32);
-            bFour = new Rectangle(plyX + t2, plyY - t1, 32, 32);
-            e.Graphics.FillRectangle(currentColor, bOne);
-            e.Graphics.FillRectangle(currentColor, bTwo);
-            e.Graphics.FillRectangle(currentColor, bThree);
-            e.Graphics.FillRectangle(currentColor, bFour);
+                bOne = new Rectangle(plyX, plyY, 32, 32); // player controlled rect
+                bTwo = new Rectangle(plyX + r1, plyY + r2, 32, 32);
+                bThree = new Rectangle(plyX - l1, plyY - l2, 32, 32);
+                bFour = new Rectangle(plyX + t2, plyY - t1, 32, 32);
+                //draw player rectangles
+                e.Graphics.FillRectangle(currentColor, bOne);
+                e.Graphics.FillRectangle(currentColor, bTwo);
+                e.Graphics.FillRectangle(currentColor, bThree);
+                e.Graphics.FillRectangle(currentColor, bFour);
 
-            #region mess1
+                //if rows contain player or placed rect, draw grid
+                for (int j = rows.Length - 1; j > 0; j--)
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (bOne.X == rows[j].X && bOne.Y == rows[j].Y || bTwo.X == rows[j].X && bTwo.Y == rows[j].Y || bThree.X == rows[j].X && bThree.Y == rows[j].Y
+                        || bFour.X == rows[j].X && bFour.Y == rows[j].Y || placedrect[i].X == rows[j].X && placedrect[i].Y == rows[j].Y)
+                            e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
+
+            }
+
+            #region Check Row
+
+            /*
+             * 
+             * Here we check if any grid box(hidden) contains a placed rectangle,
+             * if it does, we add the placed rectangle's index into the corresponding
+             * bank(row).
+             * 
+             * --only commenting on bank1 because every other row is the same.
+             * 
+             */
 
             for (int i = placedrect.Length - 1; i > 0; i--)
                 for (int j = rows.Length - 1; j > 0; j--)
-                    if (placedrect[i].Contains(rows[j]))
+                    if (placedrect[i].Contains(rows[j])) // if a row is contained in a placed rectangle
                     {
                         if (!bank1.Contains(i) && placedrect[i].Y == 608)
                         {
 
                             List<int> addbank = bank1.ToList();
-                            addbank.Add(i);
+                            addbank.Add(i); // add index of placed rectangle to bank
                             bank1 = addbank.ToArray();
-                            Array.Sort(bank1);
-                            row1++;
+                            Array.Sort(bank1);// sort array from big to least
+                            row1++; // add one to row1 counter
                         }
                         else if (!bank2.Contains(i) && placedrect[i].Y == 576)
                         {
@@ -367,709 +353,315 @@ namespace TetrisGame
                     }
             #endregion
 
-            placedrect[0].Y = 99999;
-            placedrect[1].Y = 99999;
+            #region Remove Row
+            /*
+             * 
+             * Yes, this is a mess but this is required to remove rows if they're full.
+             * 
+             * Each row contains it's own 'bank' which contains the placed rectangles on that Y level
+             * for each rectangle in the row, we add one, so once it equals 10 it passes to down here.
+             * 
+             * We check each row individually.
+             * 
+             */
 
-            #region mess2
             try
             {
                 if (row1 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank1[9]);
-                    createblock.RemoveAt(bank1[8]);
-                    createblock.RemoveAt(bank1[7]);
-                    createblock.RemoveAt(bank1[6]);
-                    createblock.RemoveAt(bank1[5]);
-                    createblock.RemoveAt(bank1[4]);
-                    createblock.RemoveAt(bank1[3]);
-                    createblock.RemoveAt(bank1[2]);
-                    createblock.RemoveAt(bank1[1]);
-                    createblock.RemoveAt(bank1[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank1[9]);
-                    removecolor.RemoveAt(bank1[8]);
-                    removecolor.RemoveAt(bank1[7]);
-                    removecolor.RemoveAt(bank1[6]);
-                    removecolor.RemoveAt(bank1[5]);
-                    removecolor.RemoveAt(bank1[4]);
-                    removecolor.RemoveAt(bank1[3]);
-                    removecolor.RemoveAt(bank1[2]);
-                    removecolor.RemoveAt(bank1[1]);
-                    removecolor.RemoveAt(bank1[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank1[i]); // remove rectangles stored in bank array
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank1[i]); // remove color stored in bank array
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
-                        placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                        placedrect[i].Y += 32; // move all remaining blocks down
+                    cleanUp(); // clean up
                 }
                 else if (row2 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank2[9]);
-                    createblock.RemoveAt(bank2[8]);
-                    createblock.RemoveAt(bank2[7]);
-                    createblock.RemoveAt(bank2[6]);
-                    createblock.RemoveAt(bank2[5]);
-                    createblock.RemoveAt(bank2[4]);
-                    createblock.RemoveAt(bank2[3]);
-                    createblock.RemoveAt(bank2[2]);
-                    createblock.RemoveAt(bank2[1]);
-                    createblock.RemoveAt(bank2[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank2[9]);
-                    removecolor.RemoveAt(bank2[8]);
-                    removecolor.RemoveAt(bank2[7]);
-                    removecolor.RemoveAt(bank2[6]);
-                    removecolor.RemoveAt(bank2[5]);
-                    removecolor.RemoveAt(bank2[4]);
-                    removecolor.RemoveAt(bank2[3]);
-                    removecolor.RemoveAt(bank2[2]);
-                    removecolor.RemoveAt(bank2[1]);
-                    removecolor.RemoveAt(bank2[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank2[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank2[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 576)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row3 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank3[9]);
-                    createblock.RemoveAt(bank3[8]);
-                    createblock.RemoveAt(bank3[7]);
-                    createblock.RemoveAt(bank3[6]);
-                    createblock.RemoveAt(bank3[5]);
-                    createblock.RemoveAt(bank3[4]);
-                    createblock.RemoveAt(bank3[3]);
-                    createblock.RemoveAt(bank3[2]);
-                    createblock.RemoveAt(bank3[1]);
-                    createblock.RemoveAt(bank3[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank3[9]);
-                    removecolor.RemoveAt(bank3[8]);
-                    removecolor.RemoveAt(bank3[7]);
-                    removecolor.RemoveAt(bank3[6]);
-                    removecolor.RemoveAt(bank3[5]);
-                    removecolor.RemoveAt(bank3[4]);
-                    removecolor.RemoveAt(bank3[3]);
-                    removecolor.RemoveAt(bank3[2]);
-                    removecolor.RemoveAt(bank3[1]);
-                    removecolor.RemoveAt(bank3[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank3[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank3[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 544)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row4 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank4[9]);
-                    createblock.RemoveAt(bank4[8]);
-                    createblock.RemoveAt(bank4[7]);
-                    createblock.RemoveAt(bank4[6]);
-                    createblock.RemoveAt(bank4[5]);
-                    createblock.RemoveAt(bank4[4]);
-                    createblock.RemoveAt(bank4[3]);
-                    createblock.RemoveAt(bank4[2]);
-                    createblock.RemoveAt(bank4[1]);
-                    createblock.RemoveAt(bank4[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank4[9]);
-                    removecolor.RemoveAt(bank4[8]);
-                    removecolor.RemoveAt(bank4[7]);
-                    removecolor.RemoveAt(bank4[6]);
-                    removecolor.RemoveAt(bank4[5]);
-                    removecolor.RemoveAt(bank4[4]);
-                    removecolor.RemoveAt(bank4[3]);
-                    removecolor.RemoveAt(bank4[2]);
-                    removecolor.RemoveAt(bank4[1]);
-                    removecolor.RemoveAt(bank4[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank4[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank4[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 512)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row5 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank5[9]);
-                    createblock.RemoveAt(bank5[8]);
-                    createblock.RemoveAt(bank5[7]);
-                    createblock.RemoveAt(bank5[6]);
-                    createblock.RemoveAt(bank5[5]);
-                    createblock.RemoveAt(bank5[4]);
-                    createblock.RemoveAt(bank5[3]);
-                    createblock.RemoveAt(bank5[2]);
-                    createblock.RemoveAt(bank5[1]);
-                    createblock.RemoveAt(bank5[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank5[9]);
-                    removecolor.RemoveAt(bank5[8]);
-                    removecolor.RemoveAt(bank5[7]);
-                    removecolor.RemoveAt(bank5[6]);
-                    removecolor.RemoveAt(bank5[5]);
-                    removecolor.RemoveAt(bank5[4]);
-                    removecolor.RemoveAt(bank5[3]);
-                    removecolor.RemoveAt(bank5[2]);
-                    removecolor.RemoveAt(bank5[1]);
-                    removecolor.RemoveAt(bank5[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank5[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank5[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 480)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row6 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank6[9]);
-                    createblock.RemoveAt(bank6[8]);
-                    createblock.RemoveAt(bank6[7]);
-                    createblock.RemoveAt(bank6[6]);
-                    createblock.RemoveAt(bank6[5]);
-                    createblock.RemoveAt(bank6[4]);
-                    createblock.RemoveAt(bank6[3]);
-                    createblock.RemoveAt(bank6[2]);
-                    createblock.RemoveAt(bank6[1]);
-                    createblock.RemoveAt(bank6[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank6[9]);
-                    removecolor.RemoveAt(bank6[8]);
-                    removecolor.RemoveAt(bank6[7]);
-                    removecolor.RemoveAt(bank6[6]);
-                    removecolor.RemoveAt(bank6[5]);
-                    removecolor.RemoveAt(bank6[4]);
-                    removecolor.RemoveAt(bank6[3]);
-                    removecolor.RemoveAt(bank6[2]);
-                    removecolor.RemoveAt(bank6[1]);
-                    removecolor.RemoveAt(bank6[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank6[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank6[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 448)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row7 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank7[9]);
-                    createblock.RemoveAt(bank7[8]);
-                    createblock.RemoveAt(bank7[7]);
-                    createblock.RemoveAt(bank7[6]);
-                    createblock.RemoveAt(bank7[5]);
-                    createblock.RemoveAt(bank7[4]);
-                    createblock.RemoveAt(bank7[3]);
-                    createblock.RemoveAt(bank7[2]);
-                    createblock.RemoveAt(bank7[1]);
-                    createblock.RemoveAt(bank7[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank7[9]);
-                    removecolor.RemoveAt(bank7[8]);
-                    removecolor.RemoveAt(bank7[7]);
-                    removecolor.RemoveAt(bank7[6]);
-                    removecolor.RemoveAt(bank7[5]);
-                    removecolor.RemoveAt(bank7[4]);
-                    removecolor.RemoveAt(bank7[3]);
-                    removecolor.RemoveAt(bank7[2]);
-                    removecolor.RemoveAt(bank7[1]);
-                    removecolor.RemoveAt(bank7[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank7[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank7[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 416)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row8 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank8[9]);
-                    createblock.RemoveAt(bank8[8]);
-                    createblock.RemoveAt(bank8[7]);
-                    createblock.RemoveAt(bank8[6]);
-                    createblock.RemoveAt(bank8[5]);
-                    createblock.RemoveAt(bank8[4]);
-                    createblock.RemoveAt(bank8[3]);
-                    createblock.RemoveAt(bank8[2]);
-                    createblock.RemoveAt(bank8[1]);
-                    createblock.RemoveAt(bank8[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank8[9]);
-                    removecolor.RemoveAt(bank8[8]);
-                    removecolor.RemoveAt(bank8[7]);
-                    removecolor.RemoveAt(bank8[6]);
-                    removecolor.RemoveAt(bank8[5]);
-                    removecolor.RemoveAt(bank8[4]);
-                    removecolor.RemoveAt(bank8[3]);
-                    removecolor.RemoveAt(bank8[2]);
-                    removecolor.RemoveAt(bank8[1]);
-                    removecolor.RemoveAt(bank8[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank8[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank8[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    score += points;
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 384)
                             placedrect[i].Y += 32;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row9 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank9[9]);
-                    createblock.RemoveAt(bank9[8]);
-                    createblock.RemoveAt(bank9[7]);
-                    createblock.RemoveAt(bank9[6]);
-                    createblock.RemoveAt(bank9[5]);
-                    createblock.RemoveAt(bank9[4]);
-                    createblock.RemoveAt(bank9[3]);
-                    createblock.RemoveAt(bank9[2]);
-                    createblock.RemoveAt(bank9[1]);
-                    createblock.RemoveAt(bank9[0]);
-                    placedrect = createblock.ToArray();
-                    playClear();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank9[9]);
-                    removecolor.RemoveAt(bank9[8]);
-                    removecolor.RemoveAt(bank9[7]);
-                    removecolor.RemoveAt(bank9[6]);
-                    removecolor.RemoveAt(bank9[5]);
-                    removecolor.RemoveAt(bank9[4]);
-                    removecolor.RemoveAt(bank9[3]);
-                    removecolor.RemoveAt(bank9[2]);
-                    removecolor.RemoveAt(bank9[1]);
-                    removecolor.RemoveAt(bank9[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank9[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank9[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 352)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row10 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank10[9]);
-                    createblock.RemoveAt(bank10[8]);
-                    createblock.RemoveAt(bank10[7]);
-                    createblock.RemoveAt(bank10[6]);
-                    createblock.RemoveAt(bank10[5]);
-                    createblock.RemoveAt(bank10[4]);
-                    createblock.RemoveAt(bank10[3]);
-                    createblock.RemoveAt(bank10[2]);
-                    createblock.RemoveAt(bank10[1]);
-                    createblock.RemoveAt(bank10[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank10[9]);
-                    removecolor.RemoveAt(bank10[8]);
-                    removecolor.RemoveAt(bank10[7]);
-                    removecolor.RemoveAt(bank10[6]);
-                    removecolor.RemoveAt(bank10[5]);
-                    removecolor.RemoveAt(bank10[4]);
-                    removecolor.RemoveAt(bank10[3]);
-                    removecolor.RemoveAt(bank10[2]);
-                    removecolor.RemoveAt(bank10[1]);
-                    removecolor.RemoveAt(bank10[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank10[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank10[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 320)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row11 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank11[9]);
-                    createblock.RemoveAt(bank11[8]);
-                    createblock.RemoveAt(bank11[7]);
-                    createblock.RemoveAt(bank11[6]);
-                    createblock.RemoveAt(bank11[5]);
-                    createblock.RemoveAt(bank11[4]);
-                    createblock.RemoveAt(bank11[3]);
-                    createblock.RemoveAt(bank11[2]);
-                    createblock.RemoveAt(bank11[1]);
-                    createblock.RemoveAt(bank11[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank11[9]);
-                    removecolor.RemoveAt(bank11[8]);
-                    removecolor.RemoveAt(bank11[7]);
-                    removecolor.RemoveAt(bank11[6]);
-                    removecolor.RemoveAt(bank11[5]);
-                    removecolor.RemoveAt(bank11[4]);
-                    removecolor.RemoveAt(bank11[3]);
-                    removecolor.RemoveAt(bank11[2]);
-                    removecolor.RemoveAt(bank11[1]);
-                    removecolor.RemoveAt(bank11[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank11[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank11[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 288)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row12 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank12[9]);
-                    createblock.RemoveAt(bank12[8]);
-                    createblock.RemoveAt(bank12[7]);
-                    createblock.RemoveAt(bank12[6]);
-                    createblock.RemoveAt(bank12[5]);
-                    createblock.RemoveAt(bank12[4]);
-                    createblock.RemoveAt(bank12[3]);
-                    createblock.RemoveAt(bank12[2]);
-                    createblock.RemoveAt(bank12[1]);
-                    createblock.RemoveAt(bank12[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank12[9]);
-                    removecolor.RemoveAt(bank12[8]);
-                    removecolor.RemoveAt(bank12[7]);
-                    removecolor.RemoveAt(bank12[6]);
-                    removecolor.RemoveAt(bank12[5]);
-                    removecolor.RemoveAt(bank12[4]);
-                    removecolor.RemoveAt(bank12[3]);
-                    removecolor.RemoveAt(bank12[2]);
-                    removecolor.RemoveAt(bank12[1]);
-                    removecolor.RemoveAt(bank12[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank12[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank12[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    gameBoard.Invalidate();
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 256)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row13 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank13[9]);
-                    createblock.RemoveAt(bank13[8]);
-                    createblock.RemoveAt(bank13[7]);
-                    createblock.RemoveAt(bank13[6]);
-                    createblock.RemoveAt(bank13[5]);
-                    createblock.RemoveAt(bank13[4]);
-                    createblock.RemoveAt(bank13[3]);
-                    createblock.RemoveAt(bank13[2]);
-                    createblock.RemoveAt(bank13[1]);
-                    createblock.RemoveAt(bank13[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank13[9]);
-                    removecolor.RemoveAt(bank13[8]);
-                    removecolor.RemoveAt(bank13[7]);
-                    removecolor.RemoveAt(bank13[6]);
-                    removecolor.RemoveAt(bank13[5]);
-                    removecolor.RemoveAt(bank13[4]);
-                    removecolor.RemoveAt(bank13[3]);
-                    removecolor.RemoveAt(bank13[2]);
-                    removecolor.RemoveAt(bank13[1]);
-                    removecolor.RemoveAt(bank13[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank13[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank13[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 224)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row14 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank14[9]);
-                    createblock.RemoveAt(bank14[8]);
-                    createblock.RemoveAt(bank14[7]);
-                    createblock.RemoveAt(bank14[6]);
-                    createblock.RemoveAt(bank14[5]);
-                    createblock.RemoveAt(bank14[4]);
-                    createblock.RemoveAt(bank14[3]);
-                    createblock.RemoveAt(bank14[2]);
-                    createblock.RemoveAt(bank14[1]);
-                    createblock.RemoveAt(bank14[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank14[9]);
-                    removecolor.RemoveAt(bank14[8]);
-                    removecolor.RemoveAt(bank14[7]);
-                    removecolor.RemoveAt(bank14[6]);
-                    removecolor.RemoveAt(bank14[5]);
-                    removecolor.RemoveAt(bank14[4]);
-                    removecolor.RemoveAt(bank14[3]);
-                    removecolor.RemoveAt(bank14[2]);
-                    removecolor.RemoveAt(bank14[1]);
-                    removecolor.RemoveAt(bank14[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank14[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank14[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 192)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row15 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank15[9]);
-                    createblock.RemoveAt(bank15[8]);
-                    createblock.RemoveAt(bank15[7]);
-                    createblock.RemoveAt(bank15[6]);
-                    createblock.RemoveAt(bank15[5]);
-                    createblock.RemoveAt(bank15[4]);
-                    createblock.RemoveAt(bank15[3]);
-                    createblock.RemoveAt(bank15[2]);
-                    createblock.RemoveAt(bank15[1]);
-                    createblock.RemoveAt(bank15[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank15[9]);
-                    removecolor.RemoveAt(bank15[8]);
-                    removecolor.RemoveAt(bank15[7]);
-                    removecolor.RemoveAt(bank15[6]);
-                    removecolor.RemoveAt(bank15[5]);
-                    removecolor.RemoveAt(bank15[4]);
-                    removecolor.RemoveAt(bank15[3]);
-                    removecolor.RemoveAt(bank15[2]);
-                    removecolor.RemoveAt(bank15[1]);
-                    removecolor.RemoveAt(bank15[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank15[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank15[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 160)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row16 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank16[9]);
-                    createblock.RemoveAt(bank16[8]);
-                    createblock.RemoveAt(bank16[7]);
-                    createblock.RemoveAt(bank16[6]);
-                    createblock.RemoveAt(bank16[5]);
-                    createblock.RemoveAt(bank16[4]);
-                    createblock.RemoveAt(bank16[3]);
-                    createblock.RemoveAt(bank16[2]);
-                    createblock.RemoveAt(bank16[1]);
-                    createblock.RemoveAt(bank16[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank16[9]);
-                    removecolor.RemoveAt(bank16[8]);
-                    removecolor.RemoveAt(bank16[7]);
-                    removecolor.RemoveAt(bank16[6]);
-                    removecolor.RemoveAt(bank16[5]);
-                    removecolor.RemoveAt(bank16[4]);
-                    removecolor.RemoveAt(bank16[3]);
-                    removecolor.RemoveAt(bank16[2]);
-                    removecolor.RemoveAt(bank16[1]);
-                    removecolor.RemoveAt(bank16[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank16[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank16[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 128)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row17 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank17[9]);
-                    createblock.RemoveAt(bank17[8]);
-                    createblock.RemoveAt(bank17[7]);
-                    createblock.RemoveAt(bank17[6]);
-                    createblock.RemoveAt(bank17[5]);
-                    createblock.RemoveAt(bank17[4]);
-                    createblock.RemoveAt(bank17[3]);
-                    createblock.RemoveAt(bank17[2]);
-                    createblock.RemoveAt(bank17[1]);
-                    createblock.RemoveAt(bank17[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank17[9]);
-                    removecolor.RemoveAt(bank17[8]);
-                    removecolor.RemoveAt(bank17[7]);
-                    removecolor.RemoveAt(bank17[6]);
-                    removecolor.RemoveAt(bank17[5]);
-                    removecolor.RemoveAt(bank17[4]);
-                    removecolor.RemoveAt(bank17[3]);
-                    removecolor.RemoveAt(bank17[2]);
-                    removecolor.RemoveAt(bank17[1]);
-                    removecolor.RemoveAt(bank17[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank17[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank17[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 96)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row18 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank18[9]);
-                    createblock.RemoveAt(bank18[8]);
-                    createblock.RemoveAt(bank18[7]);
-                    createblock.RemoveAt(bank18[6]);
-                    createblock.RemoveAt(bank18[5]);
-                    createblock.RemoveAt(bank18[4]);
-                    createblock.RemoveAt(bank18[3]);
-                    createblock.RemoveAt(bank18[2]);
-                    createblock.RemoveAt(bank18[1]);
-                    createblock.RemoveAt(bank18[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank18[9]);
-                    removecolor.RemoveAt(bank18[8]);
-                    removecolor.RemoveAt(bank18[7]);
-                    removecolor.RemoveAt(bank18[6]);
-                    removecolor.RemoveAt(bank18[5]);
-                    removecolor.RemoveAt(bank18[4]);
-                    removecolor.RemoveAt(bank18[3]);
-                    removecolor.RemoveAt(bank18[2]);
-                    removecolor.RemoveAt(bank18[1]);
-                    removecolor.RemoveAt(bank18[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank18[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank18[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 64)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row19 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank19[9]);
-                    createblock.RemoveAt(bank19[8]);
-                    createblock.RemoveAt(bank19[7]);
-                    createblock.RemoveAt(bank19[6]);
-                    createblock.RemoveAt(bank19[5]);
-                    createblock.RemoveAt(bank19[4]);
-                    createblock.RemoveAt(bank19[3]);
-                    createblock.RemoveAt(bank19[2]);
-                    createblock.RemoveAt(bank19[1]);
-                    createblock.RemoveAt(bank19[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank19[9]);
-                    removecolor.RemoveAt(bank19[8]);
-                    removecolor.RemoveAt(bank19[7]);
-                    removecolor.RemoveAt(bank19[6]);
-                    removecolor.RemoveAt(bank19[5]);
-                    removecolor.RemoveAt(bank19[4]);
-                    removecolor.RemoveAt(bank19[3]);
-                    removecolor.RemoveAt(bank19[2]);
-                    removecolor.RemoveAt(bank19[1]);
-                    removecolor.RemoveAt(bank19[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank19[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank19[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    playClear();
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (placedrect[i].Y < 32)
                             placedrect[i].Y += 32;
-                    score += points;
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
                 else if (row20 == 10)
                 {
                     List<Rectangle> createblock = placedrect.ToList();
-                    createblock.RemoveAt(bank20[9]);
-                    createblock.RemoveAt(bank20[8]);
-                    createblock.RemoveAt(bank20[7]);
-                    createblock.RemoveAt(bank20[6]);
-                    createblock.RemoveAt(bank20[5]);
-                    createblock.RemoveAt(bank20[4]);
-                    createblock.RemoveAt(bank20[3]);
-                    createblock.RemoveAt(bank20[2]);
-                    createblock.RemoveAt(bank20[1]);
-                    createblock.RemoveAt(bank20[0]);
-                    placedrect = createblock.ToArray();
                     List<Brush> removecolor = storedColor.ToList();
-                    removecolor.RemoveAt(bank20[9]);
-                    removecolor.RemoveAt(bank20[8]);
-                    removecolor.RemoveAt(bank20[7]);
-                    removecolor.RemoveAt(bank20[6]);
-                    removecolor.RemoveAt(bank20[5]);
-                    removecolor.RemoveAt(bank20[4]);
-                    removecolor.RemoveAt(bank20[3]);
-                    removecolor.RemoveAt(bank20[2]);
-                    removecolor.RemoveAt(bank20[1]);
-                    removecolor.RemoveAt(bank20[0]);
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank20[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank20[i]);
+                    placedrect = createblock.ToArray();
                     storedColor = removecolor.ToArray();
-                    lines++;
-                    score += points;
-                    playClear();
-                    resetBank();
-                    gameBoard.Invalidate();
+                    cleanUp();
                 }
 
             }
@@ -1080,37 +672,49 @@ namespace TetrisGame
 
             #endregion
 
-            for (int j = rows.Length - 1; j > 0; j--)
-                for (int i = placedrect.Length - 1; i > 0; i--)
-                    if (bOne.X == rows[j].X && bOne.Y == rows[j].Y || bTwo.X == rows[j].X && bTwo.Y == rows[j].Y || bThree.X == rows[j].X && bThree.Y == rows[j].Y
-                    || bFour.X == rows[j].X && bFour.Y == rows[j].Y || placedrect[i].X == rows[j].X && placedrect[i].Y == rows[j].Y)
-                    e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
+            //these 2 rectangles must be put off screen, they can interfere with gameplay
+            placedrect[0].Y = 99999;
+            placedrect[1].Y = 99999;
 
+            #region Collision
 
+            //player collision at the bottom of board, once reached duplicate player and reset player pos w/ new shape.
             if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
             {
-
-                timer1.Stop();
+                timer1.Start();
+                if (!confirm)
+                    return;
+                gravityTimer.Stop(); // stop gravity
+                //reset player
                 bOne = new Rectangle();
                 bTwo = new Rectangle();
                 bThree = new Rectangle();
                 bFour = new Rectangle();
+
+                //we duplicate the four player rectangles pos
                 List<Rectangle> createblock = placedrect.ToList();
                 createblock.Add(new Rectangle(plyX, plyY, 32, 32));
                 createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
                 createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
                 createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
                 placedrect = createblock.ToArray();
+
+                //we duplicate the shapes color
                 List<Brush> addcolor = storedColor.ToList();
                 addcolor.Add(currentColor);
                 addcolor.Add(currentColor);
                 addcolor.Add(currentColor);
                 addcolor.Add(currentColor);
                 storedColor = addcolor.ToArray();
+
+                //reset player pos
                 plyY = 0;
                 plyX = 160;
 
+                //generate random number between 1 and 7
                 currentBlock = rand.Next(1, 8);
+
+                //set player to what ever number was selected
                 if (currentBlock == 1)
                 {
                     r1 = 32;
@@ -1189,37 +793,48 @@ namespace TetrisGame
                     rotationAng = 1;
                 }
 
-                playFall();
+                playFall(); // play fall sound.
 
-                timer1.Start();
+                gravityTimer.Start();// enable gravity
+                timer1.Stop();
+                confirm = false;
             }
-            //use union method 
+
+            // if player rectangle collides with placed rectangles
             for (int i = placedrect.Length - 1; i > 0; i--)
                 if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
                     || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
                     || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
                     || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
                 {
-                    if (plyY < 32)
+                    timer1.Start();
+                    if (!confirm)
                         return;
 
-                    timer1.Stop();
+                    if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
+                        return;
+
+                    gravityTimer.Stop(); // stop gravity
+
+                    //reset player
                     bOne = new Rectangle();
                     bTwo = new Rectangle();
                     bThree = new Rectangle();
                     bFour = new Rectangle();
-                    if (!bOne.Contains(placedrect[i])
-                    || !bTwo.Contains(placedrect[i])
+
+                    if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
+                    || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
                     || !bThree.Contains(placedrect[i])
                     || !bFour.Contains(placedrect[i]))
                     {
+                        //duplicate player pos
                         List<Rectangle> createblock = placedrect.ToList();
                         createblock.Add(new Rectangle(plyX, plyY, 32, 32));
                         createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
                         createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
                         createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
                         placedrect = createblock.ToArray();
-                        placedrect = createblock.ToArray();
+                        //duplicate shapes color
                         List<Brush> addcolor = storedColor.ToList();
                         addcolor.Add(currentColor);
                         addcolor.Add(currentColor);
@@ -1227,10 +842,15 @@ namespace TetrisGame
                         addcolor.Add(currentColor);
                         storedColor = addcolor.ToArray();
                     }
+
+                    //reset player pos
                     plyY = 0;
                     plyX = 160;
+
+                    //select random number for next shape
                     currentBlock = rand.Next(1, 8);
 
+                    //set shape
                     if (currentBlock == 1)
                     {
                         r1 = 32;
@@ -1310,23 +930,40 @@ namespace TetrisGame
                         currentColor = Brushes.LimeGreen;
                         rotationAng = 1;
                     }
-                    playFall();
-                    timer1.Start();
+
+                    playFall();// play fall sound
+
+                    gravityTimer.Start();// enable gravity
+
+                    confirm = false;
+                    timer1.Stop();
                 }
-
-
 
             try
             {
                 for (int i = placedrect.Length - 1; i > 1; i--)
-                    if (placedrect[i].Y == 0)
+                    if (placedrect[i].Y == 0) // if placed rectangle reaches top of board, end game.
                     {
-                        resetGame();
+                        gravityTimer.Stop(); // stop gravity
+                        paused = true; // pause game
+                        stop = true; // stop music
+                        playMusic(); 
+                        startLabel.Show(); // show start button
+                        tetrisLogo.Show(); // show tetris logo
+                        gameBoard.Invalidate();
                     }
             }
             catch (Exception) { }
 
+            #endregion
 
+            #region labels
+            /*
+             * 
+             * Nothing interesting here, just updating labels to the information
+             * they should contain.
+             * 
+             */
             if (lines < 10)
                 lineLabel.Text = "00" + lines;
             else if (lines < 100)
@@ -1339,62 +976,72 @@ namespace TetrisGame
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 925;
-            }else if (lines == 20 && level != 2)
+                gravityTimer.Interval = 925;
+                playLevelUp();
+            }
+            else if (lines == 20 && level != 2)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 850;
+                gravityTimer.Interval = 850;
+                playLevelUp();
             }
             else if (lines == 30 && level != 3)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 775;
+                gravityTimer.Interval = 775;
+                playLevelUp();
             }
             else if (lines == 40 && level != 4)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 700;
+                gravityTimer.Interval = 700;
+                playLevelUp();
             }
             else if (lines == 50 && level != 5)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 625;
+                gravityTimer.Interval = 625;
+                playLevelUp();
             }
             else if (lines == 60 && level != 6)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 550;
+                gravityTimer.Interval = 550;
+                playLevelUp();
             }
             else if (lines == 70 && level != 7)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 475;
+                gravityTimer.Interval = 475;
+                playLevelUp();
             }
             else if (lines == 80 && level != 8)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 400;
+                gravityTimer.Interval = 400;
+                playLevelUp();
             }
             else if (lines == 90 && level != 9)
             {
                 level++;
                 points += 40;
                 levelLabel.Text = "0" + level;
-                timer1.Interval = 325;
+                gravityTimer.Interval = 325;
+                playLevelUp();
             }
 
             if (score >= 0 && score < 10)
@@ -1417,32 +1064,49 @@ namespace TetrisGame
             }
             else if (score >= 1000 && score < 2000)
             {
-                scoreLabel.Font = new System.Drawing.Font(hoogfont26, FontStyle.Regular);
+                scoreLabel.Font = new System.Drawing.Font(hoogfont24, FontStyle.Regular);
                 scoreLabel.Left = 358;
                 scoreLabel.Text = "" + score;
 
             }
             else if (score >= 2000)
             {
-                scoreLabel.Font = new System.Drawing.Font(hoogfont26, FontStyle.Regular);
-                scoreLabel.Left = 351;
+                scoreLabel.Font = new System.Drawing.Font(hoogfont24, FontStyle.Regular);
+                scoreLabel.Left = 358;
                 scoreLabel.Text = "" + score;
             }
-            
+            #endregion
 
+        }
+
+        #region Game Functions
+
+        //used for when we remove a row, just does the other work.
+        private void cleanUp()
+        {
+            lines++; // add one to lines removed
+            playClear(); // play our clear sound
+            score += points; // add 40 points to our score
+            resetBank(); // reset all banks
+            gameBoard.Invalidate();
         }
 
         private void resetGame()
         {
+            //reset stats
             points = 40;
             lines = 0;
             score = 0;
             level = 0;
             levelLabel.Text = "00";
             scoreLabel.Text = "0";
-            timer1.Interval = 1000;
+            //reset timer interval
+            gravityTimer.Interval = 1000;
+            //wipe all placed rectangles
             placedrect = new Rectangle[2];
+            //reset bank
             resetBank();
+            //reset all stored colors
             storedColor = new Brush[0];
             List<Brush> addcolor = storedColor.ToList();
             addcolor.Add(currentColor);
@@ -1451,40 +1115,7 @@ namespace TetrisGame
             gameBoard.Invalidate();
         }
 
-        private void playFall()
-        {
-            var dev = new Device();
-            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
-            sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.fall, dev);
-            SecondaryBuffer sound2 = new SecondaryBuffer(Properties.Resources.fall, dev);
-            sound2.Volume = -3000;
-            sound2.Play(0, BufferPlayFlags.Default);
-        }
-
-        private void playClear()
-        {
-            var dev = new Device();
-            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
-            sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.clear, dev);
-            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.clear, dev);
-            sound.Volume = -3000;
-            sound.Play(0, BufferPlayFlags.Default);
-        }
-
-        private void playMusic()
-        {
-            var dev = new Device();
-            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
-            soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.tetris_loop, dev);
-            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.tetris_loop, dev);
-            sound.Volume = -3000;
-
-            if (!stop)
-                sound.Play(0, BufferPlayFlags.Looping);
-            else
-                sound.Stop();
-        }
-
+        //wipe all banks
         private void resetBank()
         {
             bank1 = new int[0];
@@ -1529,12 +1160,71 @@ namespace TetrisGame
             row20 = 0;
         }
 
+        #endregion
+
+        #region Music/SFX
+
+        private void playFall()
+        {
+            var dev = new Device();
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.fall, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.fall, dev);
+            sound.Volume = -3000;
+            sound.Play(0, BufferPlayFlags.Default);
+        }
+
+        private void playLevelUp()
+        {
+            var dev = new Device();
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.lvlup, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.lvlup, dev);
+            sound.Volume = -3000;
+            sound.Play(0, BufferPlayFlags.Default);
+        }
+
+        private void playClear()
+        {
+            if (lines == 10 || lines == 20 || lines == 30
+                || lines == 40 || lines == 50 || lines == 60
+                || lines == 70 || lines == 80 || lines == 90)
+                return;
+
+            var dev = new Device();
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.clear, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.clear, dev);
+            sound.Volume = -3000;
+            sound.Play(0, BufferPlayFlags.Default);
+        }
+
+        private void playMusic()
+        {
+            var dev = new Device();
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.tetris_loop, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.tetris_loop, dev);
+            sound.Volume = -3000;
+
+            if (!stop)
+                sound.Play(0, BufferPlayFlags.Looping);
+            else
+                sound.Stop();
+        }
+
+        #endregion
+
+        #region Controls/Movement
+
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case Keys.Down:
                 case Keys.S:
+
+                    confirm = true;
 
                     for (int i = placedrect.Length - 1; i > 0; i--)
                         if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
@@ -1544,28 +1234,20 @@ namespace TetrisGame
                             return;
                     if (paused)
                         return;
-                    plyY += 32;
+                    if (bOne.Y != 608 && bTwo.Y != 608
+                && bThree.Y != 608 && bFour.Y != 608)
+                        plyY += 32;
                     break;
                 case Keys.Escape:
                     if (paused == false)
                     {
-                        timer1.Stop();
+                        gravityTimer.Stop();
                         paused = true;
                     }
-                    else
+                    else if(paused && !stop)
                     {
-                        timer1.Start();
+                        gravityTimer.Start();
                         paused = false;
-                    }
-                    if (!stop)
-                    {
-                        stop = true;
-                        playMusic();
-                    }
-                    else
-                    {
-                        stop = false;
-                        playMusic();
                     }
                     break;
                 case Keys.Left:
@@ -1575,6 +1257,9 @@ namespace TetrisGame
                 case Keys.Right:
                 case Keys.D:
                     moveRight();
+                    break;
+                case Keys.K:
+                    MessageBox.Show("" + placedrect.Length + " " + bank1.Length);
                     break;
                 case Keys.Z:
                 case Keys.X:
@@ -1619,6 +1304,18 @@ namespace TetrisGame
             gameBoard.Invalidate();
         }
 
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.S:
+                case Keys.Down:
+                    confirm = false;
+                    break;
+            }
+        }
+
+
         private void moveRight()
         {
             for (int i = placedrect.Length - 1; i > 0; i--)
@@ -1659,6 +1356,19 @@ namespace TetrisGame
             plyX -= 32;
 
         }
+        #endregion
+
+        #region Rotation Logic
+
+        /*
+         * 
+         * Each shape has its own rotation function, all it does is check current rotation
+         * and sets rectangles to a new position and adds one to rotationAng.
+         * 
+         * Also, some have checks to make sure that in certain areas you are unable to
+         * rotate our of the game board/into another placed block.
+         * 
+         */
 
         private void rotateIblock()
         {
@@ -1679,6 +1389,16 @@ namespace TetrisGame
                 rotationAng++;
             }else if(rotationAng == 2)
             {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                            || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                            || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                            || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                        return;
+
+                if (plyY == 608)
+                    return;
+
                 if (plyX == 288)
                     plyX -= 32;
                 else if (plyX == 0)
@@ -1697,6 +1417,16 @@ namespace TetrisGame
         {
             if (rotationAng == 1)
             {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                            || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                            || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                            || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                        return;
+
+                if (plyY == 608)
+                    return;
+
                 if (plyX == 288)
                     plyX -= 32;
                 else if (plyX == 0)
@@ -1743,6 +1473,15 @@ namespace TetrisGame
         {
             if (rotationAng == 1)
             {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                            || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                            || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                            || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                        return;
+                if (plyY == 608)
+                    return;
+
                 if (plyX == 288)
                     plyX -= 32;
                 else if (plyX == 0)
@@ -1775,6 +1514,15 @@ namespace TetrisGame
         {
             if (rotationAng == 1)
             {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                            || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                            || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                            || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                        return;
+                if (plyY == 608)
+                    return;
+
                 if (plyX == 288)
                     plyX -= 32;
                 else if (plyX == 0)
@@ -1805,6 +1553,16 @@ namespace TetrisGame
 
         private void rotateJblock()
         {
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                        || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                        || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                        || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                    return;
+
+            if (plyY == 608)
+                return;
+
             if (rotationAng == 1)
             {
                 if (plyX == 288)
@@ -1863,6 +1621,16 @@ namespace TetrisGame
 
         private void rotateLblock()
         {
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                        || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                        || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                        || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                    return;
+
+            if (plyY == 608)
+                return;
+
             if (rotationAng == 1)
             {
                 if (plyX == 288)
@@ -1921,12 +1689,46 @@ namespace TetrisGame
             }
         }
 
-        private void Timer1_Tick(object sender, EventArgs e)
+        #endregion
+
+        #region Timers
+        private void GravityTimer_Tick(object sender, EventArgs e)
         {
-            plyY += 32;
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                        || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                        || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                        || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                {// if player is above an already placed shape, we return.
+                    gameBoard.Invalidate();
+                    return;
+                }
+
+            if (bOne.Y != 608 && bTwo.Y != 608
+            && bThree.Y != 608 && bFour.Y != 608) // make sure we aren't at the bottom of the board.
+                plyY += 32;
+
             gameBoard.Invalidate();
         }
 
-        
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            //this timer just allows the player to make a last second move once they have reach the
+            //bottom of the board or are abover another shape
+            confirm = true;
+        }
+
+        #endregion
+
+        private void StartLabel_Click(object sender, EventArgs e)
+        {
+            gravityTimer.Start();
+            paused = false;
+            stop = false;
+            playMusic();
+            startLabel.Hide();
+            tetrisLogo.Hide();
+            resetGame();
+        }
     }
 }

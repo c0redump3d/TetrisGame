@@ -1,4 +1,8 @@
-﻿namespace TetrisGame
+﻿using System;
+using System.Drawing;
+using System.Drawing.Text;
+
+namespace TetrisGame
 {
     partial class Form1
     {
@@ -29,21 +33,23 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.gravityTimer = new System.Windows.Forms.Timer(this.components);
             this.gameBoard = new System.Windows.Forms.PictureBox();
             this.levelLabel = new System.Windows.Forms.Label();
             this.tetrisLogo = new System.Windows.Forms.PictureBox();
             this.lineLabel = new System.Windows.Forms.Label();
             this.scoreLabel = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.startLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).BeginInit();
             this.SuspendLayout();
             // 
-            // timer1
+            // gravityTimer
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
+            this.gravityTimer.Enabled = true;
+            this.gravityTimer.Interval = 1000;
+            this.gravityTimer.Tick += new System.EventHandler(this.GravityTimer_Tick);
             // 
             // gameBoard
             // 
@@ -70,14 +76,12 @@
             // tetrisLogo
             // 
             this.tetrisLogo.BackColor = System.Drawing.Color.Transparent;
-            this.tetrisLogo.Enabled = false;
-            this.tetrisLogo.Location = new System.Drawing.Point(35, 28);
+            this.tetrisLogo.Location = new System.Drawing.Point(58, 29);
             this.tetrisLogo.Name = "tetrisLogo";
-            this.tetrisLogo.Size = new System.Drawing.Size(263, 198);
+            this.tetrisLogo.Size = new System.Drawing.Size(265, 200);
             this.tetrisLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.tetrisLogo.TabIndex = 4;
             this.tetrisLogo.TabStop = false;
-            this.tetrisLogo.Visible = false;
             // 
             // lineLabel
             // 
@@ -104,11 +108,30 @@
             this.scoreLabel.TabIndex = 6;
             this.scoreLabel.Text = "0";
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 150;
+            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
+            // 
+            // startLabel
+            // 
+            this.startLabel.AutoSize = true;
+            this.startLabel.BackColor = System.Drawing.Color.Transparent;
+            this.startLabel.Font = new System.Drawing.Font("hooge 05_53", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.startLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.startLabel.Location = new System.Drawing.Point(55, 382);
+            this.startLabel.Name = "startLabel";
+            this.startLabel.Size = new System.Drawing.Size(253, 40);
+            this.startLabel.TabIndex = 7;
+            this.startLabel.Text = "START GAME";
+            this.startLabel.Click += new System.EventHandler(this.StartLabel_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 674);
+            this.Controls.Add(this.startLabel);
             this.Controls.Add(this.scoreLabel);
             this.Controls.Add(this.lineLabel);
             this.Controls.Add(this.tetrisLogo);
@@ -119,6 +142,7 @@
             this.Name = "Form1";
             this.Text = "Tetris";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).EndInit();
             this.ResumeLayout(false);
@@ -127,7 +151,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer gravityTimer;
         private System.Windows.Forms.PictureBox gameBoard;
 
         int[] bank1 = new int[0];
@@ -170,10 +194,53 @@
         int row19 = 0;
         int[] bank20 = new int[0];
         int row20 = 0;
+
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
+            IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
+
+        private PrivateFontCollection fonts = new PrivateFontCollection();
+
+        Font hoogfont24;
+        Font hoogfont28;
+
+        int plyX = 160;
+        int plyY = 32;
+        Rectangle bOne;
+        Rectangle bTwo;
+        Rectangle bThree;
+        Rectangle bFour;
+        int rotationAng = 1; // 1 default
+        int currentBlock = 1;
+        Random rand;
+        Brush currentColor;
+        Rectangle[] placedrect;
+        Brush[] storedColor;
+        int lines = 0;
+        int score = 0;
+        int level = 0;
+        int points = 40;
+        bool confirm = false;
+
+        Rectangle[] rows;
+
+        int r1 = 32;
+        int r2 = 0;
+        int l1 = 32;
+        int l2 = 32; // normally 0
+        int t1 = 32;
+        int t2 = 0;
+        private bool paused = false;
+        private Microsoft.DirectX.DirectSound.Buffer soundBuffer;
+        private Microsoft.DirectX.DirectSound.Buffer sfxBuffer;
+        private bool stop = true;
+
         private System.Windows.Forms.Label levelLabel;
         private System.Windows.Forms.PictureBox tetrisLogo;
         private System.Windows.Forms.Label lineLabel;
         private System.Windows.Forms.Label scoreLabel;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label startLabel;
     }
 }
 
