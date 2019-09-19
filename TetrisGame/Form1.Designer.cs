@@ -233,6 +233,8 @@ namespace TetrisGame
         private bool paused = false;
         private Microsoft.DirectX.DirectSound.Buffer soundBuffer;
         private Microsoft.DirectX.DirectSound.Buffer sfxBuffer;
+        private Microsoft.DirectX.DirectSound.Buffer playerBuffer;
+        private bool rotating = false;
         private bool stop = true;
 
         private System.Windows.Forms.Label levelLabel;

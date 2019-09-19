@@ -944,6 +944,7 @@ namespace TetrisGame
                 for (int i = placedrect.Length - 1; i > 1; i--)
                     if (placedrect[i].Y == 0) // if placed rectangle reaches top of board, end game.
                     {
+                        placedrect = new Rectangle[2];
                         gravityTimer.Stop(); // stop gravity
                         paused = true; // pause game
                         stop = true; // stop music
@@ -1199,6 +1200,26 @@ namespace TetrisGame
             sound.Play(0, BufferPlayFlags.Default);
         }
 
+        private void playRotate()
+        {
+            var dev = new Device();
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            playerBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.rotate, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.rotate, dev);
+            sound.Volume = -3000;
+            sound.Play(0, BufferPlayFlags.Default);
+        }
+
+        private void playMove()
+        {
+            var dev = new Device();
+            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+            playerBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.move, dev);
+            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.move, dev);
+            sound.Volume = -3000;
+            sound.Play(0, BufferPlayFlags.Default);
+        }
+
         private void playMusic()
         {
             var dev = new Device();
@@ -1236,7 +1257,10 @@ namespace TetrisGame
                         return;
                     if (bOne.Y != 608 && bTwo.Y != 608
                 && bThree.Y != 608 && bFour.Y != 608)
+                    {
                         plyY += 32;
+                        playMove();
+                    }
                     break;
                 case Keys.Escape:
                     if (paused == false)
@@ -1263,39 +1287,43 @@ namespace TetrisGame
                     break;
                 case Keys.Z:
                 case Keys.X:
-                    if (paused)
-                        return;
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32
-                            || bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32)
+                    if (!rotating)
+                    {
+                        rotating = true;
+                        if (paused)
                             return;
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (currentBlock == 4 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32 || currentBlock == 4 && rotationAng == 1 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 64
-                            || currentBlock == 4 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32 || currentBlock == 4 && rotationAng == 1 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 64)
-                            return;
-                    if (currentBlock == 1)
-                    {
-                        rotateTblock();
-                    }
-                    else if (currentBlock == 2)
-                    {
-                        rotateZblock();
-                    }
-                    else if (currentBlock == 3)
-                    {
-                        rotateJblock();
-                    }
-                    else if (currentBlock == 4)
-                    {
-                        rotateIblock();
-                    }
-                    else if (currentBlock == 6)
-                    {
-                        rotateLblock();
-                    }
-                    else if (currentBlock == 7)
-                    {
-                        rotateSblock();
+                        for (int i = placedrect.Length - 1; i > 0; i--)
+                            if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32
+                                || bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32)
+                                return;
+                        for (int i = placedrect.Length - 1; i > 0; i--)
+                            if (currentBlock == 4 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 32 || currentBlock == 4 && rotationAng == 1 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 64
+                                || currentBlock == 4 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 32 || currentBlock == 4 && rotationAng == 1 && bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 64)
+                                return;
+                        if (currentBlock == 1)
+                        {
+                            rotateTblock();
+                        }
+                        else if (currentBlock == 2)
+                        {
+                            rotateZblock();
+                        }
+                        else if (currentBlock == 3)
+                        {
+                            rotateJblock();
+                        }
+                        else if (currentBlock == 4)
+                        {
+                            rotateIblock();
+                        }
+                        else if (currentBlock == 6)
+                        {
+                            rotateLblock();
+                        }
+                        else if (currentBlock == 7)
+                        {
+                            rotateSblock();
+                        }
                     }
                     break;
 
@@ -1311,6 +1339,10 @@ namespace TetrisGame
                 case Keys.S:
                 case Keys.Down:
                     confirm = false;
+                    break;
+                case Keys.Z: 
+                case Keys.X:
+                    rotating = false;
                     break;
             }
         }
@@ -1333,6 +1365,7 @@ namespace TetrisGame
             if (paused)
                 return;
             plyX += 32;
+            playMove();
 
         }
 
@@ -1354,6 +1387,7 @@ namespace TetrisGame
                 return;
 
             plyX -= 32;
+            playMove();
 
         }
         #endregion
@@ -1387,7 +1421,9 @@ namespace TetrisGame
                 t2 = 64;
                 t1 = 0;
                 rotationAng++;
-            }else if(rotationAng == 2)
+                playRotate();
+            }
+            else if(rotationAng == 2)
             {
                 for (int i = placedrect.Length - 1; i > 0; i--)
                     if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
@@ -1410,6 +1446,7 @@ namespace TetrisGame
                 t1 = 32;
                 t2 = 0;
                 rotationAng = 1;
+                playRotate();
             }
         }
 
@@ -1438,6 +1475,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 2)
             {
@@ -1452,6 +1490,7 @@ namespace TetrisGame
                 t1 = -t2;
                 t2 = 0;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 3)
             {
@@ -1466,6 +1505,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng = 2;
+                playRotate();
             }
         }
 
@@ -1493,6 +1533,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 2)
             {
@@ -1507,6 +1548,7 @@ namespace TetrisGame
                 t1 = t2;
                 t2 = 0;
                 rotationAng = 1;
+                playRotate();
             }
         }
 
@@ -1534,6 +1576,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 2)
             {
@@ -1548,6 +1591,7 @@ namespace TetrisGame
                 t1 = t2;
                 t2 = 0;
                 rotationAng = 1;
+                playRotate();
             }
         }
 
@@ -1576,6 +1620,7 @@ namespace TetrisGame
                 t2 = 32;
                 t1 = 32;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 2)
             {
@@ -1590,7 +1635,9 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng++;
-            }else if(rotationAng == 3)
+                playRotate();
+            }
+            else if(rotationAng == 3)
             {
                 if (plyX == 288)
                     plyX -= 32;
@@ -1603,7 +1650,9 @@ namespace TetrisGame
                 t1 = (-32);
                 t2 = 0;
                 rotationAng++;
-            }else if(rotationAng == 4)
+                playRotate();
+            }
+            else if(rotationAng == 4)
             {
                 if (plyX == 288)
                     plyX -= 32;
@@ -1616,6 +1665,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng = 1;
+                playRotate();
             }
         }
 
@@ -1644,6 +1694,7 @@ namespace TetrisGame
                 t2 = 32;
                 t1 = (-32);
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 2)
             {
@@ -1658,6 +1709,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 3)
             {
@@ -1672,6 +1724,7 @@ namespace TetrisGame
                 t1 = (-32);
                 t2 = 0;
                 rotationAng++;
+                playRotate();
             }
             else if (rotationAng == 4)
             {
@@ -1686,6 +1739,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng = 1;
+                playRotate();
             }
         }
 
