@@ -41,8 +41,10 @@ namespace TetrisGame
             this.scoreLabel = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.startLabel = new System.Windows.Forms.Label();
+            this.nextShapeBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).BeginInit();
             this.SuspendLayout();
             // 
             // gravityTimer
@@ -117,20 +119,32 @@ namespace TetrisGame
             // 
             this.startLabel.AutoSize = true;
             this.startLabel.BackColor = System.Drawing.Color.Transparent;
-            this.startLabel.Font = new System.Drawing.Font("hooge 05_53", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.startLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.startLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.startLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.startLabel.Location = new System.Drawing.Point(55, 382);
             this.startLabel.Name = "startLabel";
-            this.startLabel.Size = new System.Drawing.Size(253, 40);
+            this.startLabel.Size = new System.Drawing.Size(225, 37);
             this.startLabel.TabIndex = 7;
             this.startLabel.Text = "START GAME";
             this.startLabel.Click += new System.EventHandler(this.StartLabel_Click);
+            // 
+            // nextShapeBox
+            // 
+            this.nextShapeBox.BackColor = System.Drawing.Color.Transparent;
+            this.nextShapeBox.Location = new System.Drawing.Point(359, 355);
+            this.nextShapeBox.Name = "nextShapeBox";
+            this.nextShapeBox.Size = new System.Drawing.Size(100, 100);
+            this.nextShapeBox.TabIndex = 8;
+            this.nextShapeBox.TabStop = false;
+            this.nextShapeBox.Paint += new System.Windows.Forms.PaintEventHandler(this.NextShapeBox_Paint);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 674);
+            this.Controls.Add(this.nextShapeBox);
             this.Controls.Add(this.startLabel);
             this.Controls.Add(this.scoreLabel);
             this.Controls.Add(this.lineLabel);
@@ -145,6 +159,7 @@ namespace TetrisGame
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -195,6 +210,8 @@ namespace TetrisGame
         int[] bank20 = new int[0];
         int row20 = 0;
 
+        int nextShape;
+
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
             IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
@@ -206,10 +223,18 @@ namespace TetrisGame
 
         int plyX = 160;
         int plyY = 32;
+        int nX = 34;
+        int nY = 50;
         Rectangle bOne;
         Rectangle bTwo;
         Rectangle bThree;
         Rectangle bFour;
+
+        Rectangle nOne;
+        Rectangle nTwo;
+        Rectangle nThree;
+        Rectangle nFour;
+        Brush nextCol;
         int rotationAng = 1; // 1 default
         int currentBlock = 1;
         Random rand;
@@ -243,6 +268,7 @@ namespace TetrisGame
         private System.Windows.Forms.Label scoreLabel;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label startLabel;
+        private System.Windows.Forms.PictureBox nextShapeBox;
     }
 }
 

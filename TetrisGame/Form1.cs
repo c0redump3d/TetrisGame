@@ -48,7 +48,8 @@ namespace TetrisGame
             paused = true;
 
             //choose shape
-            currentBlock = rand.Next(1, 8);
+            nextShape = rand.Next(1, 8);
+            currentBlock = nextShape;
 
             if (currentBlock == 1)
             {
@@ -87,12 +88,12 @@ namespace TetrisGame
             }
             else if (currentBlock == 4)
             {
-                r1 = 0;
-                r2 = 64;
-                l1 = 0;
-                l2 = (-32);
-                t1 = 32;
-                t2 = 0;
+                r1 = 32;
+                r2 = 0;
+                l1 = 32;
+                l2 = 0;
+                t2 = 64;
+                t1 = 0;
                 currentColor = Brushes.Cyan;
                 rotationAng = 1;
             }
@@ -129,7 +130,6 @@ namespace TetrisGame
                 currentColor = Brushes.LimeGreen;
                 rotationAng = 1;
             }
-
             List<Brush> addcolor = storedColor.ToList();
             addcolor.Add(currentColor);
             addcolor.Add(currentColor);
@@ -143,6 +143,89 @@ namespace TetrisGame
                     addtile.Add(new Rectangle(x * 32, y * 32, 32, 32));
                     rows = addtile.ToArray();
                 }
+            }
+        }
+
+        private void NextShapeBox_Paint(object sender, PaintEventArgs e)
+        {
+            if (!stop)
+            {
+                if (nextShape == 1)
+                {
+                    nX = 34; nY = 50;
+                    nOne = new Rectangle(nX, nY, 32, 32); // player controlled rect
+                    nTwo = new Rectangle(nX + 32, nY + 0, 32, 32);
+                    nThree = new Rectangle(nX - 32, nY - 0, 32, 32);
+                    nFour = new Rectangle(nX + 0, nY - 32, 32, 32);
+                    nextCol = Brushes.Purple;
+                }
+                else if (nextShape == 2)
+                {
+                    nX = 34; nY = 50;
+                    nOne = new Rectangle(nX, nY, 32, 32); // player controlled rect
+                    nTwo = new Rectangle(nX + 32, nY + 0, 32, 32);
+                    nThree = new Rectangle(nX - 32, nY - 32, 32, 32);
+                    nFour = new Rectangle(nX + 0, nY - 32, 32, 32);
+                    nextCol = Brushes.Red;
+                }
+                else if (nextShape == 3)
+                {
+                    nX = 34; nY = 50;
+                    nOne = new Rectangle(nX, nY, 32, 32); // player controlled rect
+                    nTwo = new Rectangle(nX - 32, nY - 32, 32, 32);
+                    nThree = new Rectangle(nX - 32, nY - 0, 32, 32);
+                    nFour = new Rectangle(nX + 32, nY - 0, 32, 32);
+                    nextCol = Brushes.Blue;
+                }
+                else if (nextShape == 4)
+                {
+                    nX = 27; nY = 40;
+                    nOne = new Rectangle(nX, nY, 24, 24); // player controlled rect
+                    nTwo = new Rectangle(nX + 24, nY + 0, 24, 24);
+                    nThree = new Rectangle(nX - 24, nY - 0, 24, 24);
+                    nFour = new Rectangle(nX + 48, nY - 0, 24, 24);
+                    nextCol = Brushes.Cyan;
+                }
+                else if (nextShape == 5)
+                {
+                    nX = 17; nY = 20;
+                    nOne = new Rectangle(nX, nY, 32, 32); // player controlled rect
+                    nTwo = new Rectangle(nX + 32, nY + 32, 32, 32);
+                    nThree = new Rectangle(nX - 0, nY - (-32), 32, 32);
+                    nFour = new Rectangle(nX + 32, nY - 0, 32, 32);
+                    nextCol = Brushes.Yellow;
+                }
+                else if (nextShape == 6)
+                {
+                    nX = 34; nY = 50;
+                    nOne = new Rectangle(nX, nY, 32, 32); // player controlled rect
+                    nTwo = new Rectangle(nX + 32, nY + -32, 32, 32);
+                    nThree = new Rectangle(nX - 32, nY - 0, 32, 32);
+                    nFour = new Rectangle(nX + 32, nY - 0, 32, 32);
+                    nextCol = Brushes.Gold;
+                }
+                else if (nextShape == 7)
+                {
+                    nX = 34; nY = 50;
+                    nOne = new Rectangle(nX, nY, 32, 32); // player controlled rect
+                    nTwo = new Rectangle(nX + -32, nY + 0, 32, 32);
+                    nThree = new Rectangle(nX - (-32), nY - 32, 32, 32);
+                    nFour = new Rectangle(nX + 0, nY - 32, 32, 32);
+                    nextCol = Brushes.LimeGreen;
+                }
+
+                e.Graphics.FillRectangle(nextCol, nOne);
+                e.Graphics.FillRectangle(nextCol, nTwo);
+                e.Graphics.FillRectangle(nextCol, nThree);
+                e.Graphics.FillRectangle(nextCol, nFour);
+
+
+                e.Graphics.DrawRectangle(Pens.Black, nOne);
+                e.Graphics.DrawRectangle(Pens.Black, nTwo);
+                e.Graphics.DrawRectangle(Pens.Black, nThree);
+                e.Graphics.DrawRectangle(Pens.Black, nFour);
+
+
             }
         }
 
@@ -712,7 +795,7 @@ namespace TetrisGame
                 plyX = 160;
 
                 //generate random number between 1 and 7
-                currentBlock = rand.Next(1, 8);
+                currentBlock = nextShape;
 
                 //set player to what ever number was selected
                 if (currentBlock == 1)
@@ -752,12 +835,12 @@ namespace TetrisGame
                 }
                 else if (currentBlock == 4)
                 {
-                    r1 = 0;
-                    r2 = 64;
-                    l1 = 0;
-                    l2 = (-32);
-                    t1 = 32;
-                    t2 = 0;
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 0;
+                    t2 = 64;
+                    t1 = 0;
                     currentColor = Brushes.Cyan;
                     rotationAng = 1;
                 }
@@ -794,10 +877,12 @@ namespace TetrisGame
                 }
 
                 playFall(); // play fall sound.
+                nextShape = rand.Next(1, 8);
 
                 gravityTimer.Start();// enable gravity
                 timer1.Stop();
                 confirm = false;
+                nextShapeBox.Invalidate();
             }
 
             // if player rectangle collides with placed rectangles
@@ -848,7 +933,7 @@ namespace TetrisGame
                     plyX = 160;
 
                     //select random number for next shape
-                    currentBlock = rand.Next(1, 8);
+                    currentBlock = nextShape;
 
                     //set shape
                     if (currentBlock == 1)
@@ -888,12 +973,12 @@ namespace TetrisGame
                     }
                     else if (currentBlock == 4)
                     {
-                        r1 = 0;
-                        r2 = 64;
-                        l1 = 0;
-                        l2 = (-32);
-                        t1 = 32;
-                        t2 = 0;
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 0;
+                        t2 = 64;
+                        t1 = 0;
                         currentColor = Brushes.Cyan;
                         rotationAng = 1;
                     }
@@ -931,12 +1016,14 @@ namespace TetrisGame
                         rotationAng = 1;
                     }
 
+                    nextShape = rand.Next(1, 8);
                     playFall();// play fall sound
 
                     gravityTimer.Start();// enable gravity
 
                     confirm = false;
                     timer1.Stop();
+                    nextShapeBox.Invalidate();
                 }
 
             try
@@ -1296,7 +1383,7 @@ namespace TetrisGame
                     moveRight();
                     break;
                 case Keys.K:
-                    MessageBox.Show("" + placedrect.Length + " " + bank1.Length);
+                    MessageBox.Show("" + nextShape);
                     break;
                 case Keys.Z:
                 case Keys.X:
@@ -1421,23 +1508,6 @@ namespace TetrisGame
         {
             if (rotationAng == 1)
             {
-                if (plyX == 288)
-                    plyX -= 64;
-                else if (plyX == 256)
-                    plyX -= 32;
-                else if (plyX == 0)
-                    plyX += 32;
-                r1 = 32;
-                r2 = 0;
-                l1 = 32;
-                l2 = 0;
-                t2 = 64;
-                t1 = 0;
-                rotationAng++;
-                playRotate();
-            }
-            else if(rotationAng == 2)
-            {
                 for (int i = placedrect.Length - 1; i > 0; i--)
                     if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
                             || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
@@ -1458,6 +1528,23 @@ namespace TetrisGame
                 l2 = (-32);
                 t1 = 32;
                 t2 = 0;
+                rotationAng++;
+                playRotate();
+            }
+            else if(rotationAng == 2)
+            {
+                if (plyX == 288)
+                    plyX -= 64;
+                else if (plyX == 256)
+                    plyX -= 32;
+                else if (plyX == 0)
+                    plyX += 32;
+                r1 = 32;
+                r2 = 0;
+                l1 = 32;
+                l2 = 0;
+                t2 = 64;
+                t1 = 0;
                 rotationAng = 1;
                 playRotate();
             }
@@ -1468,8 +1555,17 @@ namespace TetrisGame
             if (rotationAng == 1)
             {
                 for (int i = placedrect.Length - 1; i > 0; i--)
-                    if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
-                            || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                    if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 64
+                            || bTwo.Y == placedrect[i].Y && bTwo.X == placedrect[i].X + 32
+                            || bThree.Y == placedrect[i].Y && bThree.X == placedrect[i].X + 32
+                            || bFour.Y == placedrect[i].Y && bFour.X == placedrect[i].X + 32 || bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 64
+                            || bTwo.Y == placedrect[i].Y && bTwo.X == placedrect[i].X - 32
+                            || bThree.Y == placedrect[i].Y && bThree.X == placedrect[i].X - 32
+                            || bFour.Y == placedrect[i].Y && bFour.X == placedrect[i].X - 32)
+                        return;
+
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
                             || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
                             || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
                         return;
@@ -1492,6 +1588,15 @@ namespace TetrisGame
             }
             else if (rotationAng == 2)
             {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X + 64
+                            || bTwo.Y == placedrect[i].Y && bTwo.X == placedrect[i].X + 64
+                            || bThree.Y == placedrect[i].Y && bThree.X == placedrect[i].X + 64
+                            || bFour.Y == placedrect[i].Y && bFour.X == placedrect[i].X + 64 || bOne.Y == placedrect[i].Y && bOne.X == placedrect[i].X - 64
+                            || bTwo.Y == placedrect[i].Y && bTwo.X == placedrect[i].X - 64
+                            || bThree.Y == placedrect[i].Y && bThree.X == placedrect[i].X - 64
+                            || bFour.Y == placedrect[i].Y && bFour.X == placedrect[i].X - 64)
+                        return;
                 if (plyX == 288)
                     plyX -= 32;
                 else if (plyX == 0)
@@ -1796,6 +1901,9 @@ namespace TetrisGame
             startLabel.Hide();
             tetrisLogo.Hide();
             resetGame();
+            nextShapeBox.Invalidate();
         }
+
+        
     }
 }
