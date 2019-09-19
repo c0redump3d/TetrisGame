@@ -149,13 +149,13 @@
     <None Include="Resources\clear.wav" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\fall.wav" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\rotate.wav" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\move.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fall.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('packages\Fody.6.0.0\build\Fody.targets')" />

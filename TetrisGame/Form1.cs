@@ -965,6 +965,7 @@ namespace TetrisGame
              * they should contain.
              * 
              */
+
             if (lines < 10)
                 lineLabel.Text = "00" + lines;
             else if (lines < 100)
@@ -1070,10 +1071,22 @@ namespace TetrisGame
                 scoreLabel.Text = "" + score;
 
             }
-            else if (score >= 2000)
+            else if (score >= 2000 && score < 10000)
             {
                 scoreLabel.Font = new System.Drawing.Font(hoogfont24, FontStyle.Regular);
                 scoreLabel.Left = 358;
+                scoreLabel.Text = "" + score;
+            }
+            else if (score >= 10000 && score < 20000)
+            {
+                scoreLabel.Font = new System.Drawing.Font(hoogfont24, FontStyle.Regular);
+                scoreLabel.Left = 350;
+                scoreLabel.Text = "" + score;
+            }
+            else if (score >= 20000)
+            {
+                scoreLabel.Font = new System.Drawing.Font(hoogfont24, FontStyle.Regular);
+                scoreLabel.Left = 346;
                 scoreLabel.Text = "" + score;
             }
             #endregion
@@ -1171,7 +1184,7 @@ namespace TetrisGame
             dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
             sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.fall, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.fall, dev);
-            sound.Volume = -3000;
+            sound.Volume = -1000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
