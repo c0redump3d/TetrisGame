@@ -1,4 +1,5 @@
 using Microsoft.DirectX.DirectSound;
+using SharpDX.XInput;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -29,6 +30,9 @@ namespace TetrisGame
             hoogfont24 = new Font(fonts.Families[0], 24.0F); // setup 24pt font
             hoogfont28 = new Font(fonts.Families[0], 28.0F); // setup 28pt font
 
+            controller = new Controller(UserIndex.One);
+            connected = controller.IsConnected;
+
             //set labels to correct font
             scoreLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
             lineLabel.Font = new System.Drawing.Font(hoogfont28, FontStyle.Regular);
@@ -48,8 +52,7 @@ namespace TetrisGame
             paused = true;
 
             //choose shape
-            nextShape = rand.Next(1, 8);
-            currentBlock = nextShape;
+            currentBlock = rand.Next(1, 8);
 
             if (currentBlock == 1)
             {
@@ -144,6 +147,7 @@ namespace TetrisGame
                     rows = addtile.ToArray();
                 }
             }
+            nextShape = rand.Next(1, 8);
         }
 
         private void NextShapeBox_Paint(object sender, PaintEventArgs e)
@@ -254,797 +258,10 @@ namespace TetrisGame
                             e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
 
             }
-            
-
-            #region Check Row
-
-            /*
-             * 
-             * Here we check if any grid box(hidden) contains a placed rectangle,
-             * if it does, we add the placed rectangle's index into the corresponding
-             * bank(row).
-             * 
-             * --only commenting on bank1 because every other row is the same.
-             * 
-             */
-
-            for (int i = placedrect.Length - 1; i > 0; i--)
-                for (int j = rows.Length - 1; j > 0; j--)
-                    if (placedrect[i].Contains(rows[j])) // if a row is contained in a placed rectangle
-                    {
-                        if (!bank1.Contains(i) && placedrect[i].Y == 608)
-                        {
-
-                            List<int> addbank = bank1.ToList();
-                            addbank.Add(i); // add index of placed rectangle to bank
-                            bank1 = addbank.ToArray();
-                            Array.Sort(bank1);// sort array from big to least
-                            row1++; // add one to row1 counter
-                        }
-                        else if (!bank2.Contains(i) && placedrect[i].Y == 576)
-                        {
-                            List<int> addbank = bank2.ToList();
-                            addbank.Add(i);
-                            bank2 = addbank.ToArray();
-                            Array.Sort(bank2);
-                            row2++;
-                        }
-                        else if (!bank3.Contains(i) && placedrect[i].Y == 544)
-                        {
-                            List<int> addbank = bank3.ToList();
-                            addbank.Add(i);
-                            bank3 = addbank.ToArray();
-                            Array.Sort(bank3);
-                            row3++;
-                        }
-                        else if (!bank4.Contains(i) && placedrect[i].Y == 512)
-                        {
-                            List<int> addbank = bank4.ToList();
-                            addbank.Add(i);
-                            bank4 = addbank.ToArray();
-                            Array.Sort(bank4);
-                            row4++;
-                        }
-                        else if (!bank5.Contains(i) && placedrect[i].Y == 480)
-                        {
-                            List<int> addbank = bank5.ToList();
-                            addbank.Add(i);
-                            bank5 = addbank.ToArray();
-                            Array.Sort(bank5);
-                            row5++;
-                        }
-                        else if (!bank6.Contains(i) && placedrect[i].Y == 448)
-                        {
-                            List<int> addbank = bank6.ToList();
-                            addbank.Add(i);
-                            bank6 = addbank.ToArray();
-                            Array.Sort(bank6);
-                            row6++;
-                        }
-                        else if (!bank7.Contains(i) && placedrect[i].Y == 416)
-                        {
-                            List<int> addbank = bank7.ToList();
-                            addbank.Add(i);
-                            bank7 = addbank.ToArray();
-                            Array.Sort(bank7);
-                            row7++;
-                        }
-                        else if (!bank8.Contains(i) && placedrect[i].Y == 384)
-                        {
-                            List<int> addbank = bank8.ToList();
-                            addbank.Add(i);
-                            bank8 = addbank.ToArray();
-                            Array.Sort(bank8);
-                            row8++;
-                        }
-                        else if (!bank9.Contains(i) && placedrect[i].Y == 352)
-                        {
-                            List<int> addbank = bank9.ToList();
-                            addbank.Add(i);
-                            bank9 = addbank.ToArray();
-                            Array.Sort(bank9);
-                            row9++;
-                        }
-                        else if (!bank10.Contains(i) && placedrect[i].Y == 320)
-                        {
-                            List<int> addbank = bank10.ToList();
-                            addbank.Add(i);
-                            bank10 = addbank.ToArray();
-                            Array.Sort(bank10);
-                            row10++;
-                        }
-                        else if (!bank11.Contains(i) && placedrect[i].Y == 288)
-                        {
-                            List<int> addbank = bank11.ToList();
-                            addbank.Add(i);
-                            bank11 = addbank.ToArray();
-                            Array.Sort(bank11);
-                            row11++;
-                        }
-                        else if (!bank12.Contains(i) && placedrect[i].Y == 256)
-                        {
-                            List<int> addbank = bank12.ToList();
-                            addbank.Add(i);
-                            bank12 = addbank.ToArray();
-                            Array.Sort(bank12);
-                            row12++;
-                        }
-                        else if (!bank13.Contains(i) && placedrect[i].Y == 224)
-                        {
-                            List<int> addbank = bank13.ToList();
-                            addbank.Add(i);
-                            bank13 = addbank.ToArray();
-                            Array.Sort(bank13);
-                            row13++;
-                        }
-                        else if (!bank14.Contains(i) && placedrect[i].Y == 192)
-                        {
-                            List<int> addbank = bank14.ToList();
-                            addbank.Add(i);
-                            bank14 = addbank.ToArray();
-                            Array.Sort(bank14);
-                            row14++;
-                        }
-                        else if (!bank15.Contains(i) && placedrect[i].Y == 160)
-                        {
-                            List<int> addbank = bank15.ToList();
-                            addbank.Add(i);
-                            bank15 = addbank.ToArray();
-                            Array.Sort(bank15);
-                            row15++;
-                        }
-                        else if (!bank16.Contains(i) && placedrect[i].Y == 128)
-                        {
-                            List<int> addbank = bank16.ToList();
-                            addbank.Add(i);
-                            bank16 = addbank.ToArray();
-                            Array.Sort(bank16);
-                            row16++;
-                        }
-                        else if (!bank17.Contains(i) && placedrect[i].Y == 96)
-                        {
-                            List<int> addbank = bank17.ToList();
-                            addbank.Add(i);
-                            bank17 = addbank.ToArray();
-                            Array.Sort(bank17);
-                            row17++;
-                        }
-                        else if (!bank18.Contains(i) && placedrect[i].Y == 64)
-                        {
-                            List<int> addbank = bank18.ToList();
-                            addbank.Add(i);
-                            bank18 = addbank.ToArray();
-                            Array.Sort(bank18);
-                            row18++;
-                        }
-                        else if (!bank19.Contains(i) && placedrect[i].Y == 32)
-                        {
-                            List<int> addbank = bank19.ToList();
-                            addbank.Add(i);
-                            bank19 = addbank.ToArray();
-                            Array.Sort(bank19);
-                            row19++;
-                        }
-                        else if (!bank20.Contains(i) && placedrect[i].Y == 0)
-                        {
-                            List<int> addbank = bank20.ToList();
-                            addbank.Add(i);
-                            bank20 = addbank.ToArray();
-                            Array.Sort(bank20);
-                            row20++;
-                        }
-
-                    }
-            #endregion
-
-            #region Remove Row
-            /*
-             * 
-             * Yes, this is a mess but this is required to remove rows if they're full.
-             * 
-             * Each row contains it's own 'bank' which contains the placed rectangles on that Y level
-             * for each rectangle in the row, we add one, so once it equals 10 it passes to down here.
-             * 
-             * We check each row individually.
-             * 
-             */
-
-            try
-            {
-                if (row1 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank1[i]); // remove rectangles stored in bank array
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank1[i]); // remove color stored in bank array
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        placedrect[i].Y += 32; // move all remaining blocks down
-                    cleanUp(); // clean up
-                }
-                else if (row2 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank2[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank2[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 576)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row3 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank3[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank3[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 544)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row4 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank4[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank4[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 512)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row5 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank5[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank5[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 480)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row6 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank6[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank6[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 448)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row7 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank7[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank7[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 416)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row8 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank8[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank8[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 384)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row9 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank9[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank9[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 352)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row10 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank10[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank10[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 320)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row11 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank11[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank11[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 288)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row12 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank12[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank12[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 256)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row13 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank13[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank13[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 224)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row14 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank14[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank14[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 192)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row15 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank15[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank15[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 160)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row16 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank16[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank16[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 128)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row17 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank17[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank17[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 96)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row18 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank18[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank18[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 64)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row19 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank19[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank19[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                        if (placedrect[i].Y < 32)
-                            placedrect[i].Y += 32;
-                    cleanUp();
-                }
-                else if (row20 == 10)
-                {
-                    List<Rectangle> createblock = placedrect.ToList();
-                    List<Brush> removecolor = storedColor.ToList();
-                    for (int i = 9; i >= 0; i--)
-                        createblock.RemoveAt(bank20[i]);
-                    for (int i = 9; i >= 0; i--)
-                        removecolor.RemoveAt(bank20[i]);
-                    placedrect = createblock.ToArray();
-                    storedColor = removecolor.ToArray();
-                    cleanUp();
-                }
-
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("" + bank1[1]);
-            }
-
-            #endregion
 
             //these 2 rectangles must be put off screen, they can interfere with gameplay
             placedrect[0].Y = 99999;
             placedrect[1].Y = 99999;
-
-            #region Collision
-
-            //player collision at the bottom of board, once reached duplicate player and reset player pos w/ new shape.
-            if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
-            {
-                timer1.Start();
-                if (!confirm)
-                    return;
-                gravityTimer.Stop(); // stop gravity
-                //reset player
-                bOne = new Rectangle();
-                bTwo = new Rectangle();
-                bThree = new Rectangle();
-                bFour = new Rectangle();
-
-                //we duplicate the four player rectangles pos
-                List<Rectangle> createblock = placedrect.ToList();
-                createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                placedrect = createblock.ToArray();
-
-                //we duplicate the shapes color
-                List<Brush> addcolor = storedColor.ToList();
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                storedColor = addcolor.ToArray();
-
-                //reset player pos
-                plyY = 0;
-                plyX = 160;
-
-                //generate random number between 1 and 7
-                currentBlock = nextShape;
-
-                //set player to what ever number was selected
-                if (currentBlock == 1)
-                {
-                    r1 = 32;
-                    r2 = 0;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 32;
-                    t2 = 0;
-                    currentColor = Brushes.Purple;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 2)
-                {
-                    r1 = 32;
-                    r2 = 0;
-                    l1 = 32;
-                    l2 = 32;
-                    t1 = 32;
-                    t2 = 0;
-                    currentColor = Brushes.Red;
-                    rotationAng = 1;
-
-                }
-                else if (currentBlock == 3)
-                {
-                    r1 = -32;
-                    r2 = -32;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 0;
-                    t2 = 32;
-                    currentColor = Brushes.Blue;
-                    rotationAng = 1;
-
-                }
-                else if (currentBlock == 4)
-                {
-                    r1 = 32;
-                    r2 = 0;
-                    l1 = 32;
-                    l2 = 0;
-                    t2 = 64;
-                    t1 = 0;
-                    currentColor = Brushes.Cyan;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 5)
-                {
-                    r1 = 32;
-                    r2 = 32;
-                    l1 = 0;
-                    l2 = (-32);
-                    t1 = 0;
-                    t2 = 32;
-                    currentColor = Brushes.Yellow;
-                    rotationAng = 1;
-                }else if(currentBlock == 6)
-                {
-                    r1 = 32;
-                    r2 = -32;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 0;
-                    t2 = 32;
-                    currentColor = Brushes.Gold;
-                    rotationAng = 1;
-                }else if (currentBlock == 7)
-                {
-                    r1 = -32;
-                    r2 = 0;
-                    l1 = (-32);
-                    l2 = 32;
-                    t1 = 32;
-                    t2 = 0;
-                    currentColor = Brushes.LimeGreen;
-                    rotationAng = 1;
-                }
-
-                playFall(); // play fall sound.
-                nextShape = rand.Next(1, 8);
-
-                gravityTimer.Start();// enable gravity
-                timer1.Stop();
-                confirm = false;
-                nextShapeBox.Invalidate();
-            }
-
-            // if player rectangle collides with placed rectangles
-            for (int i = placedrect.Length - 1; i > 0; i--)
-                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
-                    || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
-                    || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
-                    || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
-                {
-                    timer1.Start();
-                    if (!confirm)
-                        return;
-
-                    if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
-                        return;
-
-                    gravityTimer.Stop(); // stop gravity
-
-                    //reset player
-                    bOne = new Rectangle();
-                    bTwo = new Rectangle();
-                    bThree = new Rectangle();
-                    bFour = new Rectangle();
-
-                    if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
-                    || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
-                    || !bThree.Contains(placedrect[i])
-                    || !bFour.Contains(placedrect[i]))
-                    {
-                        //duplicate player pos
-                        List<Rectangle> createblock = placedrect.ToList();
-                        createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                        createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                        createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                        createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                        placedrect = createblock.ToArray();
-                        //duplicate shapes color
-                        List<Brush> addcolor = storedColor.ToList();
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        storedColor = addcolor.ToArray();
-                    }
-
-                    //reset player pos
-                    plyY = 0;
-                    plyX = 160;
-
-                    //select random number for next shape
-                    currentBlock = nextShape;
-
-                    //set shape
-                    if (currentBlock == 1)
-                    {
-                        r1 = 32;
-                        r2 = 0;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 32;
-                        t2 = 0;
-                        currentColor = Brushes.Purple;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 2)
-                    {
-                        r1 = 32;
-                        r2 = 0;
-                        l1 = 32;
-                        l2 = 32;
-                        t1 = 32;
-                        t2 = 0;
-                        currentColor = Brushes.Red;
-                        rotationAng = 1;
-
-                    }
-                    else if (currentBlock == 3)
-                    {
-                        r1 = -32;
-                        r2 = -32;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 0;
-                        t2 = 32;
-                        currentColor = Brushes.Blue;
-                        rotationAng = 1;
-
-                    }
-                    else if (currentBlock == 4)
-                    {
-                        r1 = 32;
-                        r2 = 0;
-                        l1 = 32;
-                        l2 = 0;
-                        t2 = 64;
-                        t1 = 0;
-                        currentColor = Brushes.Cyan;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 5)
-                    {
-                        r1 = 32;
-                        r2 = 32;
-                        l1 = 0;
-                        l2 = (-32);
-                        t1 = 0;
-                        t2 = 32;
-                        currentColor = Brushes.Yellow;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 6)
-                    {
-                        r1 = 32;
-                        r2 = -32;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 0;
-                        t2 = 32;
-                        currentColor = Brushes.Gold;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 7)
-                    {
-                        r1 = -32;
-                        r2 = 0;
-                        l1 = (-32);
-                        l2 = 32;
-                        t1 = 32;
-                        t2 = 0;
-                        currentColor = Brushes.LimeGreen;
-                        rotationAng = 1;
-                    }
-
-                    nextShape = rand.Next(1, 8);
-                    playFall();// play fall sound
-
-                    gravityTimer.Start();// enable gravity
-
-                    confirm = false;
-                    timer1.Stop();
-                    nextShapeBox.Invalidate();
-                }
-
-            try
-            {
-                for (int i = placedrect.Length - 1; i > 1; i--)
-                    if (placedrect[i].Y == 0) // if placed rectangle reaches top of board, end game.
-                    {
-                        placedrect = new Rectangle[2];
-                        gravityTimer.Stop(); // stop gravity
-                        paused = true; // pause game
-                        stop = true; // stop music
-                        playMusic(); 
-                        startLabel.Show(); // show start button
-                        tetrisLogo.Show(); // show tetris logo
-                        gameBoard.Invalidate();
-                    }
-            }
-            catch (Exception) { }
-
-            #endregion
 
             #region labels
             /*
@@ -1384,15 +601,6 @@ namespace TetrisGame
                     moveRight();
                     break;
                 case Keys.K:
-                    for (int i = placedrect.Length - 1; i > 0; i--)
-                    {
-
-                        if (bOne.X == placedrect[i].X)
-                        {
-                            plyY = placedrect[i].Y - 32;
-                        }
-
-                    }
                     break;
                 case Keys.Z:
                 case Keys.X:
@@ -1915,6 +1123,899 @@ namespace TetrisGame
             nextShapeBox.Invalidate();
         }
 
-        
+        private void UpdateTimer_Tick(object sender, EventArgs e)
+        {
+
+            Update();
+
+            #region Check Row
+
+            /*
+             * 
+             * Here we check if any grid box(hidden) contains a placed rectangle,
+             * if it does, we add the placed rectangle's index into the corresponding
+             * bank(row).
+             * 
+             * --only commenting on bank1 because every other row is the same.
+             * 
+             */
+
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                for (int j = rows.Length - 1; j > 0; j--)
+                    if (placedrect[i].Contains(rows[j])) // if a row is contained in a placed rectangle
+                    {
+                        if (!bank1.Contains(i) && placedrect[i].Y == 608)
+                        {
+
+                            List<int> addbank = bank1.ToList();
+                            addbank.Add(i); // add index of placed rectangle to bank
+                            bank1 = addbank.ToArray();
+                            Array.Sort(bank1);// sort array from big to least
+                            row1++; // add one to row1 counter
+                        }
+                        else if (!bank2.Contains(i) && placedrect[i].Y == 576)
+                        {
+                            List<int> addbank = bank2.ToList();
+                            addbank.Add(i);
+                            bank2 = addbank.ToArray();
+                            Array.Sort(bank2);
+                            row2++;
+                        }
+                        else if (!bank3.Contains(i) && placedrect[i].Y == 544)
+                        {
+                            List<int> addbank = bank3.ToList();
+                            addbank.Add(i);
+                            bank3 = addbank.ToArray();
+                            Array.Sort(bank3);
+                            row3++;
+                        }
+                        else if (!bank4.Contains(i) && placedrect[i].Y == 512)
+                        {
+                            List<int> addbank = bank4.ToList();
+                            addbank.Add(i);
+                            bank4 = addbank.ToArray();
+                            Array.Sort(bank4);
+                            row4++;
+                        }
+                        else if (!bank5.Contains(i) && placedrect[i].Y == 480)
+                        {
+                            List<int> addbank = bank5.ToList();
+                            addbank.Add(i);
+                            bank5 = addbank.ToArray();
+                            Array.Sort(bank5);
+                            row5++;
+                        }
+                        else if (!bank6.Contains(i) && placedrect[i].Y == 448)
+                        {
+                            List<int> addbank = bank6.ToList();
+                            addbank.Add(i);
+                            bank6 = addbank.ToArray();
+                            Array.Sort(bank6);
+                            row6++;
+                        }
+                        else if (!bank7.Contains(i) && placedrect[i].Y == 416)
+                        {
+                            List<int> addbank = bank7.ToList();
+                            addbank.Add(i);
+                            bank7 = addbank.ToArray();
+                            Array.Sort(bank7);
+                            row7++;
+                        }
+                        else if (!bank8.Contains(i) && placedrect[i].Y == 384)
+                        {
+                            List<int> addbank = bank8.ToList();
+                            addbank.Add(i);
+                            bank8 = addbank.ToArray();
+                            Array.Sort(bank8);
+                            row8++;
+                        }
+                        else if (!bank9.Contains(i) && placedrect[i].Y == 352)
+                        {
+                            List<int> addbank = bank9.ToList();
+                            addbank.Add(i);
+                            bank9 = addbank.ToArray();
+                            Array.Sort(bank9);
+                            row9++;
+                        }
+                        else if (!bank10.Contains(i) && placedrect[i].Y == 320)
+                        {
+                            List<int> addbank = bank10.ToList();
+                            addbank.Add(i);
+                            bank10 = addbank.ToArray();
+                            Array.Sort(bank10);
+                            row10++;
+                        }
+                        else if (!bank11.Contains(i) && placedrect[i].Y == 288)
+                        {
+                            List<int> addbank = bank11.ToList();
+                            addbank.Add(i);
+                            bank11 = addbank.ToArray();
+                            Array.Sort(bank11);
+                            row11++;
+                        }
+                        else if (!bank12.Contains(i) && placedrect[i].Y == 256)
+                        {
+                            List<int> addbank = bank12.ToList();
+                            addbank.Add(i);
+                            bank12 = addbank.ToArray();
+                            Array.Sort(bank12);
+                            row12++;
+                        }
+                        else if (!bank13.Contains(i) && placedrect[i].Y == 224)
+                        {
+                            List<int> addbank = bank13.ToList();
+                            addbank.Add(i);
+                            bank13 = addbank.ToArray();
+                            Array.Sort(bank13);
+                            row13++;
+                        }
+                        else if (!bank14.Contains(i) && placedrect[i].Y == 192)
+                        {
+                            List<int> addbank = bank14.ToList();
+                            addbank.Add(i);
+                            bank14 = addbank.ToArray();
+                            Array.Sort(bank14);
+                            row14++;
+                        }
+                        else if (!bank15.Contains(i) && placedrect[i].Y == 160)
+                        {
+                            List<int> addbank = bank15.ToList();
+                            addbank.Add(i);
+                            bank15 = addbank.ToArray();
+                            Array.Sort(bank15);
+                            row15++;
+                        }
+                        else if (!bank16.Contains(i) && placedrect[i].Y == 128)
+                        {
+                            List<int> addbank = bank16.ToList();
+                            addbank.Add(i);
+                            bank16 = addbank.ToArray();
+                            Array.Sort(bank16);
+                            row16++;
+                        }
+                        else if (!bank17.Contains(i) && placedrect[i].Y == 96)
+                        {
+                            List<int> addbank = bank17.ToList();
+                            addbank.Add(i);
+                            bank17 = addbank.ToArray();
+                            Array.Sort(bank17);
+                            row17++;
+                        }
+                        else if (!bank18.Contains(i) && placedrect[i].Y == 64)
+                        {
+                            List<int> addbank = bank18.ToList();
+                            addbank.Add(i);
+                            bank18 = addbank.ToArray();
+                            Array.Sort(bank18);
+                            row18++;
+                        }
+                        else if (!bank19.Contains(i) && placedrect[i].Y == 32)
+                        {
+                            List<int> addbank = bank19.ToList();
+                            addbank.Add(i);
+                            bank19 = addbank.ToArray();
+                            Array.Sort(bank19);
+                            row19++;
+                        }
+                        else if (!bank20.Contains(i) && placedrect[i].Y == 0)
+                        {
+                            List<int> addbank = bank20.ToList();
+                            addbank.Add(i);
+                            bank20 = addbank.ToArray();
+                            Array.Sort(bank20);
+                            row20++;
+                        }
+
+                    }
+            #endregion
+
+            #region Remove Row
+            /*
+             * 
+             * Yes, this is a mess but this is required to remove rows if they're full.
+             * 
+             * Each row contains it's own 'bank' which contains the placed rectangles on that Y level
+             * for each rectangle in the row, we add one, so once it equals 10 it passes to down here.
+             * 
+             * We check each row individually.
+             * 
+             */
+
+            try
+            {
+                if (row1 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank1[i]); // remove rectangles stored in bank array
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank1[i]); // remove color stored in bank array
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        placedrect[i].Y += 32; // move all remaining blocks down
+                    cleanUp(); // clean up
+                }
+                else if (row2 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank2[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank2[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 576)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row3 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank3[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank3[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 544)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row4 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank4[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank4[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 512)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row5 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank5[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank5[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 480)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row6 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank6[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank6[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 448)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row7 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank7[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank7[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 416)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row8 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank8[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank8[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 384)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row9 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank9[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank9[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 352)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row10 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank10[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank10[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 320)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row11 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank11[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank11[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 288)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row12 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank12[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank12[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 256)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row13 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank13[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank13[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 224)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row14 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank14[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank14[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 192)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row15 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank15[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank15[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 160)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row16 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank16[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank16[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 128)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row17 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank17[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank17[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 96)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row18 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank18[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank18[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 64)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row19 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank19[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank19[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (placedrect[i].Y < 32)
+                            placedrect[i].Y += 32;
+                    cleanUp();
+                }
+                else if (row20 == 10)
+                {
+                    List<Rectangle> createblock = placedrect.ToList();
+                    List<Brush> removecolor = storedColor.ToList();
+                    for (int i = 9; i >= 0; i--)
+                        createblock.RemoveAt(bank20[i]);
+                    for (int i = 9; i >= 0; i--)
+                        removecolor.RemoveAt(bank20[i]);
+                    placedrect = createblock.ToArray();
+                    storedColor = removecolor.ToArray();
+                    cleanUp();
+                }
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("" + bank1[1]);
+            }
+
+            #endregion
+
+            #region Collision
+
+            //player collision at the bottom of board, once reached duplicate player and reset player pos w/ new shape.
+            if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
+            {
+                confimTimer.Start();
+                if (!confirm)
+                    return;
+                gravityTimer.Stop(); // stop gravity
+                //reset player
+                bOne = new Rectangle();
+                bTwo = new Rectangle();
+                bThree = new Rectangle();
+                bFour = new Rectangle();
+
+                //we duplicate the four player rectangles pos
+                List<Rectangle> createblock = placedrect.ToList();
+                createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                placedrect = createblock.ToArray();
+
+                //we duplicate the shapes color
+                List<Brush> addcolor = storedColor.ToList();
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                storedColor = addcolor.ToArray();
+
+                //reset player pos
+                plyY = 0;
+                plyX = 160;
+
+                //generate random number between 1 and 7
+                currentBlock = nextShape;
+
+                //set player to what ever number was selected
+                if (currentBlock == 1)
+                {
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.Purple;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 2)
+                {
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 32;
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.Red;
+                    rotationAng = 1;
+
+                }
+                else if (currentBlock == 3)
+                {
+                    r1 = -32;
+                    r2 = -32;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Blue;
+                    rotationAng = 1;
+
+                }
+                else if (currentBlock == 4)
+                {
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 0;
+                    t2 = 64;
+                    t1 = 0;
+                    currentColor = Brushes.Cyan;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 5)
+                {
+                    r1 = 32;
+                    r2 = 32;
+                    l1 = 0;
+                    l2 = (-32);
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Yellow;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 6)
+                {
+                    r1 = 32;
+                    r2 = -32;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Gold;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 7)
+                {
+                    r1 = -32;
+                    r2 = 0;
+                    l1 = (-32);
+                    l2 = 32;
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.LimeGreen;
+                    rotationAng = 1;
+                }
+
+                playFall(); // play fall sound.
+                nextShape = rand.Next(1, 8);
+
+                gravityTimer.Start();// enable gravity
+                confimTimer.Stop();
+                confirm = false;
+                nextShapeBox.Invalidate();
+            }
+
+            // if player rectangle collides with placed rectangles
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                    || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                    || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                    || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                {
+                    confimTimer.Start();
+                    if (!confirm)
+                        return;
+
+                    if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
+                        return;
+
+                    gravityTimer.Stop(); // stop gravity
+
+                    //reset player
+                    bOne = new Rectangle();
+                    bTwo = new Rectangle();
+                    bThree = new Rectangle();
+                    bFour = new Rectangle();
+
+                    if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
+                    || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
+                    || !bThree.Contains(placedrect[i])
+                    || !bFour.Contains(placedrect[i]))
+                    {
+                        //duplicate player pos
+                        List<Rectangle> createblock = placedrect.ToList();
+                        createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                        createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                        createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                        createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                        placedrect = createblock.ToArray();
+                        //duplicate shapes color
+                        List<Brush> addcolor = storedColor.ToList();
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        storedColor = addcolor.ToArray();
+                    }
+
+                    //reset player pos
+                    plyY = 0;
+                    plyX = 160;
+
+                    //select random number for next shape
+                    currentBlock = nextShape;
+
+                    //set shape
+                    if (currentBlock == 1)
+                    {
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.Purple;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 2)
+                    {
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 32;
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.Red;
+                        rotationAng = 1;
+
+                    }
+                    else if (currentBlock == 3)
+                    {
+                        r1 = -32;
+                        r2 = -32;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Blue;
+                        rotationAng = 1;
+
+                    }
+                    else if (currentBlock == 4)
+                    {
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 0;
+                        t2 = 64;
+                        t1 = 0;
+                        currentColor = Brushes.Cyan;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 5)
+                    {
+                        r1 = 32;
+                        r2 = 32;
+                        l1 = 0;
+                        l2 = (-32);
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Yellow;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 6)
+                    {
+                        r1 = 32;
+                        r2 = -32;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Gold;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 7)
+                    {
+                        r1 = -32;
+                        r2 = 0;
+                        l1 = (-32);
+                        l2 = 32;
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.LimeGreen;
+                        rotationAng = 1;
+                    }
+
+                    nextShape = rand.Next(1, 8);
+                    playFall();// play fall sound
+
+                    gravityTimer.Start();// enable gravity
+
+                    confirm = false;
+                    confimTimer.Stop();
+                    nextShapeBox.Invalidate();
+                }
+
+            try
+            {
+                for (int i = placedrect.Length - 1; i > 1; i--)
+                    if (placedrect[i].Y == 0) // if placed rectangle reaches top of board, end game.
+                    {
+                        placedrect = new Rectangle[2];
+                        gravityTimer.Stop(); // stop gravity
+                        paused = true; // pause game
+                        stop = true; // stop music
+                        playMusic();
+                        startLabel.Show(); // show start button
+                        tetrisLogo.Show(); // show tetris logo
+                        gameBoard.Invalidate();
+                    }
+            }
+            catch (Exception) { }
+
+            #endregion
+        }
+
+        public void Update()
+        {
+            if (!connected)
+                return;
+
+            gamepad = controller.GetState().Gamepad;
+
+            leftThumb.X = (Math.Abs((float)gamepad.LeftThumbX) < deadband) ? 0 : (float)gamepad.LeftThumbX / short.MinValue * -100;
+            leftThumb.Y = (Math.Abs((float)gamepad.LeftThumbY) < deadband) ? 0 : (float)gamepad.LeftThumbY / short.MaxValue * 100;
+            rightThumb.Y = (Math.Abs((float)gamepad.RightThumbX) < deadband) ? 0 : (float)gamepad.RightThumbX / short.MaxValue * 100;
+            rightThumb.X = (Math.Abs((float)gamepad.RightThumbY) < deadband) ? 0 : (float)gamepad.RightThumbY / short.MaxValue * 100;
+
+
+            leftTrigger = gamepad.LeftTrigger;
+            rightTrigger = gamepad.RightTrigger;
+        }
+
+        private void ThumbStickTimer_Tick(object sender, EventArgs e)
+        {
+            if (connected)
+            {
+
+                if (leftThumb.X < -50 || gamepad.Buttons == GamepadButtonFlags.DPadLeft)
+                {
+                    moveLeft();
+                    gameBoard.Invalidate();
+                }
+
+                if (leftThumb.X > 50 || gamepad.Buttons == GamepadButtonFlags.DPadRight)
+                {
+                    moveRight();
+                    gameBoard.Invalidate();
+                }
+
+                if (leftThumb.Y < -80 || gamepad.Buttons == GamepadButtonFlags.DPadDown)
+                {
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                        if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                            || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                            || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                            || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                            return;
+                    if (paused)
+                        return;
+                    if (bOne.Y != 608 && bTwo.Y != 608
+                && bThree.Y != 608 && bFour.Y != 608)
+                    {
+                        plyY += 32;
+                        playMove();
+                    }
+                    gameBoard.Invalidate();
+                }
+            }
+            else
+            {
+                thumbStickTimer.Stop();
+                controllerButtonTimer.Stop();
+            }
+        }
+
+        private void ControllerButtonTimer_Tick(object sender, EventArgs e)
+        {
+            if (connected)
+            {
+                State stateNew = controller.GetState();
+                if (stateOld.Gamepad.Buttons != GamepadButtonFlags.A && stateNew.Gamepad.Buttons == GamepadButtonFlags.A)
+                {
+                    SendKeys.SendWait("{X}");
+                }
+
+                if (stateOld.Gamepad.Buttons != GamepadButtonFlags.Start && stateNew.Gamepad.Buttons == GamepadButtonFlags.Start)
+                {
+                    if(stop && paused)
+                    {
+                        gravityTimer.Start();
+                        paused = false;
+                        stop = false;
+                        playMusic();
+                        startLabel.Hide();
+                        tetrisLogo.Hide();
+                        resetGame();
+                        nextShapeBox.Invalidate();
+                    }
+                    else
+                    {
+                        if (paused == false)
+                        {
+                            gravityTimer.Stop();
+                            paused = true;
+                        }
+                        else if (paused && !stop)
+                        {
+                            gravityTimer.Start();
+                            paused = false;
+                        }
+                    }
+                }
+                stateOld = stateNew;
+            }
+        }
     }
 }

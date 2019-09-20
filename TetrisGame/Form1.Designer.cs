@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX.XInput;
+using System;
 using System.Drawing;
 using System.Drawing.Text;
 
@@ -39,9 +40,12 @@ namespace TetrisGame
             this.tetrisLogo = new System.Windows.Forms.PictureBox();
             this.lineLabel = new System.Windows.Forms.Label();
             this.scoreLabel = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.confimTimer = new System.Windows.Forms.Timer(this.components);
             this.startLabel = new System.Windows.Forms.Label();
             this.nextShapeBox = new System.Windows.Forms.PictureBox();
+            this.updateTimer = new System.Windows.Forms.Timer(this.components);
+            this.thumbStickTimer = new System.Windows.Forms.Timer(this.components);
+            this.controllerButtonTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).BeginInit();
@@ -110,10 +114,10 @@ namespace TetrisGame
             this.scoreLabel.TabIndex = 6;
             this.scoreLabel.Text = "0";
             // 
-            // timer1
+            // confimTimer
             // 
-            this.timer1.Interval = 150;
-            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
+            this.confimTimer.Interval = 300;
+            this.confimTimer.Tick += new System.EventHandler(this.Timer1_Tick);
             // 
             // startLabel
             // 
@@ -138,6 +142,24 @@ namespace TetrisGame
             this.nextShapeBox.TabIndex = 8;
             this.nextShapeBox.TabStop = false;
             this.nextShapeBox.Paint += new System.Windows.Forms.PaintEventHandler(this.NextShapeBox_Paint);
+            // 
+            // updateTimer
+            // 
+            this.updateTimer.Enabled = true;
+            this.updateTimer.Interval = 10;
+            this.updateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
+            // 
+            // thumbStickTimer
+            // 
+            this.thumbStickTimer.Enabled = true;
+            this.thumbStickTimer.Interval = 80;
+            this.thumbStickTimer.Tick += new System.EventHandler(this.ThumbStickTimer_Tick);
+            // 
+            // controllerButtonTimer
+            // 
+            this.controllerButtonTimer.Enabled = true;
+            this.controllerButtonTimer.Interval = 50;
+            this.controllerButtonTimer.Tick += new System.EventHandler(this.ControllerButtonTimer_Tick);
             // 
             // Form1
             // 
@@ -212,6 +234,14 @@ namespace TetrisGame
 
         int nextShape;
 
+        Controller controller;
+        Gamepad gamepad;
+        public bool connected = false;
+        public int deadband = 2500;
+        public System.Windows.Point leftThumb, rightThumb = new System.Windows.Point(0, 0);
+        public float leftTrigger, rightTrigger;
+        private State stateOld;
+
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
             IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
@@ -271,9 +301,12 @@ namespace TetrisGame
         private System.Windows.Forms.PictureBox tetrisLogo;
         private System.Windows.Forms.Label lineLabel;
         private System.Windows.Forms.Label scoreLabel;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer confimTimer;
         private System.Windows.Forms.Label startLabel;
         private System.Windows.Forms.PictureBox nextShapeBox;
+        private System.Windows.Forms.Timer updateTimer;
+        private System.Windows.Forms.Timer thumbStickTimer;
+        private System.Windows.Forms.Timer controllerButtonTimer;
     }
 }
 
