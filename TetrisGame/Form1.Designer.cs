@@ -223,8 +223,13 @@ namespace TetrisGame
 
         int plyX = 160;
         int plyY = 32;
+        int testY = 608;
         int nX = 34;
         int nY = 50;
+        Rectangle tOne;
+        Rectangle tTwo;
+        Rectangle tThree;
+        Rectangle tFour;
         Rectangle bOne;
         Rectangle bTwo;
         Rectangle bThree;

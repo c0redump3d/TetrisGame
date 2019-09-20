@@ -1396,6 +1396,7 @@ namespace TetrisGame
                     break;
                 case Keys.Z:
                 case Keys.X:
+                case Keys.Up:
                     if (!rotating)
                     {
                         rotating = true;
@@ -1451,6 +1452,7 @@ namespace TetrisGame
                     break;
                 case Keys.Z: 
                 case Keys.X:
+                case Keys.Up:
                     rotating = false;
                     break;
             }
