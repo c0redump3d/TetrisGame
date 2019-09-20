@@ -132,7 +132,7 @@ namespace TetrisGame
             // nextShapeBox
             // 
             this.nextShapeBox.BackColor = System.Drawing.Color.Transparent;
-            this.nextShapeBox.Location = new System.Drawing.Point(359, 355);
+            this.nextShapeBox.Location = new System.Drawing.Point(360, 384);
             this.nextShapeBox.Name = "nextShapeBox";
             this.nextShapeBox.Size = new System.Drawing.Size(100, 100);
             this.nextShapeBox.TabIndex = 8;

@@ -254,6 +254,7 @@ namespace TetrisGame
                             e.Graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
 
             }
+            
 
             #region Check Row
 
@@ -1383,7 +1384,15 @@ namespace TetrisGame
                     moveRight();
                     break;
                 case Keys.K:
-                    MessageBox.Show("" + nextShape);
+                    for (int i = placedrect.Length - 1; i > 0; i--)
+                    {
+
+                        if (bOne.X == placedrect[i].X)
+                        {
+                            plyY = placedrect[i].Y - 32;
+                        }
+
+                    }
                     break;
                 case Keys.Z:
                 case Keys.X:
