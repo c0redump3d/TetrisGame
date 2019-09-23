@@ -148,6 +148,9 @@ namespace TetrisGame
                 }
             }
             nextShape = rand.Next(1, 8);
+
+            if (connected)
+                MessageBox.Show("Controller detected! Please feel free to use the controller.");
         }
 
         private void NextShapeBox_Paint(object sender, PaintEventArgs e)
@@ -262,6 +265,295 @@ namespace TetrisGame
             //these 2 rectangles must be put off screen, they can interfere with gameplay
             placedrect[0].Y = 99999;
             placedrect[1].Y = 99999;
+
+
+            #region Collision
+
+            //player collision at the bottom of board, once reached duplicate player and reset player pos w/ new shape.
+            if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
+            {
+                confimTimer.Start();
+                if (!confirm)
+                    return;
+                gravityTimer.Stop(); // stop gravity
+                //reset player
+                bOne = new Rectangle();
+                bTwo = new Rectangle();
+                bThree = new Rectangle();
+                bFour = new Rectangle();
+
+                //we duplicate the four player rectangles pos
+                List<Rectangle> createblock = placedrect.ToList();
+                createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                placedrect = createblock.ToArray();
+
+                //we duplicate the shapes color
+                List<Brush> addcolor = storedColor.ToList();
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                addcolor.Add(currentColor);
+                storedColor = addcolor.ToArray();
+
+                //reset player pos
+                plyY = 0;
+                plyX = 160;
+
+                //generate random number between 1 and 7
+                currentBlock = nextShape;
+
+                //set player to what ever number was selected
+                if (currentBlock == 1)
+                {
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.Purple;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 2)
+                {
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 32;
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.Red;
+                    rotationAng = 1;
+
+                }
+                else if (currentBlock == 3)
+                {
+                    r1 = -32;
+                    r2 = -32;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Blue;
+                    rotationAng = 1;
+
+                }
+                else if (currentBlock == 4)
+                {
+                    r1 = 32;
+                    r2 = 0;
+                    l1 = 32;
+                    l2 = 0;
+                    t2 = 64;
+                    t1 = 0;
+                    currentColor = Brushes.Cyan;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 5)
+                {
+                    r1 = 32;
+                    r2 = 32;
+                    l1 = 0;
+                    l2 = (-32);
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Yellow;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 6)
+                {
+                    r1 = 32;
+                    r2 = -32;
+                    l1 = 32;
+                    l2 = 0;
+                    t1 = 0;
+                    t2 = 32;
+                    currentColor = Brushes.Gold;
+                    rotationAng = 1;
+                }
+                else if (currentBlock == 7)
+                {
+                    r1 = -32;
+                    r2 = 0;
+                    l1 = (-32);
+                    l2 = 32;
+                    t1 = 32;
+                    t2 = 0;
+                    currentColor = Brushes.LimeGreen;
+                    rotationAng = 1;
+                }
+
+                playFall(); // play fall sound.
+                nextShape = rand.Next(1, 8);
+
+                gravityTimer.Start();// enable gravity
+                confimTimer.Stop();
+                confirm = false;
+                nextShapeBox.Invalidate();
+            }
+
+            // if player rectangle collides with placed rectangles
+            for (int i = placedrect.Length - 1; i > 0; i--)
+                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                    || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                    || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                    || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                {
+                    confimTimer.Start();
+                    if (!confirm)
+                        return;
+
+                    if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
+                        return;
+
+                    gravityTimer.Stop(); // stop gravity
+
+                    //reset player
+                    bOne = new Rectangle();
+                    bTwo = new Rectangle();
+                    bThree = new Rectangle();
+                    bFour = new Rectangle();
+
+                    if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
+                    || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
+                    || !bThree.Contains(placedrect[i])
+                    || !bFour.Contains(placedrect[i]))
+                    {
+                        //duplicate player pos
+                        List<Rectangle> createblock = placedrect.ToList();
+                        createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                        createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                        createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                        createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                        placedrect = createblock.ToArray();
+                        //duplicate shapes color
+                        List<Brush> addcolor = storedColor.ToList();
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        addcolor.Add(currentColor);
+                        storedColor = addcolor.ToArray();
+                    }
+
+                    //reset player pos
+                    plyY = 0;
+                    plyX = 160;
+
+                    //select random number for next shape
+                    currentBlock = nextShape;
+
+                    //set shape
+                    if (currentBlock == 1)
+                    {
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.Purple;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 2)
+                    {
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 32;
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.Red;
+                        rotationAng = 1;
+
+                    }
+                    else if (currentBlock == 3)
+                    {
+                        r1 = -32;
+                        r2 = -32;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Blue;
+                        rotationAng = 1;
+
+                    }
+                    else if (currentBlock == 4)
+                    {
+                        r1 = 32;
+                        r2 = 0;
+                        l1 = 32;
+                        l2 = 0;
+                        t2 = 64;
+                        t1 = 0;
+                        currentColor = Brushes.Cyan;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 5)
+                    {
+                        r1 = 32;
+                        r2 = 32;
+                        l1 = 0;
+                        l2 = (-32);
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Yellow;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 6)
+                    {
+                        r1 = 32;
+                        r2 = -32;
+                        l1 = 32;
+                        l2 = 0;
+                        t1 = 0;
+                        t2 = 32;
+                        currentColor = Brushes.Gold;
+                        rotationAng = 1;
+                    }
+                    else if (currentBlock == 7)
+                    {
+                        r1 = -32;
+                        r2 = 0;
+                        l1 = (-32);
+                        l2 = 32;
+                        t1 = 32;
+                        t2 = 0;
+                        currentColor = Brushes.LimeGreen;
+                        rotationAng = 1;
+                    }
+
+                    nextShape = rand.Next(1, 8);
+                    playFall();// play fall sound
+
+                    gravityTimer.Start();// enable gravity
+
+                    confirm = false;
+                    confimTimer.Stop();
+                    nextShapeBox.Invalidate();
+                }
+
+            try
+            {
+                for (int i = placedrect.Length - 1; i > 1; i--)
+                    if (placedrect[i].Y == 0) // if placed rectangle reaches top of board, end game.
+                    {
+                        placedrect = new Rectangle[2];
+                        gravityTimer.Stop(); // stop gravity
+                        paused = true; // pause game
+                        stop = true; // stop music
+                        playMusic();
+                        startLabel.Show(); // show start button
+                        tetrisLogo.Show(); // show tetris logo
+                        gameBoard.Invalidate();
+                    }
+            }
+            catch (Exception) { }
+
+            #endregion
 
             #region labels
             /*
@@ -578,6 +870,7 @@ namespace TetrisGame
                     {
                         plyY += 32;
                         playMove();
+                        movingDown = true;
                     }
                     break;
                 case Keys.Escape:
@@ -657,6 +950,7 @@ namespace TetrisGame
                 case Keys.S:
                 case Keys.Down:
                     confirm = false;
+                    movingDown = false;
                     break;
                 case Keys.Z: 
                 case Keys.X:
@@ -1096,7 +1390,7 @@ namespace TetrisGame
                 }
 
             if (bOne.Y != 608 && bTwo.Y != 608
-            && bThree.Y != 608 && bFour.Y != 608) // make sure we aren't at the bottom of the board.
+            && bThree.Y != 608 && bFour.Y != 608 && !movingDown) // make sure we aren't at the bottom of the board.
                 plyY += 32;
 
             gameBoard.Invalidate();
@@ -1628,293 +1922,6 @@ namespace TetrisGame
 
             #endregion
 
-            #region Collision
-
-            //player collision at the bottom of board, once reached duplicate player and reset player pos w/ new shape.
-            if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
-            {
-                confimTimer.Start();
-                if (!confirm)
-                    return;
-                gravityTimer.Stop(); // stop gravity
-                //reset player
-                bOne = new Rectangle();
-                bTwo = new Rectangle();
-                bThree = new Rectangle();
-                bFour = new Rectangle();
-
-                //we duplicate the four player rectangles pos
-                List<Rectangle> createblock = placedrect.ToList();
-                createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                placedrect = createblock.ToArray();
-
-                //we duplicate the shapes color
-                List<Brush> addcolor = storedColor.ToList();
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                storedColor = addcolor.ToArray();
-
-                //reset player pos
-                plyY = 0;
-                plyX = 160;
-
-                //generate random number between 1 and 7
-                currentBlock = nextShape;
-
-                //set player to what ever number was selected
-                if (currentBlock == 1)
-                {
-                    r1 = 32;
-                    r2 = 0;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 32;
-                    t2 = 0;
-                    currentColor = Brushes.Purple;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 2)
-                {
-                    r1 = 32;
-                    r2 = 0;
-                    l1 = 32;
-                    l2 = 32;
-                    t1 = 32;
-                    t2 = 0;
-                    currentColor = Brushes.Red;
-                    rotationAng = 1;
-
-                }
-                else if (currentBlock == 3)
-                {
-                    r1 = -32;
-                    r2 = -32;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 0;
-                    t2 = 32;
-                    currentColor = Brushes.Blue;
-                    rotationAng = 1;
-
-                }
-                else if (currentBlock == 4)
-                {
-                    r1 = 32;
-                    r2 = 0;
-                    l1 = 32;
-                    l2 = 0;
-                    t2 = 64;
-                    t1 = 0;
-                    currentColor = Brushes.Cyan;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 5)
-                {
-                    r1 = 32;
-                    r2 = 32;
-                    l1 = 0;
-                    l2 = (-32);
-                    t1 = 0;
-                    t2 = 32;
-                    currentColor = Brushes.Yellow;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 6)
-                {
-                    r1 = 32;
-                    r2 = -32;
-                    l1 = 32;
-                    l2 = 0;
-                    t1 = 0;
-                    t2 = 32;
-                    currentColor = Brushes.Gold;
-                    rotationAng = 1;
-                }
-                else if (currentBlock == 7)
-                {
-                    r1 = -32;
-                    r2 = 0;
-                    l1 = (-32);
-                    l2 = 32;
-                    t1 = 32;
-                    t2 = 0;
-                    currentColor = Brushes.LimeGreen;
-                    rotationAng = 1;
-                }
-
-                playFall(); // play fall sound.
-                nextShape = rand.Next(1, 8);
-
-                gravityTimer.Start();// enable gravity
-                confimTimer.Stop();
-                confirm = false;
-                nextShapeBox.Invalidate();
-            }
-
-            // if player rectangle collides with placed rectangles
-            for (int i = placedrect.Length - 1; i > 0; i--)
-                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
-                    || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
-                    || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
-                    || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
-                {
-                    confimTimer.Start();
-                    if (!confirm)
-                        return;
-
-                    if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
-                        return;
-
-                    gravityTimer.Stop(); // stop gravity
-
-                    //reset player
-                    bOne = new Rectangle();
-                    bTwo = new Rectangle();
-                    bThree = new Rectangle();
-                    bFour = new Rectangle();
-
-                    if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
-                    || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
-                    || !bThree.Contains(placedrect[i])
-                    || !bFour.Contains(placedrect[i]))
-                    {
-                        //duplicate player pos
-                        List<Rectangle> createblock = placedrect.ToList();
-                        createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                        createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                        createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                        createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                        placedrect = createblock.ToArray();
-                        //duplicate shapes color
-                        List<Brush> addcolor = storedColor.ToList();
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        storedColor = addcolor.ToArray();
-                    }
-
-                    //reset player pos
-                    plyY = 0;
-                    plyX = 160;
-
-                    //select random number for next shape
-                    currentBlock = nextShape;
-
-                    //set shape
-                    if (currentBlock == 1)
-                    {
-                        r1 = 32;
-                        r2 = 0;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 32;
-                        t2 = 0;
-                        currentColor = Brushes.Purple;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 2)
-                    {
-                        r1 = 32;
-                        r2 = 0;
-                        l1 = 32;
-                        l2 = 32;
-                        t1 = 32;
-                        t2 = 0;
-                        currentColor = Brushes.Red;
-                        rotationAng = 1;
-
-                    }
-                    else if (currentBlock == 3)
-                    {
-                        r1 = -32;
-                        r2 = -32;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 0;
-                        t2 = 32;
-                        currentColor = Brushes.Blue;
-                        rotationAng = 1;
-
-                    }
-                    else if (currentBlock == 4)
-                    {
-                        r1 = 32;
-                        r2 = 0;
-                        l1 = 32;
-                        l2 = 0;
-                        t2 = 64;
-                        t1 = 0;
-                        currentColor = Brushes.Cyan;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 5)
-                    {
-                        r1 = 32;
-                        r2 = 32;
-                        l1 = 0;
-                        l2 = (-32);
-                        t1 = 0;
-                        t2 = 32;
-                        currentColor = Brushes.Yellow;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 6)
-                    {
-                        r1 = 32;
-                        r2 = -32;
-                        l1 = 32;
-                        l2 = 0;
-                        t1 = 0;
-                        t2 = 32;
-                        currentColor = Brushes.Gold;
-                        rotationAng = 1;
-                    }
-                    else if (currentBlock == 7)
-                    {
-                        r1 = -32;
-                        r2 = 0;
-                        l1 = (-32);
-                        l2 = 32;
-                        t1 = 32;
-                        t2 = 0;
-                        currentColor = Brushes.LimeGreen;
-                        rotationAng = 1;
-                    }
-
-                    nextShape = rand.Next(1, 8);
-                    playFall();// play fall sound
-
-                    gravityTimer.Start();// enable gravity
-
-                    confirm = false;
-                    confimTimer.Stop();
-                    nextShapeBox.Invalidate();
-                }
-
-            try
-            {
-                for (int i = placedrect.Length - 1; i > 1; i--)
-                    if (placedrect[i].Y == 0) // if placed rectangle reaches top of board, end game.
-                    {
-                        placedrect = new Rectangle[2];
-                        gravityTimer.Stop(); // stop gravity
-                        paused = true; // pause game
-                        stop = true; // stop music
-                        playMusic();
-                        startLabel.Show(); // show start button
-                        tetrisLogo.Show(); // show tetris logo
-                        gameBoard.Invalidate();
-                    }
-            }
-            catch (Exception) { }
-
-            #endregion
         }
 
         public void Update()
@@ -1965,9 +1972,14 @@ namespace TetrisGame
                 && bThree.Y != 608 && bFour.Y != 608)
                     {
                         plyY += 32;
+                        movingDown = true;
                         playMove();
                     }
                     gameBoard.Invalidate();
+                }
+                else
+                {
+                    movingDown = false;
                 }
             }
             else

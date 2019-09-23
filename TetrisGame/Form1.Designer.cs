@@ -146,7 +146,7 @@ namespace TetrisGame
             // updateTimer
             // 
             this.updateTimer.Enabled = true;
-            this.updateTimer.Interval = 10;
+            this.updateTimer.Interval = 1;
             this.updateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
             // 
             // thumbStickTimer
@@ -241,6 +241,8 @@ namespace TetrisGame
         public System.Windows.Point leftThumb, rightThumb = new System.Windows.Point(0, 0);
         public float leftTrigger, rightTrigger;
         private State stateOld;
+
+        private bool movingDown = false;
 
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
