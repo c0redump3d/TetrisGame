@@ -49,9 +49,12 @@ namespace TetrisGame
             this.selectedLevelLabel = new System.Windows.Forms.Label();
             this.rightArrowLabel = new System.Windows.Forms.Label();
             this.leftArrowLabel = new System.Windows.Forms.Label();
+            this.githubLink = new System.Windows.Forms.PictureBox();
+            this.createdByLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.githubLink)).BeginInit();
             this.SuspendLayout();
             // 
             // gravityTimer
@@ -85,9 +88,9 @@ namespace TetrisGame
             // tetrisLogo
             // 
             this.tetrisLogo.BackColor = System.Drawing.Color.Transparent;
-            this.tetrisLogo.Location = new System.Drawing.Point(58, 29);
+            this.tetrisLogo.Location = new System.Drawing.Point(20, 17);
             this.tetrisLogo.Name = "tetrisLogo";
-            this.tetrisLogo.Size = new System.Drawing.Size(265, 200);
+            this.tetrisLogo.Size = new System.Drawing.Size(321, 300);
             this.tetrisLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.tetrisLogo.TabIndex = 4;
             this.tetrisLogo.TabStop = false;
@@ -204,11 +207,38 @@ namespace TetrisGame
             this.leftArrowLabel.Text = "<";
             this.leftArrowLabel.Click += new System.EventHandler(this.leftArrowLabel_Click);
             // 
+            // githubLink
+            // 
+            this.githubLink.BackColor = System.Drawing.Color.Transparent;
+            this.githubLink.BackgroundImage = global::TetrisGame.Properties.Resources.GitHub_Mark_64px;
+            this.githubLink.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.githubLink.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.githubLink.Location = new System.Drawing.Point(300, 617);
+            this.githubLink.Name = "githubLink";
+            this.githubLink.Size = new System.Drawing.Size(32, 32);
+            this.githubLink.TabIndex = 12;
+            this.githubLink.TabStop = false;
+            this.githubLink.Click += new System.EventHandler(this.GithubLink_Click);
+            // 
+            // createdByLabel
+            // 
+            this.createdByLabel.AutoSize = true;
+            this.createdByLabel.BackColor = System.Drawing.Color.Transparent;
+            this.createdByLabel.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.createdByLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.createdByLabel.Location = new System.Drawing.Point(168, 635);
+            this.createdByLabel.Name = "createdByLabel";
+            this.createdByLabel.Size = new System.Drawing.Size(130, 14);
+            this.createdByLabel.TabIndex = 13;
+            this.createdByLabel.Text = "Created by Carson Kelley";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 674);
+            this.Controls.Add(this.createdByLabel);
+            this.Controls.Add(this.githubLink);
             this.Controls.Add(this.leftArrowLabel);
             this.Controls.Add(this.rightArrowLabel);
             this.Controls.Add(this.selectedLevelLabel);
@@ -228,6 +258,7 @@ namespace TetrisGame
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.githubLink)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -276,6 +307,8 @@ namespace TetrisGame
         private System.Windows.Forms.Label selectedLevelLabel;
         private System.Windows.Forms.Label rightArrowLabel;
         private System.Windows.Forms.Label leftArrowLabel;
+        private System.Windows.Forms.PictureBox githubLink;
+        private System.Windows.Forms.Label createdByLabel;
     }
 }
 

@@ -754,7 +754,7 @@ namespace TetrisGame
                 t1 = 32;
                 t2 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 2)
             {
@@ -771,7 +771,7 @@ namespace TetrisGame
                 t2 = 64;
                 t1 = 0;
                 rotationAng = 1;
-                
+
             }
         }
 
@@ -812,7 +812,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 2)
             {
@@ -836,7 +836,7 @@ namespace TetrisGame
                 t1 = -t2;
                 t2 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 3)
             {
@@ -851,7 +851,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng = 2;
-                
+
             }
         }
 
@@ -882,7 +882,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 2)
             {
@@ -897,7 +897,7 @@ namespace TetrisGame
                 t1 = t2;
                 t2 = 0;
                 rotationAng = 1;
-                
+
             }
         }
 
@@ -928,7 +928,7 @@ namespace TetrisGame
                 t2 = t1;
                 t1 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 2)
             {
@@ -943,7 +943,7 @@ namespace TetrisGame
                 t1 = t2;
                 t2 = 0;
                 rotationAng = 1;
-                
+
             }
         }
 
@@ -975,7 +975,7 @@ namespace TetrisGame
                 t2 = 32;
                 t1 = 32;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 2)
             {
@@ -990,7 +990,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 3)
             {
@@ -1005,7 +1005,7 @@ namespace TetrisGame
                 t1 = (-32);
                 t2 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 4)
             {
@@ -1020,7 +1020,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng = 1;
-                
+
             }
         }
 
@@ -1052,7 +1052,7 @@ namespace TetrisGame
                 t2 = 32;
                 t1 = (-32);
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 2)
             {
@@ -1067,7 +1067,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 3)
             {
@@ -1082,7 +1082,7 @@ namespace TetrisGame
                 t1 = (-32);
                 t2 = 0;
                 rotationAng++;
-                
+
             }
             else if (rotationAng == 4)
             {
@@ -1097,7 +1097,7 @@ namespace TetrisGame
                 t1 = 0;
                 t2 = 32;
                 rotationAng = 1;
-                
+
             }
         }
 

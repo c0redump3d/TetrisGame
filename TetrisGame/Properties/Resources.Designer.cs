@@ -81,6 +81,16 @@ namespace TetrisGame.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GitHub_Mark_64px {
+            get {
+                object obj = ResourceManager.GetObject("GitHub-Mark-64px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap gui {
             get {
                 object obj = ResourceManager.GetObject("gui", resourceCulture);
@@ -154,16 +164,6 @@ namespace TetrisGame.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap tetris_logo {
-            get {
-                object obj = ResourceManager.GetObject("tetris_logo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
         internal static System.IO.UnmanagedMemoryStream tetris_loop {
@@ -179,6 +179,16 @@ namespace TetrisGame.Properties {
             get {
                 object obj = ResourceManager.GetObject("tetrisico", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tetrislogo {
+            get {
+                object obj = ResourceManager.GetObject("tetrislogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

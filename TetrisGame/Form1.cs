@@ -1,5 +1,6 @@
 using SharpDX.XInput;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -41,7 +42,7 @@ namespace TetrisGame
             rightArrowLabel.Font = new Font(hoogfont24, FontStyle.Regular);
             leftArrowLabel.Font = new Font(hoogfont24, FontStyle.Regular);
 
-            tetrisLogo.Image = Properties.Resources.tetris_logo;
+            tetrisLogo.Image = Properties.Resources.tetrislogo;
             this.BackgroundImage = Properties.Resources.gui;
 
 
@@ -75,17 +76,20 @@ namespace TetrisGame
 
             try
             {
-                if (tetris.HitTop()) {
-                        gravityTimer.Stop(); // stop gravity
-                        paused = true; // pause game
-                        stop = true; // stop music
-                        sfx.playMusic(ref stop);
-                        startLabel.Show(); // show start button
-                        tetrisLogo.Show(); // show tetris logo
-                        selectedLevelLabel.Show();
-                        leftArrowLabel.Show();
-                        rightArrowLabel.Show();
-                        gameBoard.Invalidate();
+                if (tetris.HitTop())
+                {
+                    gravityTimer.Stop(); // stop gravity
+                    paused = true; // pause game
+                    stop = true; // stop music
+                    sfx.playMusic(ref stop);
+                    startLabel.Show(); // show start button
+                    tetrisLogo.Show(); // show tetris logo
+                    selectedLevelLabel.Show();
+                    leftArrowLabel.Show();
+                    rightArrowLabel.Show();
+                    githubLink.Show();
+                    createdByLabel.Show();
+                    gameBoard.Invalidate();
                 }
             }
             catch (Exception) { }
@@ -460,6 +464,8 @@ namespace TetrisGame
                         leftArrowLabel.Hide();
                         rightArrowLabel.Hide();
                         tetrisLogo.Hide();
+                        githubLink.Hide();
+                        createdByLabel.Hide();
                         resetGame();
                         nextShapeBox.Invalidate();
                     }
@@ -504,6 +510,7 @@ namespace TetrisGame
 
             selectedLevelLabel.Text = "LEVEL " + selectedLevel;
         }
+
         private void StartLabel_Click(object sender, EventArgs e)
         {
             //hides labels, starts timers and starts to play music
@@ -516,8 +523,15 @@ namespace TetrisGame
             leftArrowLabel.Hide();
             rightArrowLabel.Hide();
             tetrisLogo.Hide();
+            githubLink.Hide();
+            createdByLabel.Hide();
             resetGame();
             nextShapeBox.Invalidate();
+        }
+
+        private void GithubLink_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/StrugglingDoge/TetrisGame");
         }
 
         #endregion
