@@ -20,6 +20,7 @@ namespace TetrisGame
         Rectangle[] rows;
 
         SFX sfx;
+        Prediction predict;
         RowCheck checkRow;
 
         int rotationAng = 1; // 1 default
@@ -61,6 +62,7 @@ namespace TetrisGame
         {
             sfx = new SFX();
             checkRow = new RowCheck();
+            predict = new Prediction(this);
 
             //setup rows, placedrectangles, etc
             placedrect = new Rectangle[2];
@@ -89,6 +91,16 @@ namespace TetrisGame
             }
 
             nextShape = rand.Next(1, 8);
+        }
+
+        public int getShape()
+        {
+            return currentBlock;
+        }
+
+        public int rotationAngle()
+        {
+            return rotationAng;
         }
 
         #region Player
@@ -160,6 +172,7 @@ namespace TetrisGame
                 plyX = 160;
 
                 currentBlock = nextShape;
+                predict.reset(ref placedrect);
 
                 //set player to what ever number was selected
                 setShape();
@@ -223,6 +236,7 @@ namespace TetrisGame
 
                     //select random number for next shape
                     currentBlock = nextShape;
+                    predict.reset(ref placedrect);
 
                     //set shape
                     setShape();
@@ -236,6 +250,14 @@ namespace TetrisGame
                     confirmTimer.Stop();
                     nextShapeBox.Invalidate();
                 }
+        }
+
+        public void instantFall()
+        {
+            if (predict.isStopped())
+            {
+                plyY = predict.getY();
+            }
         }
 
         /// <summary>
@@ -256,6 +278,8 @@ namespace TetrisGame
             graphics.FillRectangle(currentColor, bTwo);
             graphics.FillRectangle(currentColor, bThree);
             graphics.FillRectangle(currentColor, bFour);
+
+            predict.Draw(graphics);
 
             //if rows contain player or placed rect, draw grid
             for (int j = rows.Length - 1; j > 0; j--)
@@ -371,6 +395,34 @@ namespace TetrisGame
             if (bOne.Y != 608 && bTwo.Y != 608
             && bThree.Y != 608 && bFour.Y != 608 && !movingDown) // make sure we aren't at the bottom of the board.
                 plyY += 32;
+        }
+
+        public void update(ref bool paused, ref PictureBox gameBoard)
+        {
+            if (paused)
+                return;
+
+            int x2 = bTwo.X;
+            int x3 = bThree.X;
+            int x4 = bFour.X;
+
+            predict.Gravity(ref placedrect, ref gameBoard);
+            predict.blockCollision(ref plyX, ref x2, ref x3, ref x4, ref placedrect);
+
+            gameBoard.Invalidate();
+        }
+
+        public void predictUpdate(ref PictureBox gameBoard)
+        {
+
+            int x2 = bTwo.X;
+            int x3 = bThree.X;
+            int x4 = bFour.X;
+
+            predict.Gravity(ref placedrect, ref gameBoard);
+            predict.blockCollision(ref plyX, ref x2, ref x3, ref x4, ref placedrect);
+
+            gameBoard.Invalidate();
         }
 
         /// <summary>
@@ -563,6 +615,11 @@ namespace TetrisGame
 
         #endregion
 
+        public int getY()
+        {
+            return plyY;
+        }
+
         #region Controller
 
         public void joystickDown(ref bool movingDown)
@@ -606,6 +663,8 @@ namespace TetrisGame
                 }
             if (paused)
                 return;
+            predict.reset(ref placedrect);
+
             plyX += 32;
             sfx.playMove();
 
@@ -631,6 +690,8 @@ namespace TetrisGame
                 }
             if (paused)
                 return;
+
+            predict.reset(ref placedrect);
 
             plyX -= 32;
             sfx.playMove();
@@ -724,8 +785,28 @@ namespace TetrisGame
             {
                 rotateSblock();
             }
+            int x2 = bTwo.X;
+            int x3 = bThree.X;
+            int x4 = bFour.X;
+            int y2 = bTwo.Y;
+            int y3 = bThree.Y;
+            int y4 = bFour.Y;
+            predict.reset(ref placedrect);
         }
 
+        public int getr2()
+        {
+            return r2;
+        }
+
+        public int getl2()
+        {
+            return l2;
+        }
+        public int gett1()
+        {
+            return t1;
+        }
         /// <summary>
         /// Rotates I block(4).
         /// </summary>

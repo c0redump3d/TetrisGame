@@ -339,7 +339,10 @@ namespace TetrisGame
                         sfx.playRotate();
                     }
                     break;
-
+                case Keys.C:
+                    tetris.instantFall();
+                    confirm = true;
+                    break;
             }
 
             gameBoard.Invalidate();
@@ -353,6 +356,12 @@ namespace TetrisGame
                 case Keys.Down:
                     confirm = false;
                     movingDown = false;
+                    break;
+                case Keys.Left:
+                case Keys.A:
+                case Keys.Right:
+                case Keys.D:
+                    confirm = false;
                     break;
                 case Keys.Z: 
                 case Keys.X:
@@ -383,6 +392,8 @@ namespace TetrisGame
         {
             if (gamepad.isConnected())
                 gamepad.ControllerUpdate();
+
+            tetris.update(ref paused, ref gameBoard);
 
             #region Check Row
 
