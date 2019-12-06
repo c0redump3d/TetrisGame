@@ -93,16 +93,6 @@ namespace TetrisGame
             nextShape = rand.Next(1, 8);
         }
 
-        public int getShape()
-        {
-            return currentBlock;
-        }
-
-        public int rotationAngle()
-        {
-            return rotationAng;
-        }
-
         #region Player
 
         /// <summary>
@@ -131,7 +121,7 @@ namespace TetrisGame
         /// <param name="gravityTimer"></param>
         /// <param name="confirm"></param>
         /// <param name="nextShapeBox"></param>
-        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox)
+        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop)
         {
 
             //these 2 rectangles must be put off screen, they can interfere with gameplay
@@ -172,17 +162,22 @@ namespace TetrisGame
                 plyX = 160;
 
                 currentBlock = nextShape;
-                predict.reset(ref placedrect);
+                predict.reset();
 
                 //set player to what ever number was selected
                 setShape();
 
-                sfx.playFall(); // play fall sound.
+                if (hardDrop)
+                    sfx.playHardDrop();
+                else
+                    sfx.playFall(); // play fall sound.
+
                 //generate random number between 1 and 7
                 nextShape = rand.Next(1, 8);
 
                 gravityTimer.Start();// enable gravity
                 confirmTimer.Stop();
+                hardDrop = false;
                 confirm = false;
                 nextShapeBox.Invalidate();
             }
@@ -236,17 +231,22 @@ namespace TetrisGame
 
                     //select random number for next shape
                     currentBlock = nextShape;
-                    predict.reset(ref placedrect);
+                    predict.reset();
 
                     //set shape
                     setShape();
 
                     nextShape = rand.Next(1, 8);
-                    sfx.playFall();// play fall sound
+
+                    if (hardDrop)
+                        sfx.playHardDrop();
+                    else
+                        sfx.playFall(); // play fall sound.
 
                     gravityTimer.Start();// enable gravity
 
                     confirm = false;
+                    hardDrop = false;
                     confirmTimer.Stop();
                     nextShapeBox.Invalidate();
                 }
@@ -266,6 +266,7 @@ namespace TetrisGame
         /// <param name="graphics"></param>
         public void Draw(Graphics graphics)
         {
+
             for (int i = placedrect.Length - 1; i > 0; i--)
                 graphics.FillRectangle(storedColor[i], placedrect[i]);
 
@@ -279,14 +280,14 @@ namespace TetrisGame
             graphics.FillRectangle(currentColor, bThree);
             graphics.FillRectangle(currentColor, bFour);
 
-            predict.Draw(graphics);
-
             //if rows contain player or placed rect, draw grid
             for (int j = rows.Length - 1; j > 0; j--)
                 for (int i = placedrect.Length - 1; i > 0; i--)
                     if (bOne.X == rows[j].X && bOne.Y == rows[j].Y || bTwo.X == rows[j].X && bTwo.Y == rows[j].Y || bThree.X == rows[j].X && bThree.Y == rows[j].Y
                     || bFour.X == rows[j].X && bFour.Y == rows[j].Y || placedrect[i].X == rows[j].X && placedrect[i].Y == rows[j].Y)
                         graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
+
+            predict.Draw(graphics, bOne, bTwo, bThree, bFour, currentColor);
         }
 
         /// <summary>
@@ -412,19 +413,6 @@ namespace TetrisGame
             gameBoard.Invalidate();
         }
 
-        public void predictUpdate(ref PictureBox gameBoard)
-        {
-
-            int x2 = bTwo.X;
-            int x3 = bThree.X;
-            int x4 = bFour.X;
-
-            predict.Gravity(ref placedrect, ref gameBoard);
-            predict.blockCollision(ref plyX, ref x2, ref x3, ref x4, ref placedrect);
-
-            gameBoard.Invalidate();
-        }
-
         /// <summary>
         /// Resets rectangle array and color array.
         /// </summary>
@@ -437,6 +425,11 @@ namespace TetrisGame
             addcolor.Add(currentColor);
             addcolor.Add(currentColor);
             storedColor = addcolor.ToArray();
+        }
+
+        public int getY()
+        {
+            return plyY;
         }
 
         #endregion
@@ -615,10 +608,6 @@ namespace TetrisGame
 
         #endregion
 
-        public int getY()
-        {
-            return plyY;
-        }
 
         #region Controller
 
@@ -663,7 +652,7 @@ namespace TetrisGame
                 }
             if (paused)
                 return;
-            predict.reset(ref placedrect);
+            predict.reset();
 
             plyX += 32;
             sfx.playMove();
@@ -691,7 +680,7 @@ namespace TetrisGame
             if (paused)
                 return;
 
-            predict.reset(ref placedrect);
+            predict.reset();
 
             plyX -= 32;
             sfx.playMove();
@@ -791,7 +780,7 @@ namespace TetrisGame
             int y2 = bTwo.Y;
             int y3 = bThree.Y;
             int y4 = bFour.Y;
-            predict.reset(ref placedrect);
+            predict.reset();
         }
 
         public int getr2()

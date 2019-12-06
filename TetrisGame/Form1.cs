@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TetrisGame
@@ -18,6 +19,7 @@ namespace TetrisGame
             sfx = new SFX();
             gamepad = new GamepadSupport();
             tetris = new Tetris();
+
 
             this.Icon = Properties.Resources.tetrisico; // set icon
 
@@ -45,7 +47,6 @@ namespace TetrisGame
             tetrisLogo.Image = Properties.Resources.tetrislogo;
             this.BackgroundImage = Properties.Resources.gui;
 
-
             gravityTimer.Stop();
             paused = true;
 
@@ -72,7 +73,7 @@ namespace TetrisGame
 
             #region Collision
 
-            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox);
+            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox, ref hardDrop);
 
             try
             {
@@ -340,6 +341,7 @@ namespace TetrisGame
                     }
                     break;
                 case Keys.C:
+                    hardDrop = true;
                     tetris.instantFall();
                     confirm = true;
                     break;

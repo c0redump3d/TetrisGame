@@ -290,6 +290,7 @@ namespace TetrisGame
         int points = 40;
         bool confirm = false;
         bool remove = false;
+        bool hardDrop = false;
         private bool paused = false;
         private bool rotating = false;
         private bool stop = true;
