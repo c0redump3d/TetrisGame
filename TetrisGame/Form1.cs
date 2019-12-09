@@ -20,7 +20,6 @@ namespace TetrisGame
             gamepad = new GamepadSupport();
             tetris = new Tetris();
 
-
             this.Icon = Properties.Resources.tetrisico; // set icon
 
             //add custom font
@@ -245,6 +244,11 @@ namespace TetrisGame
             gameBoard.Invalidate();
         }
 
+        public static bool isMuted()
+        {
+            return changedMute;
+        }
+
         private void resetGame()
         {
             //reset stats
@@ -341,7 +345,10 @@ namespace TetrisGame
                     }
                     break;
                 case Keys.C:
+                    if (fastFall)
+                        return;
                     hardDrop = true;
+                    fastFall = true;
                     tetris.instantFall();
                     confirm = true;
                     break;
@@ -369,6 +376,9 @@ namespace TetrisGame
                 case Keys.X:
                 case Keys.Up:
                     rotating = false;
+                    break;
+                case Keys.C:
+                    fastFall = false;
                     break;
             }
         }
@@ -545,6 +555,23 @@ namespace TetrisGame
         private void GithubLink_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/StrugglingDoge/TetrisGame");
+        }
+
+        private void SoundBox_Click(object sender, EventArgs e)
+        {
+            if (changedMute)
+            {
+                soundBox.Image = Properties.Resources.unMute;
+                changedMute = false;
+                sfx.playMusic(ref stop);
+                return;
+            }
+            else if (soundBox.Image != Properties.Resources.Mute && !changedMute)
+            {
+                changedMute = true;
+                soundBox.Image = Properties.Resources.Mute;
+                sfx.playMusic(ref stop);
+            }
         }
 
         #endregion

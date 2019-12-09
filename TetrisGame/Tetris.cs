@@ -287,7 +287,7 @@ namespace TetrisGame
                     || bFour.X == rows[j].X && bFour.Y == rows[j].Y || placedrect[i].X == rows[j].X && placedrect[i].Y == rows[j].Y)
                         graphics.DrawRectangle(new Pen(Color.Black), rows[j]);
 
-            predict.Draw(graphics, bOne, bTwo, bThree, bFour, currentColor);
+            predict.Draw(graphics, currentColor);
         }
 
         /// <summary>

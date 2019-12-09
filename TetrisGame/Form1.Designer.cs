@@ -51,10 +51,12 @@ namespace TetrisGame
             this.leftArrowLabel = new System.Windows.Forms.Label();
             this.githubLink = new System.Windows.Forms.PictureBox();
             this.createdByLabel = new System.Windows.Forms.Label();
+            this.soundBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.githubLink)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.soundBox)).BeginInit();
             this.SuspendLayout();
             // 
             // gravityTimer
@@ -232,11 +234,24 @@ namespace TetrisGame
             this.createdByLabel.TabIndex = 13;
             this.createdByLabel.Text = "Created by Carson Kelley";
             // 
+            // soundBox
+            // 
+            this.soundBox.BackColor = System.Drawing.Color.Transparent;
+            this.soundBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.soundBox.Image = global::TetrisGame.Properties.Resources.unMute;
+            this.soundBox.Location = new System.Drawing.Point(433, 626);
+            this.soundBox.Name = "soundBox";
+            this.soundBox.Size = new System.Drawing.Size(32, 32);
+            this.soundBox.TabIndex = 14;
+            this.soundBox.TabStop = false;
+            this.soundBox.Click += new System.EventHandler(this.SoundBox_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 674);
+            this.Controls.Add(this.soundBox);
             this.Controls.Add(this.createdByLabel);
             this.Controls.Add(this.githubLink);
             this.Controls.Add(this.leftArrowLabel);
@@ -259,6 +274,7 @@ namespace TetrisGame
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.githubLink)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.soundBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -288,6 +304,8 @@ namespace TetrisGame
         int score = 0;
         int level = 0;
         int points = 40;
+        bool fastFall = false;
+        static bool changedMute;
         bool confirm = false;
         bool remove = false;
         bool hardDrop = false;
@@ -310,6 +328,7 @@ namespace TetrisGame
         private System.Windows.Forms.Label leftArrowLabel;
         private System.Windows.Forms.PictureBox githubLink;
         private System.Windows.Forms.Label createdByLabel;
+        private System.Windows.Forms.PictureBox soundBox;
     }
 }
 

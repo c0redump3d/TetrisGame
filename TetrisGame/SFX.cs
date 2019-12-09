@@ -22,7 +22,7 @@ namespace TetrisGame
             sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.fall, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.fall, dev);
             sound.Stop();
-            sound.Volume = -1000;
+            sound.Volume = Form1.isMuted() ? -10000 : -1000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
@@ -33,7 +33,7 @@ namespace TetrisGame
             sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.lvlup, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.lvlup, dev);
             sound.Stop();
-            sound.Volume = -3000;
+            sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
@@ -44,7 +44,7 @@ namespace TetrisGame
             sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.harddrop, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.harddrop, dev);
             sound.Stop();
-            sound.Volume = -3000;
+            sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
@@ -60,7 +60,7 @@ namespace TetrisGame
             sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.clear, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.clear, dev);
             sound.Stop();
-            sound.Volume = -3000;
+            sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
@@ -70,7 +70,7 @@ namespace TetrisGame
             dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
             playerBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.rotate, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.rotate, dev);
-            sound.Volume = -3000;
+            sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
@@ -80,7 +80,7 @@ namespace TetrisGame
             dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
             playerBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.move, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.move, dev);
-            sound.Volume = -3000;
+            sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
         }
 
@@ -90,12 +90,13 @@ namespace TetrisGame
             dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
             soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.tetris_loop, dev);
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.tetris_loop, dev);
-            sound.Volume = -3000;
+            sound.Volume = Form1.isMuted() ? -10000 : -3000;
 
             if (!stop)
                 sound.Play(0, BufferPlayFlags.Looping);
             else
                 sound.Stop();
+
         }
 
     }

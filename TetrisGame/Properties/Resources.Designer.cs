@@ -164,6 +164,16 @@ namespace TetrisGame.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Mute {
+            get {
+                object obj = ResourceManager.GetObject("Mute", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
         internal static System.IO.UnmanagedMemoryStream rotate {
@@ -197,6 +207,16 @@ namespace TetrisGame.Properties {
         internal static System.Drawing.Bitmap tetrislogo {
             get {
                 object obj = ResourceManager.GetObject("tetrislogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap unMute {
+            get {
+                object obj = ResourceManager.GetObject("unMute", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

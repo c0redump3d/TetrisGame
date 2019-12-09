@@ -35,14 +35,36 @@ namespace TetrisGame
             tThree.X = x3;
             tFour.X = x4;
 
+            if(plyY < tetris.getY())
+                plyY = 608;
+
             for (int i = placedrect.Length - 1; i > 0; i--)
                 if (placedrect[i].Contains(tOne) || placedrect[i].Contains(tTwo) || placedrect[i].Contains(tThree) || placedrect[i].Contains(tFour)
                     || plyY > 608 || tTwo.Y > 608 || tThree.Y > 608 || tFour.Y > 608
                     || placedrect[i].X == tOne.X && placedrect[i].Y == tOne.Y || placedrect[i].X == tTwo.X && placedrect[i].Y == tTwo.Y
                     || placedrect[i].X == tThree.X && placedrect[i].Y == tThree.Y || placedrect[i].X == tFour.X && placedrect[i].Y == tFour.Y)
                 {
-                    reset();
+                    plyY -= 64;
+                    stopped = false;
+                    return;
                 }
+
+            /*
+             * if predicted y is below a placed block, this will correct its position.
+             * also checks to see if the actual tetris block is under the placedblock its checking
+             * if it is, then it will not correct it.
+             */
+            for (int i = placedrect.Length - 1; i > 0; i--)
+            {
+                if (placedrect[i].X == plyX && placedrect[i].Y <= plyY && placedrect[i].Y > tetris.getY())
+                    plyY = placedrect[i].Y - 32;
+                if (placedrect[i].X == tTwo.X && placedrect[i].Y <= tTwo.Y && placedrect[i].Y > tetris.getY())
+                    plyY = placedrect[i].Y - 32;
+                if (placedrect[i].X == tThree.X && placedrect[i].Y <= tThree.Y && placedrect[i].Y > tetris.getY())
+                    plyY = placedrect[i].Y - 32;
+                if (placedrect[i].X == tFour.X && placedrect[i].Y <= tFour.Y && placedrect[i].Y > tetris.getY())
+                    plyY = placedrect[i].Y - 32;
+            }
 
             // if player rectangle collides with placed rectangles
             for (int i = placedrect.Length - 1; i > 0; i--)
@@ -64,7 +86,6 @@ namespace TetrisGame
         {
             if (!stopped)
                 return;
-            plyY = tetris.getY();
 
             stopped = false;
         }
@@ -79,7 +100,7 @@ namespace TetrisGame
             return stopped;
         }
 
-        public void Draw(Graphics graphics, Rectangle bOne, Rectangle bTwo, Rectangle bThree, Rectangle bFour, Brush currentColor)
+        public void Draw(Graphics graphics, Brush currentColor)
         {
 
             tOne = new Rectangle(plyX, plyY, 32, 32); // player controlled rect
