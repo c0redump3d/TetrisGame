@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.DirectSound;
+using System;
 using System.Windows.Forms;
 
 namespace TetrisGame
@@ -96,8 +97,6 @@ namespace TetrisGame
                 sound.Play(0, BufferPlayFlags.Looping);
             else
                 sound.Stop();
-
         }
-
     }
 }

@@ -311,6 +311,7 @@ namespace TetrisGame
         bool hardDrop = false;
         private bool paused = false;
         private bool rotating = false;
+        private bool noSound = false;
         private bool stop = true;
 
         private System.Windows.Forms.Label levelLabel;

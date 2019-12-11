@@ -121,7 +121,7 @@ namespace TetrisGame
         /// <param name="gravityTimer"></param>
         /// <param name="confirm"></param>
         /// <param name="nextShapeBox"></param>
-        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop)
+        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop, bool noSound)
         {
 
             //these 2 rectangles must be put off screen, they can interfere with gameplay
@@ -167,9 +167,9 @@ namespace TetrisGame
                 //set player to what ever number was selected
                 setShape();
 
-                if (hardDrop)
+                if (hardDrop && !noSound)
                     sfx.playHardDrop();
-                else
+                else if (!hardDrop && !noSound)
                     sfx.playFall(); // play fall sound.
 
                 //generate random number between 1 and 7
@@ -238,9 +238,9 @@ namespace TetrisGame
 
                     nextShape = rand.Next(1, 8);
 
-                    if (hardDrop)
+                    if (hardDrop && !noSound)
                         sfx.playHardDrop();
-                    else
+                    else if (!hardDrop && !noSound)
                         sfx.playFall(); // play fall sound.
 
                     gravityTimer.Start();// enable gravity
@@ -608,7 +608,6 @@ namespace TetrisGame
 
         #endregion
 
-
         #region Controller
 
         public void joystickDown(ref bool movingDown)
@@ -624,7 +623,6 @@ namespace TetrisGame
             {
                 plyY += 32;
                 movingDown = true;
-                sfx.playMove();
             }
         }
 
@@ -655,7 +653,6 @@ namespace TetrisGame
             predict.reset();
 
             plyX += 32;
-            sfx.playMove();
 
         }
 
@@ -683,7 +680,6 @@ namespace TetrisGame
             predict.reset();
 
             plyX -= 32;
-            sfx.playMove();
 
         }
 

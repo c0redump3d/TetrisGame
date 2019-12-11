@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TetrisGame
@@ -72,27 +71,24 @@ namespace TetrisGame
 
             #region Collision
 
-            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox, ref hardDrop);
+            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox, ref hardDrop, noSound);
 
-            try
+            if (tetris.HitTop())
             {
-                if (tetris.HitTop())
-                {
-                    gravityTimer.Stop(); // stop gravity
-                    paused = true; // pause game
-                    stop = true; // stop music
+                gravityTimer.Stop(); // stop gravity
+                paused = true; // pause game
+                stop = true; // stop music
+                startLabel.Show(); // show start button
+                tetrisLogo.Show(); // show tetris logo
+                selectedLevelLabel.Show();
+                leftArrowLabel.Show();
+                rightArrowLabel.Show();
+                githubLink.Show();
+                createdByLabel.Show();
+                gameBoard.Invalidate();
+                if (!noSound)
                     sfx.playMusic(ref stop);
-                    startLabel.Show(); // show start button
-                    tetrisLogo.Show(); // show tetris logo
-                    selectedLevelLabel.Show();
-                    leftArrowLabel.Show();
-                    rightArrowLabel.Show();
-                    githubLink.Show();
-                    createdByLabel.Show();
-                    gameBoard.Invalidate();
-                }
             }
-            catch (Exception) { }
 
             #endregion
 
@@ -117,7 +113,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 925;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 20 && level != 2 && selectedLevel < 2)
             {
@@ -125,7 +122,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 850;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 30 && level != 3 && selectedLevel < 3)
             {
@@ -133,7 +131,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 775;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 40 && level != 4 && selectedLevel < 4)
             {
@@ -141,7 +140,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 700;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 50 && level != 5 && selectedLevel < 5)
             {
@@ -149,7 +149,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 625;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 60 && level != 6 && selectedLevel < 6)
             {
@@ -157,7 +158,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 550;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 70 && level != 7 && selectedLevel < 7)
             {
@@ -165,7 +167,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 475;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 80 && level != 8 && selectedLevel < 8)
             {
@@ -173,7 +176,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 400;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
             else if (lines == 90 && level != 9 && selectedLevel < 9)
             {
@@ -181,7 +185,8 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 325;
-                sfx.playLevelUp();
+                if (!noSound)
+                    sfx.playLevelUp();
             }
 
             if (score >= 0 && score < 10)
@@ -238,7 +243,8 @@ namespace TetrisGame
         {
             remove = false;
             lines++; // add one to lines removed
-            sfx.playClear(ref lines); // play our clear sound
+            if (!noSound)
+                sfx.playClear(ref lines); // play our clear sound
             score += points; // add 40 points to our score
             tetris.resetBank();
             gameBoard.Invalidate();
@@ -306,7 +312,8 @@ namespace TetrisGame
 
                     if (tetris.moveDown())
                     {
-                        sfx.playMove();
+                        if (!noSound)
+                            sfx.playMove();
                         movingDown = true;
                     }
                     break;
@@ -325,10 +332,14 @@ namespace TetrisGame
                 case Keys.Left:
                 case Keys.A:
                     tetris.moveLeft(ref paused);
+                    if(!noSound)
+                        sfx.playMove();
                     break;
                 case Keys.Right:
                 case Keys.D:
                     tetris.moveRight(ref paused);
+                    if (!noSound)
+                        sfx.playMove();
                     break;
                 case Keys.Z:
                 case Keys.X:
@@ -341,7 +352,8 @@ namespace TetrisGame
 
                         tetris.rotateTetris();
 
-                        sfx.playRotate();
+                        if (!noSound)
+                            sfx.playRotate();
                     }
                     break;
                 case Keys.C:
@@ -450,6 +462,8 @@ namespace TetrisGame
                     if (paused)
                         return;
                     tetris.joystickDown(ref movingDown);
+                    if (!noSound)
+                        sfx.playMove();
                     gameBoard.Invalidate();
                 }
                 else
@@ -481,7 +495,8 @@ namespace TetrisGame
                         gravityTimer.Start();
                         paused = false;
                         stop = false;
-                        sfx.playMusic(ref stop);
+                        if (!noSound)
+                            sfx.playMusic(ref stop);
                         startLabel.Hide();
                         selectedLevelLabel.Hide();
                         leftArrowLabel.Hide();
@@ -540,7 +555,6 @@ namespace TetrisGame
             gravityTimer.Start();
             paused = false;
             stop = false;
-            sfx.playMusic(ref stop);
             startLabel.Hide();
             selectedLevelLabel.Hide();
             leftArrowLabel.Hide();
@@ -550,6 +564,18 @@ namespace TetrisGame
             createdByLabel.Hide();
             resetGame();
             nextShapeBox.Invalidate();
+            try
+            {
+                sfx.playMusic(ref stop);
+            }
+            catch (Exception)
+            {
+                if(!noSound)
+                    MessageBox.Show("You are missing required files to use sound. Please make sure you have the \"TetrisGame.exe.config\" file found on" +
+                        " the github release page.\nIf you have this file, please make sure you have DirectX installed on your machine.", "Sound Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                soundBox.Image = Properties.Resources.Mute;
+                noSound = true;
+            }
         }
 
         private void GithubLink_Click(object sender, EventArgs e)
@@ -559,18 +585,27 @@ namespace TetrisGame
 
         private void SoundBox_Click(object sender, EventArgs e)
         {
+            if (noSound)
+            {
+                MessageBox.Show("You are missing required files to use sound. Please make sure you have the \"TetrisGame.exe.config\" file found on" +
+                    " the github release page.\nIf you have this file, please make sure you have DirectX installed on your machine.", "Sound Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (changedMute)
             {
                 soundBox.Image = Properties.Resources.unMute;
                 changedMute = false;
-                sfx.playMusic(ref stop);
+                if (!noSound)
+                    sfx.playMusic(ref stop);
                 return;
             }
             else if (soundBox.Image != Properties.Resources.Mute && !changedMute)
             {
                 changedMute = true;
                 soundBox.Image = Properties.Resources.Mute;
-                sfx.playMusic(ref stop);
+                if (!noSound)
+                    sfx.playMusic(ref stop);
             }
         }
 
