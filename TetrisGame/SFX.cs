@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.DirectSound;
+using System;
 using System.Windows.Forms;
 
 namespace TetrisGame
@@ -24,6 +25,7 @@ namespace TetrisGame
             sound.Stop();
             sound.Volume = Form1.isMuted() ? -10000 : -1000;
             sound.Play(0, BufferPlayFlags.Default);
+            Debug.debugMessage("Playing sound effect: Fall", 1);
         }
 
         public void playLevelUp()
@@ -35,6 +37,7 @@ namespace TetrisGame
             sound.Stop();
             sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
+            Debug.debugMessage("Playing sound effect: LevelUp", 1);
         }
 
         public void playHardDrop()
@@ -46,6 +49,7 @@ namespace TetrisGame
             sound.Stop();
             sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
+            Debug.debugMessage("Playing sound effect: HardDrop", 1);
         }
 
         public void playClear(ref int lines)
@@ -62,6 +66,7 @@ namespace TetrisGame
             sound.Stop();
             sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
+            Debug.debugMessage("Playing sound effect: Clear", 1);
         }
 
         public void playRotate()
@@ -72,6 +77,7 @@ namespace TetrisGame
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.rotate, dev);
             sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
+            Debug.debugMessage("Playing sound effect: Rotate", 1);
         }
 
         public void playMove()
@@ -82,6 +88,7 @@ namespace TetrisGame
             SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.move, dev);
             sound.Volume = Form1.isMuted() ? -10000 : -3000;
             sound.Play(0, BufferPlayFlags.Default);
+            Debug.debugMessage("Playing sound effect: Move", 1);
         }
 
         public void playMusic(ref bool stop)
@@ -96,8 +103,7 @@ namespace TetrisGame
                 sound.Play(0, BufferPlayFlags.Looping);
             else
                 sound.Stop();
-
+            Debug.debugMessage("Playing sound effect: Music", 1);
         }
-
     }
 }

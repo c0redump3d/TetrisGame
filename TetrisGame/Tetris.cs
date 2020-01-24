@@ -121,7 +121,7 @@ namespace TetrisGame
         /// <param name="gravityTimer"></param>
         /// <param name="confirm"></param>
         /// <param name="nextShapeBox"></param>
-        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop)
+        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop, bool noSound, ref bool remove)
         {
 
             //these 2 rectangles must be put off screen, they can interfere with gameplay
@@ -129,127 +129,151 @@ namespace TetrisGame
             placedrect[1].Y = 99999;
 
             //player collision at the bottom of board, once reached duplicate player and reset player pos w/ new shape.
-            if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
+            try
             {
-                confirmTimer.Start();
-                if (!confirm)
-                    return;
-                gravityTimer.Stop(); // stop gravity
-                //reset player
-                bOne = new Rectangle();
-                bTwo = new Rectangle();
-                bThree = new Rectangle();
-                bFour = new Rectangle();
-
-                //we duplicate the four player rectangles pos
-                List<Rectangle> createblock = placedrect.ToList();
-                createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                placedrect = createblock.ToArray();
-
-                //we duplicate the shapes color
-                List<Brush> addcolor = storedColor.ToList();
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                addcolor.Add(currentColor);
-                storedColor = addcolor.ToArray();
-
-                //reset player pos
-                plyY = 0;
-                plyX = 160;
-
-                currentBlock = nextShape;
-                predict.reset();
-
-                //set player to what ever number was selected
-                setShape();
-
-                if (hardDrop)
-                    sfx.playHardDrop();
-                else
-                    sfx.playFall(); // play fall sound.
-
-                //generate random number between 1 and 7
-                nextShape = rand.Next(1, 8);
-
-                gravityTimer.Start();// enable gravity
-                confirmTimer.Stop();
-                hardDrop = false;
-                confirm = false;
-                nextShapeBox.Invalidate();
-            }
-
-            // if player rectangle collides with placed rectangles
-            for (int i = placedrect.Length - 1; i > 0; i--)
-                if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
-                    || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
-                    || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
-                    || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                if (plyY == 608 || bTwo.Y == 608 || bThree.Y == 608 || bFour.Y == 608)
                 {
                     confirmTimer.Start();
                     if (!confirm)
                         return;
-
-                    if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
-                        return;
-
                     gravityTimer.Stop(); // stop gravity
-
-                    //reset player
+                                         //reset player
                     bOne = new Rectangle();
                     bTwo = new Rectangle();
                     bThree = new Rectangle();
                     bFour = new Rectangle();
 
-                    if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
-                    || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
-                    || !bThree.Contains(placedrect[i])
-                    || !bFour.Contains(placedrect[i]))
-                    {
-                        //duplicate player pos
-                        List<Rectangle> createblock = placedrect.ToList();
-                        createblock.Add(new Rectangle(plyX, plyY, 32, 32));
-                        createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
-                        createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
-                        createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
-                        placedrect = createblock.ToArray();
-                        //duplicate shapes color
-                        List<Brush> addcolor = storedColor.ToList();
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        addcolor.Add(currentColor);
-                        storedColor = addcolor.ToArray();
-                    }
+                    //we duplicate the four player rectangles pos
+                    List<Rectangle> createblock = placedrect.ToList();
+                    createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                    createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                    createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                    createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                    placedrect = createblock.ToArray();
+
+                    //we duplicate the shapes color
+                    List<Brush> addcolor = storedColor.ToList();
+                    addcolor.Add(currentColor);
+                    addcolor.Add(currentColor);
+                    addcolor.Add(currentColor);
+                    addcolor.Add(currentColor);
+                    storedColor = addcolor.ToArray();
 
                     //reset player pos
                     plyY = 0;
                     plyX = 160;
 
-                    //select random number for next shape
                     currentBlock = nextShape;
                     predict.reset();
 
-                    //set shape
+                    //set player to what ever number was selected
                     setShape();
 
-                    nextShape = rand.Next(1, 8);
-
-                    if (hardDrop)
+                    if (hardDrop && !noSound)
                         sfx.playHardDrop();
-                    else
+                    else if (!hardDrop && !noSound)
                         sfx.playFall(); // play fall sound.
 
-                    gravityTimer.Start();// enable gravity
+                    //generate random number between 1 and 7
+                    nextShape = rand.Next(1, 8);
 
-                    confirm = false;
-                    hardDrop = false;
+                    gravityTimer.Start();// enable gravity
                     confirmTimer.Stop();
+                    hardDrop = false;
+                    confirm = false;
                     nextShapeBox.Invalidate();
+                    try
+                    {
+                        if (Debug.isEnabled() && Debug.getSelection() == 2)
+                        {
+                            checkRow.update(ref placedrect, ref storedColor, ref remove);
+                            checkRow.update(ref placedrect, ref storedColor, ref remove);
+                            Debug.debugMessage(checkRow.showBoard(), 2);
+                        }
+
+                    }
+                    catch (Exception) { }
                 }
+
+                // if player rectangle collides with placed rectangles
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    if (bOne.Y == placedrect[i].Y - 32 && bOne.X == placedrect[i].X
+                        || bTwo.Y == placedrect[i].Y - 32 && bTwo.X == placedrect[i].X
+                        || bThree.Y == placedrect[i].Y - 32 && bThree.X == placedrect[i].X
+                        || bFour.Y == placedrect[i].Y - 32 && bFour.X == placedrect[i].X)
+                    {
+                        confirmTimer.Start();
+                        if (!confirm)
+                            return;
+
+                        if (plyY < 0) // if above screen, stop, this may not be an issue anymore, keeping just incase.
+                            return;
+
+                        gravityTimer.Stop(); // stop gravity
+
+                        //reset player
+                        bOne = new Rectangle();
+                        bTwo = new Rectangle();
+                        bThree = new Rectangle();
+                        bFour = new Rectangle();
+
+                        if (!bOne.Contains(placedrect[i]) // this check is supposed to be incase the player rotates into a placed rect
+                        || !bTwo.Contains(placedrect[i]) // it may not work, not sure.
+                        || !bThree.Contains(placedrect[i])
+                        || !bFour.Contains(placedrect[i]))
+                        {
+                            //duplicate player pos
+                            List<Rectangle> createblock = placedrect.ToList();
+                            createblock.Add(new Rectangle(plyX, plyY, 32, 32));
+                            createblock.Add(new Rectangle(plyX + r1, plyY + r2, 32, 32));
+                            createblock.Add(new Rectangle(plyX - l1, plyY - l2, 32, 32));
+                            createblock.Add(new Rectangle(plyX + t2, plyY - t1, 32, 32));
+                            placedrect = createblock.ToArray();
+                            //duplicate shapes color
+                            List<Brush> addcolor = storedColor.ToList();
+                            addcolor.Add(currentColor);
+                            addcolor.Add(currentColor);
+                            addcolor.Add(currentColor);
+                            addcolor.Add(currentColor);
+                            storedColor = addcolor.ToArray();
+                        }
+
+                        //reset player pos
+                        plyY = 0;
+                        plyX = 160;
+
+                        //select random number for next shape
+                        currentBlock = nextShape;
+                        predict.reset();
+
+                        //set shape
+                        setShape();
+
+                        nextShape = rand.Next(1, 8);
+
+                        if (hardDrop && !noSound)
+                            sfx.playHardDrop();
+                        else if (!hardDrop && !noSound)
+                            sfx.playFall(); // play fall sound.
+
+                        gravityTimer.Start();// enable gravity
+
+                        confirm = false;
+                        hardDrop = false;
+                        confirmTimer.Stop();
+                        nextShapeBox.Invalidate();
+                        try
+                        {
+                            if (Debug.isEnabled() && Debug.getSelection() == 2)
+                            {
+                                checkRow.update(ref placedrect, ref storedColor, ref remove);
+                                checkRow.update(ref placedrect, ref storedColor, ref remove);
+                                Debug.debugMessage(checkRow.showBoard(), 2);
+                            }
+                        }
+                        catch (Exception) { }
+                    }
+            }catch(Exception ex) { Debug.debugMessage("GAME: Unable to check on block! " + ex.Message, 1, true); }
         }
 
         public void instantFall()
@@ -374,6 +398,8 @@ namespace TetrisGame
                 currentColor = Brushes.LimeGreen;
                 rotationAng = 1;
             }
+
+            Debug.debugMessage("PLAYER: Shape set(" + currentBlock + ")", 1);
         }
 
         /// <summary>
@@ -398,7 +424,7 @@ namespace TetrisGame
                 plyY += 32;
         }
 
-        public void update(ref bool paused, ref PictureBox gameBoard)
+        public void update(ref bool paused, ref PictureBox gameBoard, ref bool remove)
         {
             if (paused)
                 return;
@@ -409,6 +435,7 @@ namespace TetrisGame
 
             predict.Gravity(ref placedrect, ref gameBoard);
             predict.blockCollision(ref plyX, ref x2, ref x3, ref x4, ref placedrect);
+            checkRow.update(ref placedrect, ref storedColor, ref remove);
 
             gameBoard.Invalidate();
         }
@@ -418,13 +445,15 @@ namespace TetrisGame
         /// </summary>
         public void Reset()
         {
+            Debug.debugMessage("GAME: Start", 1);
             placedrect = new Rectangle[2];
             //reset all stored colors
             storedColor = new Brush[0];
             List<Brush> addcolor = storedColor.ToList();
             addcolor.Add(currentColor);
             addcolor.Add(currentColor);
-            storedColor = addcolor.ToArray();
+            storedColor = addcolor.ToArray(); 
+            checkRow = new RowCheck();
         }
 
         public int getY()
@@ -516,6 +545,8 @@ namespace TetrisGame
             graphics.DrawRectangle(Pens.Black, nTwo);
             graphics.DrawRectangle(Pens.Black, nThree);
             graphics.DrawRectangle(Pens.Black, nFour);
+
+            Debug.debugMessage("NEXT_BLOCK: Generating next block...", 1);
         }
 
         #endregion
@@ -534,6 +565,7 @@ namespace TetrisGame
         {
             while (blocks > 0)
             {
+                Debug.debugMessage("GAME: Generating " + blocks + " random blocks", 1);
                 randX = rand.Next(1, 11);
                 randY = rand.Next(1, 7);
                 int x = 0;
@@ -608,7 +640,6 @@ namespace TetrisGame
 
         #endregion
 
-
         #region Controller
 
         public void joystickDown(ref bool movingDown)
@@ -624,7 +655,6 @@ namespace TetrisGame
             {
                 plyY += 32;
                 movingDown = true;
-                sfx.playMove();
             }
         }
 
@@ -655,7 +685,6 @@ namespace TetrisGame
             predict.reset();
 
             plyX += 32;
-            sfx.playMove();
 
         }
 
@@ -683,7 +712,6 @@ namespace TetrisGame
             predict.reset();
 
             plyX -= 32;
-            sfx.playMove();
 
         }
 
@@ -707,25 +735,6 @@ namespace TetrisGame
             }
 
             return true;
-        }
-
-        #endregion
-
-        #region Row check
-
-        public void checkRows()
-        {
-            checkRow.checkRow(ref placedrect, ref rows);
-        }
-
-        public void removeRow(ref bool remove)
-        {
-            checkRow.removeRow(ref placedrect, ref rows, ref storedColor, ref remove);
-        }
-
-        public void resetBank()
-        {
-            checkRow.resetBank(); // reset all banks
         }
 
         #endregion
@@ -781,6 +790,8 @@ namespace TetrisGame
             int y3 = bThree.Y;
             int y4 = bFour.Y;
             predict.reset();
+
+            Debug.debugMessage("PLAYER: Rotate", 1);
         }
 
         public int getr2()
