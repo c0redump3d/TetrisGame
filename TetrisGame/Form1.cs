@@ -86,7 +86,7 @@ namespace TetrisGame
                 createdByLabel.Show();
                 gameBoard.Invalidate();
                 if (!noSound)
-                    sfx.playMusic(ref stop);
+                    sfx.playMusic(ref stop, level);
                 Debug.debugMessage("GAME: End", 1, false);
             }
 
@@ -107,7 +107,7 @@ namespace TetrisGame
             else
                 lineLabel.Text = "" + lines;
 
-            if(lines == 10 && level != 1 && selectedLevel < 1)
+            if(lines >= 10 && lines < 20 && level != 1 && selectedLevel < 1)
             {
                 level++;
                 points += 40;
@@ -116,7 +116,7 @@ namespace TetrisGame
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 20 && level != 2 && selectedLevel < 2)
+            else if (lines >= 20 && lines < 30 && level != 2 && selectedLevel < 2)
             {
                 level++;
                 points += 40;
@@ -125,7 +125,7 @@ namespace TetrisGame
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 30 && level != 3 && selectedLevel < 3)
+            else if (lines >= 30 && lines < 40 && level != 3 && selectedLevel < 3)
             {
                 level++;
                 points += 40;
@@ -134,7 +134,7 @@ namespace TetrisGame
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 40 && level != 4 && selectedLevel < 4)
+            else if (lines >= 40 && lines < 50 && level != 4 && selectedLevel < 4)
             {
                 level++;
                 points += 40;
@@ -143,16 +143,20 @@ namespace TetrisGame
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 50 && level != 5 && selectedLevel < 5)
+            else if (lines >= 50 && lines < 60 && level != 5 && selectedLevel < 5)
             {
                 level++;
+                stop = true;
+                sfx.playMusic(ref stop, level);
+                stop = false;
+                sfx.playMusic(ref stop, level);
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 625;
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 60 && level != 6 && selectedLevel < 6)
+            else if (lines >= 60 && lines < 70 && level != 6 && selectedLevel < 6)
             {
                 level++;
                 points += 40;
@@ -161,7 +165,7 @@ namespace TetrisGame
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 70 && level != 7 && selectedLevel < 7)
+            else if (lines >= 70 && lines < 80 && level != 7 && selectedLevel < 7)
             {
                 level++;
                 points += 40;
@@ -170,16 +174,19 @@ namespace TetrisGame
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 80 && level != 8 && selectedLevel < 8)
+            else if (lines >= 80 && lines < 90 && level != 8 && selectedLevel < 8)
             {
                 level++;
+                sfx.playMusic(ref stop, level);
+                stop = false;
+                sfx.playMusic(ref stop, level);
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 400;
                 if (!noSound)
                     sfx.playLevelUp();
             }
-            else if (lines == 90 && level != 9 && selectedLevel < 9)
+            else if (lines >= 90 && level != 9 && selectedLevel < 9)
             {
                 level++;
                 points += 40;
@@ -242,10 +249,10 @@ namespace TetrisGame
         public void cleanUp()
         {
             remove = false;
-            lines++; // add one to lines removed
+            lines += tetris.getLinesCleared(); // add one to lines removed
             if (!noSound)
-                sfx.playClear(ref lines); // play our clear sound
-            score += points; // add 40 points to our score
+                sfx.playClear(tetris.getLinesCleared()); // play our clear sound
+            score += points * tetris.getLinesCleared(); // add 40 points to our score
             gameBoard.Invalidate();
         }
 
@@ -287,7 +294,7 @@ namespace TetrisGame
             tetris.Reset();
 
             if (level > 6)
-                tetris.randomBlock(7);
+                tetris.randomBlock(level - 3);
 
             gameBoard.Invalidate();
         }
@@ -417,7 +424,7 @@ namespace TetrisGame
             if (gamepad.isConnected())
                 gamepad.ControllerUpdate();
 
-            tetris.update(ref paused, ref gameBoard, ref remove);
+            tetris.update(ref paused, ref gameBoard, ref remove, level);
 
             if (remove)
                 cleanUp();
@@ -484,7 +491,7 @@ namespace TetrisGame
                         paused = false;
                         stop = false;
                         if (!noSound)
-                            sfx.playMusic(ref stop);
+                            sfx.playMusic(ref stop, level);
                         startLabel.Hide();
                         selectedLevelLabel.Hide();
                         leftArrowLabel.Hide();
@@ -554,7 +561,7 @@ namespace TetrisGame
             nextShapeBox.Invalidate();
             try
             {
-                sfx.playMusic(ref stop);
+                sfx.playMusic(ref stop, level);
             }
             catch (Exception)
             {
@@ -586,7 +593,7 @@ namespace TetrisGame
                 soundBox.Image = Properties.Resources.unMute;
                 changedMute = false;
                 if (!noSound)
-                    sfx.playMusic(ref stop);
+                    sfx.playMusic(ref stop, level);
                 return;
             }
             else if (soundBox.Image != Properties.Resources.Mute && !changedMute)
@@ -594,7 +601,7 @@ namespace TetrisGame
                 changedMute = true;
                 soundBox.Image = Properties.Resources.Mute;
                 if (!noSound)
-                    sfx.playMusic(ref stop);
+                    sfx.playMusic(ref stop, level);
             }
         }
 

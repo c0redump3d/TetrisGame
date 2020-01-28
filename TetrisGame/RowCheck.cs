@@ -16,10 +16,10 @@ namespace TetrisGame
     {
 
         int[] bank = new int[0];
-        int rowRemove;
-        int[] toRemove = new int[20];
+        int rowRemove = 608;
         bool removing = false;
         Rectangle[] row = new Rectangle[200];
+        int moveDown = 0;
         int k = 0;
         int l = 0;
         int[] xRow = new int[10] { 0, 32, 64, 96, 128, 160, 192, 224, 256, 288 };
@@ -27,10 +27,10 @@ namespace TetrisGame
                                    320, 352, 384, 416, 448, 480, 512, 544, 576, 608};
         int[] added = new int[200];
         int[,] board = new int[20, 10];
+        bool[,] boardBool = new bool[20, 10];
 
         public RowCheck()
         {
-            setBoard();
 
             int x = 0;
             int y = 0;
@@ -51,21 +51,23 @@ namespace TetrisGame
 
         public void update(ref Rectangle[] placedrect, ref Brush[] storedColor, ref bool remove)
         {
-
+            if (removing)
+                return;
+            moveDown = 0;
+            rowRemove = 608;
             try
             {
                 for (int i = 0; i < placedrect.Length; i++)
                     for (int j = 0; j < row.Length; j++)
                         if (placedrect[i].IntersectsWith(row[j])) // Basically means a block has landed on a specific square
                         {
-                            if (removing)
-                                break;
                             board[getLocationY(placedrect[i].Y), getLocationX(placedrect[i].X)] = i; // store the index of the placedrect inside the board array
-
-                            check(ref placedrect, ref storedColor, ref remove); // check to see if any removals are needed
+                            boardBool[getLocationY(placedrect[i].Y), getLocationX(placedrect[i].X)] = true;
 
                             break;
                         }
+
+                check(ref placedrect, ref storedColor, ref remove); // check to see if any removals are needed
             }
             catch (Exception ex) { Debug.debugMessage("ERROR: Exception thrown! function: " + System.Reflection.MethodBase.GetCurrentMethod().Name + "\n" + ex.Message, 1, true); }
         }
@@ -86,55 +88,86 @@ namespace TetrisGame
                 if (board[l, k] > 0 && board[l, k] != added[c]) // if board piece does not equal 0 and has not already been added to the toRemove array
                 {
                     added[c] = board[l, k];
-                    toRemove[getLocationY(placedrect[board[l, k]].Y)]++;
                     Debug.debugMessage("BLOCK: " + board[l, k] + " added to board at ROW: " + l + " COLUMN: " + k, 1);
-
-                    if (toRemove[getLocationY(placedrect[board[l, k]].Y)] == 10)
-                    {
-                        rowRemove = placedrect[board[l, k]].Y;
-
-                        List<int> addBank = bank.ToList();
-                        for (int i = 0; i < board.GetLength(1); i++)
-                            addBank.Add(board[getLocationY(rowRemove), i]);
-                        bank = addBank.ToArray();
-                        Array.Sort(bank);
-                    }
 
                 }
 
                 k++;
             }
 
-            for (int i = 0; i < toRemove.Length; i++)
-                if (toRemove[i] == 10)
-                    removing = true;
+            moveDown = checkIfFull(ref placedrect);
 
             if (removing)
             {
 
                 List<Rectangle> createblock = placedrect.ToList();
                 List<Brush> removecolor = storedColor.ToList();
-                for (int i = 9; i >= 0; i--)
+                for (int i = moveDown * 10 - 1; i >= 0; i--)
                 {
                     createblock.RemoveAt(bank[i]); // remove rectangles stored in bank array
-                    Debug.debugMessage("BLOCK: " + bank[i] + " was removed from board\n", 1);
-                }
-                for (int i = 9; i >= 0; i--)
                     removecolor.RemoveAt(bank[i]); // remove color stored in bank array
+                    Debug.debugMessage("BLOCK: " + bank[i] + " was removed from board", 1, true);
+                }
                 placedrect = createblock.ToArray();
                 storedColor = removecolor.ToArray();
 
                 for (int i = placedrect.Length - 1; i > 0; i--)
                     if (placedrect[i].Y < rowRemove)
-                        placedrect[i].Y += 32;
+                        placedrect[i].Y += 32 * moveDown;
 
-                setBoard();
-                bank = new int[0];
-                added = new int[200];
-                toRemove = new int[200];
-                removing = false;
+                Reset();
                 remove = true;
             }
+        }
+
+        public void Reset()
+        {
+            board = new int[20, 10];
+            bank = new int[0];
+            added = new int[200];
+            removing = false;
+            rowRemove = 0;
+            boardBool = new bool[20, 10];
+        }
+
+        private int checkIfFull(ref Rectangle[] placedrect)
+        {
+            int lines = 0;
+
+            for (int row = 0; row < boardBool.GetLength(0); row++)
+            {
+                bool rowFull = true;
+                for (int col = 0; col < boardBool.GetLength(1); col++)
+                {
+                    if (boardBool[row, col] == false)
+                    {
+                        rowFull = false;
+                        break;
+                    }
+                }
+
+                if (rowFull)
+                {
+                    List<int> addBank = bank.ToList();
+                    for (int i = 0; i < board.GetLength(1); i++)
+                    {
+                        addBank.Add(board[row, i]);
+                        if (placedrect[board[row, i]].Y < rowRemove)
+                            rowRemove = placedrect[board[row, i]].Y;
+                    }
+                    bank = addBank.ToArray();
+                    Array.Sort(bank);
+                    lines++;
+                }
+
+            }
+
+            if (lines > 0)
+            {
+                removing = true;
+            }
+
+            return lines;
         }
 
         public string showBoard()
@@ -163,30 +196,6 @@ namespace TetrisGame
             return output;
         }
 
-        private void setBoard()
-        {
-            board = new int[20, 10] {    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
-        }
-
         private int getLocationX(int x)
         {
             for (int i = 0; i < xRow.Length; i++)
@@ -209,5 +218,9 @@ namespace TetrisGame
             return 0;
         }
 
+        internal int getLinesCleared()
+        {
+            return moveDown;
+        }
     }
 }

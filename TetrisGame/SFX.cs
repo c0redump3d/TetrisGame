@@ -1,5 +1,6 @@
 ﻿using Microsoft.DirectX.DirectSound;
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace TetrisGame
@@ -52,20 +53,49 @@ namespace TetrisGame
             Debug.debugMessage("Playing sound effect: HardDrop", 1);
         }
 
-        public void playClear(ref int lines)
+        public void playClear(int line)
         {
-            if (lines == 10 || lines == 20 || lines == 30
-                || lines == 40 || lines == 50 || lines == 60
-                || lines == 70 || lines == 80 || lines == 90)
-                return;
-
-            var dev = new Device();
-            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
-            sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.clear, dev);
-            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.clear, dev);
-            sound.Stop();
-            sound.Volume = Form1.isMuted() ? -10000 : -3000;
-            sound.Play(0, BufferPlayFlags.Default);
+            
+            if (line == 2)
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.linedouble, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.linedouble, dev);
+                sound.Stop();
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
+                sound.Play(0, BufferPlayFlags.Default);
+            }
+            else if (line == 3)
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.linetriple, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.linetriple, dev);
+                sound.Stop();
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
+                sound.Play(0, BufferPlayFlags.Default);
+            }
+            else if (line >= 4)
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.lineperfect, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.lineperfect, dev);
+                sound.Stop();
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
+                sound.Play(0, BufferPlayFlags.Default);
+            }
+            else
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                sfxBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.clear, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.clear, dev);
+                sound.Stop();
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
+                sound.Play(0, BufferPlayFlags.Default);
+            }
             Debug.debugMessage("Playing sound effect: Clear", 1);
         }
 
@@ -91,18 +121,46 @@ namespace TetrisGame
             Debug.debugMessage("Playing sound effect: Move", 1);
         }
 
-        public void playMusic(ref bool stop)
+        public void playMusic(ref bool stop, int level)
         {
-            var dev = new Device();
-            dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
-            soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.tetris_loop, dev);
-            SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.tetris_loop, dev);
-            sound.Volume = Form1.isMuted() ? -10000 : -3000;
+            if (level < 5)
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.musicmain, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.musicmain, dev);
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
 
-            if (!stop)
-                sound.Play(0, BufferPlayFlags.Looping);
+                if (!stop)
+                    sound.Play(0, BufferPlayFlags.Looping);
+                else
+                    sound.Stop();
+            }else if(level < 8)
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.musiclvl5, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.musiclvl5, dev);
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
+
+                if (!stop)
+                    sound.Play(0, BufferPlayFlags.Looping);
+                else
+                    sound.Stop();
+            }
             else
-                sound.Stop();
+            {
+                var dev = new Device();
+                dev.SetCooperativeLevel(this, CooperativeLevel.Normal);
+                soundBuffer = new Microsoft.DirectX.DirectSound.Buffer(Properties.Resources.musiclvl8, dev);
+                SecondaryBuffer sound = new SecondaryBuffer(Properties.Resources.musiclvl8, dev);
+                sound.Volume = Form1.isMuted() ? -10000 : -3000;
+
+                if (!stop)
+                    sound.Play(0, BufferPlayFlags.Looping);
+                else
+                    sound.Stop();
+            }
             Debug.debugMessage("Playing sound effect: Music", 1);
         }
     }

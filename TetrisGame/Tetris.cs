@@ -276,6 +276,11 @@ namespace TetrisGame
             }catch(Exception ex) { Debug.debugMessage("GAME: Unable to check on block! " + ex.Message, 1, true); }
         }
 
+        internal int getLinesCleared()
+        {
+            return checkRow.getLinesCleared();
+        }
+
         public void instantFall()
         {
             if (predict.isStopped())
@@ -424,7 +429,7 @@ namespace TetrisGame
                 plyY += 32;
         }
 
-        public void update(ref bool paused, ref PictureBox gameBoard, ref bool remove)
+        public void update(ref bool paused, ref PictureBox gameBoard, ref bool remove, int level)
         {
             if (paused)
                 return;
@@ -437,6 +442,13 @@ namespace TetrisGame
             predict.blockCollision(ref plyX, ref x2, ref x3, ref x4, ref placedrect);
             checkRow.update(ref placedrect, ref storedColor, ref remove);
 
+            if(getLinesCleared() > 1 && level > 6)
+            {
+                for (int i = placedrect.Length - 1; i > 0; i--)
+                    placedrect[i].Y -= 32;
+                randomBlock(1);
+            }
+
             gameBoard.Invalidate();
         }
 
@@ -446,6 +458,7 @@ namespace TetrisGame
         public void Reset()
         {
             Debug.debugMessage("GAME: Start", 1);
+            checkRow.Reset();
             placedrect = new Rectangle[2];
             //reset all stored colors
             storedColor = new Brush[0];
@@ -563,77 +576,31 @@ namespace TetrisGame
         /// <param name="blocks"></param>
         public void randomBlock(int blocks)
         {
+            int y = 608;
             while (blocks > 0)
             {
                 Debug.debugMessage("GAME: Generating " + blocks + " random blocks", 1);
-                randX = rand.Next(1, 11);
-                randY = rand.Next(1, 7);
                 int x = 0;
-                int y = 0;
-                if (randX == 1)
-                {
-                    x = 0;
-                }
-                else if (randX == 2)
-                {
-                    x = 32;
-                }
-                else if (randX == 3)
-                {
-                    x = 64;
-                }
-                else if (randX == 4)
-                {
-                    x = 96;
-                }
-                else if (randX == 5)
-                {
-                    x = 128;
-                }
-                else if (randX == 6)
-                {
-                    x = 160;
-                }
-                else if (randX == 7)
-                {
-                    x = 192; y = 448;
-                }
-                else if (randX == 8)
-                {
-                    x = 224; y = 480;
-                }
-                else if (randX == 9)
-                {
-                    x = 256; y = 512;
-                }
-                else if (randX == 10)
-                {
-                    x = 288; y = 608;
-                }
-
-                if (randY == 1)
-                    y = 608;
-                else if (randY == 2)
-                    y = 576;
-                else if (randY == 3)
-                    y = 544;
-                else if (randY == 4)
-                    y = 512;
-                else if (randY == 5)
-                    y = 480;
-                else if (randY == 6)
-                    y = 448;
+                randX = rand.Next(1, 11);
 
                 for (int i = placedrect.Length - 1; i > 1; i--)
                     if (x == placedrect[i].X && y == placedrect[i].Y)
                         return;
 
                 List<Rectangle> createblock = placedrect.ToList();
-                createblock.Add(new Rectangle(x, y, 32, 32));
-                placedrect = createblock.ToArray();
                 List<Brush> addcolor2 = storedColor.ToList();
-                addcolor2.Add(Brushes.Gray);
+                for (int i = 10; i > 0; i--)
+                {
+                    if (randX != i)
+                    {
+                        createblock.Add(new Rectangle(x, y, 32, 32));
+                        addcolor2.Add(Brushes.Gray);
+                    }
+                    x += 32;
+                }
+                placedrect = createblock.ToArray();
                 storedColor = addcolor2.ToArray();
+                y -= 32;
                 blocks--;
             }
         }

@@ -118,12 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Microsoft_DirectX_DirectSound1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Microsoft.DirectX.DirectSound.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="tetris_loop" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\tetris_loop.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="lvlup" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lvlup.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -145,9 +139,6 @@
   <data name="move" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\move.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Microsoft_DirectX_DirectSound" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Microsoft.DirectX.DirectSound.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="GitHub-Mark-64px" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GitHub-Mark-64px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -165,5 +156,23 @@
   </data>
   <data name="unMute" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\unMute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="linedouble" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\linedouble.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lineperfect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lineperfect.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="linetriple" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\linetriple.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="musiclvl5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\musiclvl5.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="musiclvl8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\musiclvl8.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="musicmain" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\musicmain.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

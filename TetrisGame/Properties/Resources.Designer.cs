@@ -120,37 +120,36 @@ namespace TetrisGame.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream linedouble {
+            get {
+                return ResourceManager.GetStream("linedouble", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream lineperfect {
+            get {
+                return ResourceManager.GetStream("lineperfect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream linetriple {
+            get {
+                return ResourceManager.GetStream("linetriple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream lvlup {
             get {
                 return ResourceManager.GetStream("lvlup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Microsoft_DirectX_DirectSound {
-            get {
-                object obj = ResourceManager.GetObject("Microsoft_DirectX_DirectSound", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;doc&gt;
-        ///  &lt;assembly&gt;
-        ///    &lt;name&gt;Microsoft.DirectX.DirectSound&lt;/name&gt;
-        ///  &lt;/assembly&gt;
-        ///  &lt;members&gt;
-        ///    &lt;member name=&quot;T:Microsoft.DirectX.DirectSound.AccessDeniedException&quot;&gt;
-        ///      &lt;summary&gt;The request failed because access was denied.&lt;/summary&gt;
-        ///    &lt;/member&gt;
-        ///    &lt;member name=&quot;M:Microsoft.DirectX.DirectSound.AccessDeniedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)&quot;&gt;
-        ///      &lt;summary&gt;Initializes a new instance of the &lt;see cref=&quot;T:Microsoft.Direct [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Microsoft_DirectX_DirectSound1 {
-            get {
-                return ResourceManager.GetString("Microsoft_DirectX_DirectSound1", resourceCulture);
             }
         }
         
@@ -160,6 +159,33 @@ namespace TetrisGame.Properties {
         internal static System.IO.UnmanagedMemoryStream move {
             get {
                 return ResourceManager.GetStream("move", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream musiclvl5 {
+            get {
+                return ResourceManager.GetStream("musiclvl5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream musiclvl8 {
+            get {
+                return ResourceManager.GetStream("musiclvl8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream musicmain {
+            get {
+                return ResourceManager.GetStream("musicmain", resourceCulture);
             }
         }
         
@@ -179,15 +205,6 @@ namespace TetrisGame.Properties {
         internal static System.IO.UnmanagedMemoryStream rotate {
             get {
                 return ResourceManager.GetStream("rotate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream tetris_loop {
-            get {
-                return ResourceManager.GetStream("tetris_loop", resourceCulture);
             }
         }
         
