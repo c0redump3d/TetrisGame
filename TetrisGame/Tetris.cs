@@ -121,7 +121,7 @@ namespace TetrisGame
         /// <param name="gravityTimer"></param>
         /// <param name="confirm"></param>
         /// <param name="nextShapeBox"></param>
-        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop, bool noSound, ref bool remove)
+        public void blockCollision(ref Timer confirmTimer, ref Timer gravityTimer, ref bool confirm, ref PictureBox nextShapeBox, ref bool hardDrop, bool noSound, ref bool remove, int level)
         {
 
             //these 2 rectangles must be put off screen, they can interfere with gameplay
@@ -158,6 +158,15 @@ namespace TetrisGame
                     addcolor.Add(currentColor);
                     addcolor.Add(currentColor);
                     storedColor = addcolor.ToArray();
+
+                    checkRow.update(ref placedrect, ref storedColor, ref remove);
+
+                    if (getLinesCleared() > 1 && level > 6)
+                    {
+                        for (int f = placedrect.Length - 1; f > 0; f--)
+                            placedrect[f].Y -= 32;
+                        randomBlock(1);
+                    }
 
                     //reset player pos
                     plyY = 0;
@@ -236,6 +245,14 @@ namespace TetrisGame
                             addcolor.Add(currentColor);
                             addcolor.Add(currentColor);
                             storedColor = addcolor.ToArray();
+                        }
+                        checkRow.update(ref placedrect, ref storedColor, ref remove);
+
+                        if (getLinesCleared() > 1 && level > 6)
+                        {
+                            for (int f = placedrect.Length - 1; f > 0; f--)
+                                placedrect[f].Y -= 32;
+                            randomBlock(1);
                         }
 
                         //reset player pos
@@ -429,7 +446,7 @@ namespace TetrisGame
                 plyY += 32;
         }
 
-        public void update(ref bool paused, ref PictureBox gameBoard, ref bool remove, int level)
+        public void update(ref bool paused, ref PictureBox gameBoard)
         {
             if (paused)
                 return;
@@ -440,14 +457,6 @@ namespace TetrisGame
 
             predict.Gravity(ref placedrect, ref gameBoard);
             predict.blockCollision(ref plyX, ref x2, ref x3, ref x4, ref placedrect);
-            checkRow.update(ref placedrect, ref storedColor, ref remove);
-
-            if(getLinesCleared() > 1 && level > 6)
-            {
-                for (int i = placedrect.Length - 1; i > 0; i--)
-                    placedrect[i].Y -= 32;
-                randomBlock(1);
-            }
 
             gameBoard.Invalidate();
         }

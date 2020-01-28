@@ -53,6 +53,7 @@ namespace TetrisGame
         {
             if (removing)
                 return;
+            Reset();
             moveDown = 0;
             rowRemove = 608;
             try
@@ -148,6 +149,7 @@ namespace TetrisGame
 
                 if (rowFull)
                 {
+                    removing = true;
                     List<int> addBank = bank.ToList();
                     for (int i = 0; i < board.GetLength(1); i++)
                     {
@@ -160,11 +162,6 @@ namespace TetrisGame
                     lines++;
                 }
 
-            }
-
-            if (lines > 0)
-            {
-                removing = true;
             }
 
             return lines;

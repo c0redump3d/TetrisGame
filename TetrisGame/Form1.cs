@@ -70,7 +70,7 @@ namespace TetrisGame
 
             #region Collision
 
-            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox, ref hardDrop, noSound, ref remove);
+            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox, ref hardDrop, noSound, ref remove, level);
 
             if (tetris.HitTop())
             {
@@ -424,7 +424,7 @@ namespace TetrisGame
             if (gamepad.isConnected())
                 gamepad.ControllerUpdate();
 
-            tetris.update(ref paused, ref gameBoard, ref remove, level);
+            tetris.update(ref paused, ref gameBoard);
 
             if (remove)
                 cleanUp();
