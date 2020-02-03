@@ -112,10 +112,6 @@ namespace TetrisGame
                 placedrect = createblock.ToArray();
                 storedColor = removecolor.ToArray();
 
-                for (int i = placedrect.Length - 1; i > 0; i--)
-                    if (placedrect[i].Y < rowRemove)
-                        placedrect[i].Y += 32 * moveDown;
-
                 Reset();
                 remove = true;
             }
@@ -127,7 +123,7 @@ namespace TetrisGame
             bank = new int[0];
             added = new int[200];
             removing = false;
-            rowRemove = 0;
+            rowRemove = 608;
             boardBool = new bool[20, 10];
         }
 
@@ -135,12 +131,12 @@ namespace TetrisGame
         {
             int lines = 0;
 
-            for (int row = 0; row < boardBool.GetLength(0); row++)
+            for (int row = 0; row < board.GetLength(0); row++)
             {
                 bool rowFull = true;
-                for (int col = 0; col < boardBool.GetLength(1); col++)
+                for (int col = 0; col < board.GetLength(1); col++)
                 {
-                    if (boardBool[row, col] == false)
+                    if (board[row, col] == 0)
                     {
                         rowFull = false;
                         break;
@@ -151,14 +147,20 @@ namespace TetrisGame
                 {
                     removing = true;
                     List<int> addBank = bank.ToList();
+
                     for (int i = 0; i < board.GetLength(1); i++)
                     {
                         addBank.Add(board[row, i]);
-                        if (placedrect[board[row, i]].Y < rowRemove)
-                            rowRemove = placedrect[board[row, i]].Y;
+                        rowRemove = placedrect[board[row, i]].Y;
                     }
+
+                    for (int g = placedrect.Length - 1; g > 0; g--)
+                        if (placedrect[g].Y < rowRemove)
+                            placedrect[g].Y += 32;
+
                     bank = addBank.ToArray();
                     Array.Sort(bank);
+                    Debug.debugMessage("HIGHEST ROW IS: " + rowRemove, 1, true);
                     lines++;
                 }
 
