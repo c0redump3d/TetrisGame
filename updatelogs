@@ -1,5 +1,5 @@
--Way better row check algorithm\\n
+-Fixes to RowCheck\\n
 -New sound effects for matching up more than one row\\n
 -New music when player reaches higher levels\\n
 -Made levels 7-9 more difficult\\n
--Debug console\\n
+-Debug console
