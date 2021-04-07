@@ -62,9 +62,29 @@
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
+    <Reference Include="Microsoft.Win32.Registry, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Win32.Registry.4.7.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.2.0.0\lib\netstandard2.0\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Asio, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.Asio.2.0.0\lib\netstandard2.0\NAudio.Asio.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.Core.2.0.0\lib\netstandard2.0\NAudio.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Midi, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.Midi.2.0.0\lib\netstandard2.0\NAudio.Midi.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Wasapi, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.Wasapi.2.0.0\lib\netstandard2.0\NAudio.Wasapi.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.WinForms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.WinForms.2.0.0\lib\net472\NAudio.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.WinMM, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e279aa5131008a41, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.WinMM.2.0.0\lib\netstandard2.0\NAudio.WinMM.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -75,6 +95,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Security.AccessControl, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.AccessControl.4.7.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Principal.Windows.4.7.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -89,22 +115,34 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Debug.cs" />
+    <Compile Include="Debug\Debug.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="GamepadSupport.cs" />
-    <Compile Include="Prediction.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RowCheck.cs" />
-    <Compile Include="SFX.cs">
+    <Compile Include="Main\Player\Move.cs" />
+    <Compile Include="Main\Player\NextShape.cs" />
+    <Compile Include="Main\Player\Player.cs" />
+    <Compile Include="Main\Player\Rotate.cs" />
+    <Compile Include="Main\Player\RotateCheck.cs" />
+    <Compile Include="Settings\ChangeSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Tetris.cs" />
+    <Compile Include="Settings\ChangeSettingsForm.Designer.cs">
+      <DependentUpon>ChangeSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\GameSettings.cs" />
+    <Compile Include="Other\BlockUtils.cs" />
+    <Compile Include="Other\GamepadSupport.cs" />
+    <Compile Include="Main\Prediction.cs" />
+    <Compile Include="Other\InstanceManager.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Main\RowCheck.cs" />
+    <Compile Include="Sound\LoopStream.cs" />
+    <Compile Include="Sound\SFX.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -118,6 +156,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Settings\ChangeSettingsForm.resx">
+      <DependentUpon>ChangeSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="bin\Debug\TetrisGame.exe.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -182,12 +223,6 @@
     <None Include="Resources\harddrop.wav" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\unMute.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Mute.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\linetriple.wav" />
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +239,54 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\lineperfect.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_z2_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_i_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_i_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_l1_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_l1_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_l2_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_l2_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_o_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_o_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_t_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_t_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_z1_placed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_z2_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_z1_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tetris_x_full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\settingsback.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('packages\Fody.6.0.0\build\Fody.targets')" />

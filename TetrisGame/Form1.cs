@@ -4,19 +4,20 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using TetrisGame.Main;
+using TetrisGame.Other;
+using TetrisGame.Settings;
 
 namespace TetrisGame
 {
     
     public partial class Form1 : Form
     {
+
         public Form1()
         {
             InitializeComponent();
-
-            sfx = new SFX();
-            gamepad = new GamepadSupport();
-            tetris = new Tetris();
+            new InstanceManager(this);
 
             this.Icon = Properties.Resources.tetrisico; // set icon
 
@@ -37,6 +38,7 @@ namespace TetrisGame
             lineLabel.Font = new Font(hoogfont28, FontStyle.Regular);
             levelLabel.Font = new Font(hoogfont28, FontStyle.Regular);
             startLabel.Font = new Font(hoogfont24, FontStyle.Regular);
+            settingsLabel.Font = new Font(hoogfont24, FontStyle.Regular);
             selectedLevelLabel.Font = new Font(hoogfont24, FontStyle.Regular);
             rightArrowLabel.Font = new Font(hoogfont24, FontStyle.Regular);
             leftArrowLabel.Font = new Font(hoogfont24, FontStyle.Regular);
@@ -47,7 +49,7 @@ namespace TetrisGame
             gravityTimer.Stop();
             paused = true;
 
-            if (gamepad.isConnected())
+            if (InstanceManager.getGamepad().isConnected())
                 MessageBox.Show("Controller detected! Please feel free to use the controller.");
         }
 
@@ -55,39 +57,28 @@ namespace TetrisGame
         {
             if (!stop)
             {
-                tetris.setNextShape(e.Graphics);
+                InstanceManager.getNextShape().setNextShape(e.Graphics);
             }
         }
 
         private void GameBoard_Paint(object sender, PaintEventArgs e)
         {
+            InstanceManager.setGameGraphics(e.Graphics);
+
             if (!stop)
             {
 
-                tetris.Draw(e.Graphics);
+                InstanceManager.getPlayer().Draw();
 
             }
 
             #region Collision
 
-            tetris.blockCollision(ref confimTimer, ref gravityTimer, ref confirm, ref nextShapeBox, ref hardDrop, noSound, ref remove, level);
+            InstanceManager.getPlayer().blockCollision(ref confirm, ref hardDrop, ref remove, level);
 
-            if (tetris.HitTop())
+            if (InstanceManager.getPlayer().HitTop())
             {
-                gravityTimer.Stop(); // stop gravity
-                paused = true; // pause game
-                stop = true; // stop music
-                startLabel.Show(); // show start button
-                tetrisLogo.Show(); // show tetris logo
-                selectedLevelLabel.Show();
-                leftArrowLabel.Show();
-                rightArrowLabel.Show();
-                githubLink.Show();
-                createdByLabel.Show();
-                gameBoard.Invalidate();
-                if (!noSound)
-                    sfx.playMusic(ref stop, level);
-                Debug.debugMessage("GAME: End", 1, false);
+                endGame();
             }
 
             #endregion
@@ -113,8 +104,7 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 925;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 20 && lines < 30 && level != 2 && selectedLevel < 2)
             {
@@ -122,8 +112,7 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 850;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 30 && lines < 40 && level != 3 && selectedLevel < 3)
             {
@@ -131,8 +120,7 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 775;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 40 && lines < 50 && level != 4 && selectedLevel < 4)
             {
@@ -140,21 +128,17 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 700;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 50 && lines < 60 && level != 5 && selectedLevel < 5)
             {
                 level++;
-                stop = true;
-                sfx.playMusic(ref stop, level);
-                stop = false;
-                sfx.playMusic(ref stop, level);
+                InstanceManager.getSound().stopMusic();
+                InstanceManager.getSound().playMusic(level);
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 625;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 60 && lines < 70 && level != 6 && selectedLevel < 6)
             {
@@ -162,8 +146,7 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 550;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 70 && lines < 80 && level != 7 && selectedLevel < 7)
             {
@@ -171,20 +154,17 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 475;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 80 && lines < 90 && level != 8 && selectedLevel < 8)
             {
                 level++;
-                sfx.playMusic(ref stop, level);
-                stop = false;
-                sfx.playMusic(ref stop, level);
+                InstanceManager.getSound().stopMusic();
+                InstanceManager.getSound().playMusic(level);
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 400;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
             else if (lines >= 90 && level != 9 && selectedLevel < 9)
             {
@@ -192,8 +172,7 @@ namespace TetrisGame
                 points += 40;
                 levelLabel.Text = "0" + level;
                 gravityTimer.Interval = 325;
-                if (!noSound)
-                    sfx.playLevelUp();
+                InstanceManager.getSound().playLevelUp();
             }
 
             if (score >= 0 && score < 10)
@@ -245,20 +224,37 @@ namespace TetrisGame
 
         #region Game Functions
 
+        public void endGame()
+        {
+            gravityTimer.Stop(); // stop gravity
+            paused = true; // pause game
+            stop = true; // stop music
+            startLabel.Show(); // show start button
+            settingsLabel.Show();
+            tetrisLogo.Show(); // show tetris logo
+            selectedLevelLabel.Show();
+            leftArrowLabel.Show();
+            rightArrowLabel.Show();
+            githubLink.Show();
+            createdByLabel.Show();
+            gameBoard.Invalidate();
+            InstanceManager.getSound().stopMusic();
+            Debug.debugMessage("GAME: End", 1, false);
+        }
+
         //used for when we remove a row, just does the other work.
         public void cleanUp()
         {
             remove = false;
-            lines += tetris.getLinesCleared(); // add one to lines removed
-            if (!noSound)
-                sfx.playClear(tetris.getLinesCleared()); // play our clear sound
-            score += points * tetris.getLinesCleared(); // add 40 points to our score
+            lines += InstanceManager.getPlayer().getLinesCleared(); // add one to lines removed
+            InstanceManager.getSound().playClear(InstanceManager.getPlayer().getLinesCleared()); // play our clear sound
+            score += points * InstanceManager.getPlayer().getLinesCleared(); // add 40 points to our score
             gameBoard.Invalidate();
         }
 
-        public static bool isMuted()
+        public bool isPaused()
         {
-            return changedMute;
+            return paused;
         }
 
         private void resetGame()
@@ -291,10 +287,10 @@ namespace TetrisGame
                 gravityTimer.Interval = 325;
             scoreLabel.Text = "0";
             //wipe all placed rectangles
-            tetris.Reset();
+            InstanceManager.getPlayer().Reset();
 
             if (level > 6)
-                tetris.randomBlock(level - 3);
+                InstanceManager.getPlayer().randomBlock(level - 3);
 
             gameBoard.Invalidate();
         }
@@ -305,22 +301,10 @@ namespace TetrisGame
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            movePlayer(e.KeyCode);
+
             switch (e.KeyCode)
             {
-                case Keys.Down:
-                case Keys.S:
-                    if (paused)
-                        return;
-
-                    confirm = true;
-
-                    if (tetris.moveDown())
-                    {
-                        if (!noSound)
-                            sfx.playMove();
-                        movingDown = true;
-                    }
-                    break;
                 case Keys.Escape:
                     if (paused == false)
                     {
@@ -333,73 +317,99 @@ namespace TetrisGame
                         paused = false;
                     }
                     break;
-                case Keys.Left:
-                case Keys.A:
-                    tetris.moveLeft(ref paused);
-                    if (!noSound)
-                        sfx.playMove();
-                    break;
-                case Keys.Right:
-                case Keys.D:
-                    tetris.moveRight(ref paused);
-                    if (!noSound)
-                        sfx.playMove();
-                    break;
-                case Keys.Z:
-                case Keys.X:
-                case Keys.Up:
-                    if (!rotating)
-                    {
-                        if (paused)
-                            return;
-                        rotating = true;
-
-                        tetris.rotateTetris();
-
-                        if (!noSound)
-                            sfx.playRotate();
-                    }
-                    break;
-                case Keys.C:
-                    if (fastFall)
-                        return;
-                    hardDrop = true;
-                    fastFall = true;
-                    tetris.instantFall();
-                    confirm = true;
-                    break;
                 case Keys.F4:
                     Debug.setUp();
+                    break;
+                case Keys.F1:
+                    if (Debug.isEnabled())
+                    {
+                        int shape = InstanceManager.getRotate().getCurShape();
+                        if (shape < 7)
+                            shape++;
+                        if (shape == 7)
+                            shape = 1;
+
+                        InstanceManager.getRotate().setCurShape(shape);
+                        InstanceManager.getRotate().setCurAngel(1);
+                        InstanceManager.getPlayer().setShape();
+                        InstanceManager.getRotateCheck().setAllPositions();
+                    }
                     break;
             }
 
             gameBoard.Invalidate();
         }
 
+        public void movePlayer(Keys key)
+        {
+            //cant use switch statement since movementkeys are not a constant value.... thanks c#
+            if (key == MovementKeys.DOWN)
+            {
+                if (paused)
+                    return;
+
+                confirm = true;
+
+                if (InstanceManager.getMove().moveDown())
+                {
+                    movingDown = true;
+                }
+            }
+            if (key == MovementKeys.LEFT)
+            {
+                InstanceManager.getMove().moveLeft();
+            }
+            if (key == MovementKeys.RIGHT)
+            {
+                InstanceManager.getMove().moveRight();
+            }
+            if (key == MovementKeys.ROTATE)
+            {
+                if (!rotating)
+                {
+                    if (paused)
+                        return;
+                    rotating = true;
+
+                    InstanceManager.getRotate().rotateTetris();
+                    InstanceManager.getSound().playRotate();
+                }
+            }
+            if (key == MovementKeys.FORCEDROP)
+            {
+                if (fastFall || paused)
+                    return;
+                hardDrop = true;
+                fastFall = true;
+                InstanceManager.getPlayer().instantFall();
+                confirm = true;
+            }
+        }
+
+        public void keyUp(Keys key)
+        {
+            if(key == MovementKeys.LEFT || key == MovementKeys.RIGHT)
+            {
+                confirm = false;
+            }
+            if(key == MovementKeys.DOWN)
+            {
+                confirm = false;
+                movingDown = false;
+            }
+            if(key == MovementKeys.ROTATE)
+            {
+                rotating = false;
+            }
+            if(key == MovementKeys.FORCEDROP)
+            {
+                fastFall = false;
+            }
+        }
+
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            switch (e.KeyCode)
-            {
-                case Keys.S:
-                case Keys.Down:
-                    confirm = false;
-                    movingDown = false;
-                    break;
-                case Keys.Left:
-                case Keys.A:
-                case Keys.Right:
-                case Keys.D:
-                    confirm = false;
-                    break;
-                case Keys.Z: 
-                case Keys.X:
-                case Keys.Up:
-                    rotating = false;
-                    break;
-                case Keys.C:
-                    fastFall = false;
-                    break;
-            }
+            keyUp(e.KeyCode);
         }
 
         #endregion
@@ -407,7 +417,7 @@ namespace TetrisGame
         #region Timers
         private void GravityTimer_Tick(object sender, EventArgs e)
         {
-            tetris.Gravity(ref gameBoard, ref movingDown);
+            InstanceManager.getPlayer().Gravity(ref gameBoard, ref movingDown);
 
             gameBoard.Invalidate();
         }
@@ -421,10 +431,10 @@ namespace TetrisGame
 
         private void UpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (gamepad.isConnected())
-                gamepad.ControllerUpdate();
+            if (InstanceManager.getGamepad().isConnected())
+                InstanceManager.getGamepad().ControllerUpdate();
 
-            tetris.update(ref paused, ref gameBoard);
+            InstanceManager.getPlayer().update();
 
             if (remove)
                 cleanUp();
@@ -437,28 +447,28 @@ namespace TetrisGame
 
         private void ThumbStickTimer_Tick(object sender, EventArgs e)
         {
-            if (gamepad.isConnected())
+            if (InstanceManager.getGamepad().isConnected())
             {
 
-                if (gamepad.leftThumb.X < -50 || gamepad.gamepad.Buttons == GamepadButtonFlags.DPadLeft)
+                if (InstanceManager.getGamepad().leftThumb.X < -50 || InstanceManager.getGamepad().gamepad.Buttons == GamepadButtonFlags.DPadLeft)
                 {
-                    tetris.moveLeft(ref paused);
+                    InstanceManager.getMove().moveLeft();
                     gameBoard.Invalidate();
                 }
 
-                if (gamepad.leftThumb.X > 50 || gamepad.gamepad.Buttons == GamepadButtonFlags.DPadRight)
+                if (InstanceManager.getGamepad().leftThumb.X > 50 || InstanceManager.getGamepad().gamepad.Buttons == GamepadButtonFlags.DPadRight)
                 {
-                    tetris.moveRight(ref paused);
+                    InstanceManager.getMove().moveRight();
                     gameBoard.Invalidate();
                 }
 
-                if (gamepad.leftThumb.Y < -80 || gamepad.gamepad.Buttons == GamepadButtonFlags.DPadDown)
+                if (InstanceManager.getGamepad().leftThumb.Y < -80 || InstanceManager.getGamepad().gamepad.Buttons == GamepadButtonFlags.DPadDown)
                 {
                     if (paused)
                         return;
-                    tetris.joystickDown(ref movingDown);
-                    if (!noSound)
-                        sfx.playMove();
+                    //TODO: remove ref
+                    InstanceManager.getMove().joystickDown(ref movingDown);
+                    InstanceManager.getSound().playMove();
                     gameBoard.Invalidate();
                 }
                 else
@@ -475,9 +485,9 @@ namespace TetrisGame
 
         private void ControllerButtonTimer_Tick(object sender, EventArgs e)
         {
-            if (gamepad.isConnected())
+            if (InstanceManager.getGamepad().isConnected())
             {
-                State stateNew = gamepad.controller.GetState();
+                State stateNew = InstanceManager.getGamepad().controller.GetState();
                 if (stateOld.Gamepad.Buttons != GamepadButtonFlags.A && stateNew.Gamepad.Buttons == GamepadButtonFlags.A)
                 {
                     SendKeys.SendWait("{X}");
@@ -490,9 +500,9 @@ namespace TetrisGame
                         gravityTimer.Start();
                         paused = false;
                         stop = false;
-                        if (!noSound)
-                            sfx.playMusic(ref stop, level);
+                        InstanceManager.getSound().playMusic(level);
                         startLabel.Hide();
+                        settingsLabel.Hide();
                         selectedLevelLabel.Hide();
                         leftArrowLabel.Hide();
                         rightArrowLabel.Hide();
@@ -551,6 +561,7 @@ namespace TetrisGame
             paused = false;
             stop = false;
             startLabel.Hide();
+            settingsLabel.Hide();
             selectedLevelLabel.Hide();
             leftArrowLabel.Hide();
             rightArrowLabel.Hide();
@@ -559,50 +570,29 @@ namespace TetrisGame
             createdByLabel.Hide();
             resetGame();
             nextShapeBox.Invalidate();
-            try
-            {
-                sfx.playMusic(ref stop, level);
-            }
-            catch (Exception)
-            {
-                if(!noSound)
-                    MessageBox.Show("You are missing required files to use sound. Please make sure you have the \"TetrisGame.exe.config\" file found on" +
-                        " the github release page.\nIf you have this file, please make sure you have DirectX SDK installed on your machine.", "Sound Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.debugMessage("GAME: DirectSound error! Sound disabled", 1, true);
-                soundBox.Image = Properties.Resources.Mute;
-                noSound = true;
-            }
+            InstanceManager.getSound().playMusic(level);
         }
 
         private void GithubLink_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/StrugglingDoge/TetrisGame");
         }
-
-        private void SoundBox_Click(object sender, EventArgs e)
+        private void settingsLabel_Click(object sender, EventArgs e)
         {
-            if (noSound)
-            {
-                MessageBox.Show("You are missing required files to use sound. Please make sure you have the \"TetrisGame.exe.config\" file found on" +
-                    " the github release page.\nIf you have this file, please make sure you have DirectX SDK installed on your machine.", "Sound Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            ChangeSettingsForm form = new ChangeSettingsForm();
+            form.ShowDialog();
+        }
 
-            if (changedMute)
-            {
-                soundBox.Image = Properties.Resources.unMute;
-                changedMute = false;
-                if (!noSound)
-                    sfx.playMusic(ref stop, level);
-                return;
-            }
-            else if (soundBox.Image != Properties.Resources.Mute && !changedMute)
-            {
-                changedMute = true;
-                soundBox.Image = Properties.Resources.Mute;
-                if (!noSound)
-                    sfx.playMusic(ref stop, level);
-            }
+        private void label_MouseEnter(object sender, EventArgs e)
+        {
+            string oldText = ((Label)sender).Text;
+            ((Label)sender).Text = ">" + oldText;
+        }
+
+        private void label_MouseLeave(object sender, EventArgs e)
+        {
+            string oldText = ((Label)sender).Text;
+            ((Label)sender).Text = oldText.Remove(0, 1);
         }
 
         #endregion

@@ -51,12 +51,11 @@ namespace TetrisGame
             this.leftArrowLabel = new System.Windows.Forms.Label();
             this.githubLink = new System.Windows.Forms.PictureBox();
             this.createdByLabel = new System.Windows.Forms.Label();
-            this.soundBox = new System.Windows.Forms.PictureBox();
+            this.settingsLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gameBoard)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.githubLink)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.soundBox)).BeginInit();
             this.SuspendLayout();
             // 
             // gravityTimer
@@ -124,7 +123,7 @@ namespace TetrisGame
             // 
             // confimTimer
             // 
-            this.confimTimer.Interval = 300;
+            this.confimTimer.Interval = 1000;
             this.confimTimer.Tick += new System.EventHandler(this.Timer1_Tick);
             // 
             // startLabel
@@ -140,6 +139,8 @@ namespace TetrisGame
             this.startLabel.TabIndex = 7;
             this.startLabel.Text = "START GAME";
             this.startLabel.Click += new System.EventHandler(this.StartLabel_Click);
+            this.startLabel.MouseEnter += new System.EventHandler(this.label_MouseEnter);
+            this.startLabel.MouseLeave += new System.EventHandler(this.label_MouseLeave);
             // 
             // nextShapeBox
             // 
@@ -175,7 +176,7 @@ namespace TetrisGame
             this.selectedLevelLabel.BackColor = System.Drawing.Color.Transparent;
             this.selectedLevelLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.selectedLevelLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.selectedLevelLabel.Location = new System.Drawing.Point(97, 431);
+            this.selectedLevelLabel.Location = new System.Drawing.Point(97, 480);
             this.selectedLevelLabel.Name = "selectedLevelLabel";
             this.selectedLevelLabel.Size = new System.Drawing.Size(144, 37);
             this.selectedLevelLabel.TabIndex = 9;
@@ -188,7 +189,7 @@ namespace TetrisGame
             this.rightArrowLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rightArrowLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rightArrowLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.rightArrowLabel.Location = new System.Drawing.Point(262, 431);
+            this.rightArrowLabel.Location = new System.Drawing.Point(262, 480);
             this.rightArrowLabel.Name = "rightArrowLabel";
             this.rightArrowLabel.Size = new System.Drawing.Size(36, 37);
             this.rightArrowLabel.TabIndex = 10;
@@ -202,7 +203,7 @@ namespace TetrisGame
             this.leftArrowLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.leftArrowLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.leftArrowLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.leftArrowLabel.Location = new System.Drawing.Point(65, 431);
+            this.leftArrowLabel.Location = new System.Drawing.Point(65, 480);
             this.leftArrowLabel.Name = "leftArrowLabel";
             this.leftArrowLabel.Size = new System.Drawing.Size(36, 37);
             this.leftArrowLabel.TabIndex = 11;
@@ -234,24 +235,28 @@ namespace TetrisGame
             this.createdByLabel.TabIndex = 13;
             this.createdByLabel.Text = "Created by Carson Kelley";
             // 
-            // soundBox
+            // settingsLabel
             // 
-            this.soundBox.BackColor = System.Drawing.Color.Transparent;
-            this.soundBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.soundBox.Image = global::TetrisGame.Properties.Resources.unMute;
-            this.soundBox.Location = new System.Drawing.Point(433, 626);
-            this.soundBox.Name = "soundBox";
-            this.soundBox.Size = new System.Drawing.Size(32, 32);
-            this.soundBox.TabIndex = 14;
-            this.soundBox.TabStop = false;
-            this.soundBox.Click += new System.EventHandler(this.SoundBox_Click);
+            this.settingsLabel.AutoSize = true;
+            this.settingsLabel.BackColor = System.Drawing.Color.Transparent;
+            this.settingsLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.settingsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.settingsLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.settingsLabel.Location = new System.Drawing.Point(80, 430);
+            this.settingsLabel.Name = "settingsLabel";
+            this.settingsLabel.Size = new System.Drawing.Size(177, 37);
+            this.settingsLabel.TabIndex = 15;
+            this.settingsLabel.Text = "SETTINGS";
+            this.settingsLabel.Click += new System.EventHandler(this.settingsLabel_Click);
+            this.settingsLabel.MouseEnter += new System.EventHandler(this.label_MouseEnter);
+            this.settingsLabel.MouseLeave += new System.EventHandler(this.label_MouseLeave);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 674);
-            this.Controls.Add(this.soundBox);
+            this.Controls.Add(this.settingsLabel);
             this.Controls.Add(this.createdByLabel);
             this.Controls.Add(this.githubLink);
             this.Controls.Add(this.leftArrowLabel);
@@ -274,62 +279,56 @@ namespace TetrisGame
             ((System.ComponentModel.ISupportInitialize)(this.tetrisLogo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextShapeBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.githubLink)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.soundBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Timer gravityTimer;
-        private System.Windows.Forms.PictureBox gameBoard;
+        public System.Windows.Forms.Timer gravityTimer;
+        public System.Windows.Forms.PictureBox gameBoard;
 
-        private bool movingDown = false;
+        public bool movingDown = false;
 
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
             IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
 
-        private PrivateFontCollection fonts = new PrivateFontCollection();
+        public PrivateFontCollection fonts = new PrivateFontCollection();
 
         Font hoogfont24;
         Font hoogfont28;
 
         int selectedLevel = 0;
-        SFX sfx;
-        GamepadSupport gamepad;
-        Tetris tetris;
         private State stateOld;
         int lines = 0;
         int score = 0;
-        int level = 0;
+        public int level = 0;
         int points = 40;
         bool fastFall = false;
-        static bool changedMute;
         bool confirm = false;
-        bool remove = false;
+        public bool remove = false;
         bool hardDrop = false;
         private bool paused = false;
         private bool rotating = false;
-        private bool noSound = false;
-        private bool stop = true;
+        public bool stop = true;
 
-        private System.Windows.Forms.Label levelLabel;
-        private System.Windows.Forms.PictureBox tetrisLogo;
-        private System.Windows.Forms.Label lineLabel;
-        private System.Windows.Forms.Label scoreLabel;
-        private System.Windows.Forms.Timer confimTimer;
-        private System.Windows.Forms.Label startLabel;
-        private System.Windows.Forms.PictureBox nextShapeBox;
-        private System.Windows.Forms.Timer updateTimer;
-        private System.Windows.Forms.Timer thumbStickTimer;
-        private System.Windows.Forms.Timer controllerButtonTimer;
-        private System.Windows.Forms.Label selectedLevelLabel;
-        private System.Windows.Forms.Label rightArrowLabel;
-        private System.Windows.Forms.Label leftArrowLabel;
-        private System.Windows.Forms.PictureBox githubLink;
-        private System.Windows.Forms.Label createdByLabel;
-        private System.Windows.Forms.PictureBox soundBox;
+        public System.Windows.Forms.Label levelLabel;
+        public System.Windows.Forms.PictureBox tetrisLogo;
+        public System.Windows.Forms.Label lineLabel;
+        public System.Windows.Forms.Label scoreLabel;
+        public System.Windows.Forms.Timer confimTimer;
+        public System.Windows.Forms.Label startLabel;
+        public System.Windows.Forms.PictureBox nextShapeBox;
+        public System.Windows.Forms.Timer updateTimer;
+        public System.Windows.Forms.Timer thumbStickTimer;
+        public System.Windows.Forms.Timer controllerButtonTimer;
+        public System.Windows.Forms.Label selectedLevelLabel;
+        public System.Windows.Forms.Label rightArrowLabel;
+        public System.Windows.Forms.Label leftArrowLabel;
+        public System.Windows.Forms.PictureBox githubLink;
+        public System.Windows.Forms.Label createdByLabel;
+        public System.Windows.Forms.Label settingsLabel;
     }
 }
 

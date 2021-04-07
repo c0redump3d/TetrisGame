@@ -1,5 +1,8 @@
--Fixes to RowCheck\\n
--New sound effects for matching up more than one row\\n
--New music when player reaches higher levels\\n
--Made levels 7-9 more difficult\\n
--Debug console
+-New graphics\\n
+-Cleaned up A LOT of code\\n
+-Lots of bug fixes\\n
+-New rotate check algorithm\\n
+-New sound library(NAudio)\\n
+-Removed DirectX requirement\\n
+-Ability to change keybinds and audio settings\\n
+-Other general QOL improvements

@@ -151,12 +151,6 @@
   <data name="harddrop" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\harddrop.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Mute" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Mute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unMute" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unMute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="linedouble" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\linedouble.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -174,5 +168,53 @@
   </data>
   <data name="musicmain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\musicmain.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tetris_i_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_i_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_i_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_i_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_l1_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_l1_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_l1_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_l1_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_l2_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_l2_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_l2_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_l2_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_o_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_o_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_o_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_o_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_t_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_t_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_t_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_t_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_z1_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_z1_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_z1_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_z1_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_z2_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_z2_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_z2_placed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_z2_placed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tetris_x_full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tetris_x_full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settingsback" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settingsback.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
