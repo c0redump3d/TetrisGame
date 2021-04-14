@@ -18,12 +18,7 @@ namespace TetrisGame.Main.Player
 
         Graphics graphics;
 
-        public int r1 = 32;
-        public int r2 = 0;
-        public int l1 = 32;
-        public int l2 = 32;
-        public int t1 = 32;
-        public int t2 = 0;
+        public int r1, r2, l1, l2, t1, t2;
 
         Bitmap currentTetImage;
         Font debugFont;

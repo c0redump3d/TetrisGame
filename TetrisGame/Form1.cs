@@ -47,7 +47,6 @@ namespace TetrisGame
             this.BackgroundImage = Properties.Resources.gui;
 
             gravityTimer.Stop();
-            paused = true;
 
             if (InstanceManager.getGamepad().isConnected())
                 MessageBox.Show("Controller detected! Please feel free to use the controller.");

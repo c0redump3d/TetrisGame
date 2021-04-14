@@ -309,7 +309,7 @@ namespace TetrisGame
         bool confirm = false;
         public bool remove = false;
         bool hardDrop = false;
-        private bool paused = false;
+        private bool paused = true;
         private bool rotating = false;
         public bool stop = true;
 
